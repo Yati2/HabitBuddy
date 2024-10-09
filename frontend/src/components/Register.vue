@@ -18,8 +18,10 @@
           <p v-if="passwordError" class="text-danger">{{ passwordError }}</p>
         </div>
         <button type="submit" class="btn btn-primary">Register</button>
-        <p v-if="message" class="mt-3">{{ message }}</p>
       </form>
+  
+      <!-- Error Message -->
+      <p v-if="message" class="mt-3">{{ message }}</p>
     </div>
   </template>
   
@@ -35,50 +37,52 @@
         message: '',
         usernameError: '',
         emailError: '',
-        passwordError: ''
+        passwordError: '',
       };
     },
     methods: {
       async registerUser() {
-        // Reset errors
+        // Reset errors and message
         this.usernameError = '';
         this.emailError = '';
         this.passwordError = '';
   
-        // Validate username
+        // make sure username matches requirement
         if (!this.validateUsername(this.username)) {
           this.usernameError = 'Username must be between 6-10 characters and can only contain letters, numbers, and underscores.';
           return;
         }
   
-        // Validate email
+        // make sure valid email
         if (!this.validateEmail(this.email)) {
           this.emailError = 'Please enter a valid email address.';
           return;
         }
   
-        // Validate password
+        // make sure pw matches requirement
         if (!this.validatePassword(this.password)) {
           this.passwordError = 'Password must contain at least 8 characters, including letters and numbers.';
           return;
         }
   
-        // Check if username already exists
+        // make sure username is unique
         const existingUser = await this.checkUsernameExists(this.username);
         if (existingUser) {
           this.usernameError = 'Username already exists.';
           return;
         }
   
-        // Send registration request to the server
+        // axios req to register user
         try {
           const response = await axios.post('http://localhost:8000/api/register', {
             username: this.username,
             email: this.email,
             password: this.password
           });
-          this.message = response.data.message; // Show success message
-          this.resetForm(); // Reset the form
+          
+          // success message alert
+          alert("Registration successful!");
+          this.resetForm(); 
         } catch (error) {
           console.error('Error registering user:', error);
           this.message = 'Error registering user.';
@@ -86,17 +90,17 @@
       },
   
       validateUsername(username) {
-        const regex = /^[a-zA-Z0-9_]{6,10}$/; // Regex for 6-10 characters, letters, numbers, underscores
+        const regex = /^[a-zA-Z0-9_]{6,10}$/; 
         return regex.test(username);
       },
   
       validateEmail(email) {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
         return regex.test(email);
       },
   
       validatePassword(password) {
-        const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // At least 8 characters, including letters and numbers
+        const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; 
         return regex.test(password);
       },
   
@@ -104,7 +108,7 @@
         try {
           const response = await axios.get(`http://localhost:8000/api/users`);
           const users = response.data;
-          return users.some(user => user.username === username); // Check if username exists
+          return users.some(user => user.username === username); 
         } catch (error) {
           console.error('Error checking username:', error);
           return false;
@@ -122,6 +126,5 @@
   </script>
   
   <style scoped>
-  /* Add any additional styles here if needed */
   </style>
   

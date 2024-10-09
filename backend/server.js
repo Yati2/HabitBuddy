@@ -59,4 +59,27 @@ app.post("/api/register", async (req, res) => {
     }
 });
 
+app.post("/api/login", async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        // Find the user by username
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid username or password." });
+        }
+
+        // Check if the password matches
+        if (user.password !== password) {
+            return res.status(400).json({ message: "Invalid username or password." });
+        }
+
+        // If successful, return a success message
+        res.status(200).json({ message: "Login successful!" });
+    } catch (error) {
+        console.error("Error logging in:", error);
+        res.status(500).json({ message: "Error logging in" });
+    }
+});
+
+
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
