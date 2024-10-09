@@ -2,13 +2,13 @@
   <div class="container-fluid bg-register">
     <div class="overlay row">
       <!-- App Name -->
-      <div class="app-info col-6 text-center p-10px">
+      <div class="app-info col-lg-6 col-12 text-center p-10px">
         <h1 class="app-name">HabitBuddy</h1>
         <h3 class="description">Take care of yourself while taking care of your pet!</h3>
       </div>
 
       <!-- Registration Form -->
-      <div class="col-6 d-flex justify-content-center">
+      <div class="col-lg-6 col-12 d-flex justify-content-center">
         <div class="form-container">
           <h3>Sign Up For Free</h3>
           <form @submit.prevent="registerUser">
@@ -159,20 +159,22 @@ a {
 }
 .bg-register {
   background-image: url('@/assets/bg_login_register.gif'); /* Background GIF */
-  background-size: cover; /* Set width to 100% and height to auto */
+  background-size: cover;
   background-position: center;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
-  margin: 0;
+  margin: auto;
   justify-content: center;
 }
 
 .overlay {
   position: relative;
   /* background: rgba(0, 0, 0, 0.5); Dark overlay to improve readability */
-  padding: 2rem;
-  width: 70%;
+  padding: auto;
+  width: 100%;
+  height: 100%;
+  margin: auto;
   border-radius: 10px;
   text-align: center;
 }
@@ -186,7 +188,7 @@ a {
 
 .app-name {
   color: white;
-  font-size: 4.5rem;
+  font-size: 4rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   margin-bottom: 5px;
 }
@@ -197,7 +199,7 @@ a {
 
 .form-container {
   background-color: rgba(255, 255, 255, 0.341); /* Semi-transparent background for form */
-  padding: 2rem;
+  padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   max-width: 400px;
