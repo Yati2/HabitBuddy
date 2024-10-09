@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid bg-register">
+  <div class="container-fluid">
     <div class="overlay row">
       <!-- App Name -->
       <div class="app-info col-lg-6 col-12 text-center p-10px">
@@ -171,11 +171,17 @@ export default {
   background-color: #f7bec1;
   margin-bottom: 10px;
 }
+.btn:hover {
+  background-color: #be9294;
+}
 a {
   color: #ffc1c4;
   font-weight: bold;
 }
-.bg-register {
+a:hover {
+  color: #be9294;
+}
+.container-fluid {
   background-image: url('@/assets/bg_login_register.gif'); /* Background GIF */
   background-size: cover;
   background-position: center;
