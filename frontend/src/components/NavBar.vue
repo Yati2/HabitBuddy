@@ -59,13 +59,16 @@ export default {
 </script>
 
 <style scoped>
+/* Style the navbar for larger screens */
 .navbar {
+  background-image: url('@/assets/nav_background.jpeg');
+  z-index: 1000;
+  position: relative;
+  font-size: 1.5rem;
   font-family: 'Jersey 25', sans-serif;
-
   display: flex;
   align-items: center;
-  justify-content: center; /* This ensures horizontal centering */
-  background-color: #eec0c2;
+  background-image:;
   padding: 10px 20px;
   height: 80px;
   width: 100%;
@@ -76,12 +79,9 @@ export default {
 }
 
 .nav-link {
-  list-style-type: none;
-  padding: auto;
-  margin: auto;
-  display: flex;
   font-size: 1.2rem;
   font-weight: normal;
+  display: flex;
   justify-content: space-between;
   width: 100%;
   text-align: center;
@@ -97,5 +97,49 @@ export default {
   height: 40px;
   border-radius: 50%;
   background-color: black;
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 991px) {
+  .navbar {
+    padding: 10px;
+    height: auto; /* Let the navbar height adjust automatically */
+  }
+
+  .nav-link {
+    font-size: 1rem; /* Reduce font size */
+    padding: 5px 0;
+  }
+
+  .nav-item {
+    padding: 5px;
+    text-align: left;
+  }
+
+  .cat-icon {
+    height: 35px; /* Slightly reduce the size of the cat icon */
+  }
+
+  .profile-icon {
+    width: 35px;
+    height: 35px;
+  }
+
+  /* Make sure the navbar expands properly */
+  .navbar-collapse {
+    position: relative; /* Match navbar background */
+  }
+
+  .navbar-toggler {
+    border-color: rgba(0, 0, 0, 0.1); /* Style the toggle button */
+  }
+
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28150, 150, 150, 0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); /* Custom icon */
+  }
+
+  .collapse .nav-item {
+    text-align: left; /* Align items to the left in collapsed mode */
+  }
 }
 </style>
