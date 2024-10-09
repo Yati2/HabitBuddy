@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <div class="overlay row">
       <!-- App Name -->
-      <div class="app-info col-lg-6 col-12 text-center p-10px">
+      <div class="app-info col-lg-6 col-12 text-center">
         <h1 class="app-name">HabitBuddy</h1>
         <h3 class="description">Take care of yourself while taking care of your pet!</h3>
       </div>
@@ -32,7 +32,7 @@
                 required
               />
             </div>
-            <div class="mb-3">
+            <div class="mb-4">
               <label for="confirm-password" class="form-label">Confirm Password:</label>
               <input
                 type="password"
@@ -48,7 +48,7 @@
 
           <!-- Error Message -->
           <p v-if="message" class="mt-3 mb-5 text-white">{{ message }}</p>
-          <p>Already have an account ? <a href="/login">Login here!</a></p>
+          <p style="font-size: 1rem">Already have an account ? <a href="/login">Login here!</a></p>
         </div>
       </div>
     </div>
@@ -168,6 +168,7 @@ export default {
 
 <style scoped>
 .btn {
+  font-size: 1.3rem;
   background-color: #f7bec1;
   margin-bottom: 10px;
 }
@@ -219,14 +220,19 @@ a:hover {
 .app-info {
   margin-top: auto;
   margin-bottom: auto;
+  font-family: 'Pixelify Sans', sans-serif;
 }
 
 .form-container {
+  font-family: 'Jersey 25', sans-serif;
   background-color: rgba(255, 255, 255, 0.474); /* Semi-transparent background for form */
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   max-width: 400px;
   width: 100%;
+}
+.form-label {
+  font-size: 1.3rem;
 }
 </style>

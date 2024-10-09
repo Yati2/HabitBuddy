@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="overlay row">
-      <div class="app-info col-lg-6 col-12 text-center p-10px">
+      <div class="app-info col-lg-6 col-12 text-center">
         <h1 class="app-name">HabitBuddy</h1>
         <h3 class="description">Take care of yourself while taking care of your pet!</h3>
       </div>
@@ -14,7 +14,7 @@
               <input type="text" id="username" class="form-control" v-model="username" required />
               <p v-if="usernameError" class="text-danger">{{ usernameError }}</p>
             </div>
-            <div class="mb-3">
+            <div class="mb-4">
               <label for="password" class="form-label">Password:</label>
               <input
                 type="password"
@@ -27,7 +27,7 @@
             </div>
             <button type="submit" class="btn w-100">Login</button>
             <p v-if="message" class="mt-3 text-center">{{ message }}</p>
-            <p>New here ? <a href="/register">Register here!</a></p>
+            <p style="font-size: 1rem">New here ? <a href="/register">Register here!</a></p>
           </form>
         </div>
       </div>
@@ -89,6 +89,7 @@ export default {
 .btn {
   background-color: #f7bec1;
   margin-bottom: 10px;
+  font-size: 1.2rem;
 }
 .btn:hover {
   background-color: #be9294;
@@ -138,9 +139,12 @@ a:hover {
 .app-info {
   margin-top: auto;
   margin-bottom: auto;
+  font-family: 'Pixelify Sans', sans-serif;
 }
 
 .form-container {
+  font-family: 'Jersey 25', sans-serif;
+  font-size: 1.3rem;
   background-color: rgba(255, 255, 255, 0.474); /* Semi-transparent background for form */
   padding: 20px;
   border-radius: 10px;
