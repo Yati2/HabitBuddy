@@ -31,6 +31,16 @@
                 v-model="password"
                 required
               />
+            </div>
+            <div class="mb-3">
+              <label for="confirm-password" class="form-label">Confirm Password:</label>
+              <input
+                type="password"
+                id="confirm-password"
+                class="form-control"
+                v-model="confirmPassword"
+                required
+              />
               <p v-if="passwordError" class="text-danger">{{ passwordError }}</p>
             </div>
             <button type="submit" class="btn w-100">Register</button>
@@ -56,6 +66,7 @@ export default {
       password: '',
       message: '',
       usernameError: '',
+      confirmPassword: '',
       emailError: '',
       passwordError: ''
     }
@@ -95,6 +106,12 @@ export default {
         return
       }
 
+      //check confirm password and password
+      const isSamepwd = this.password === this.confirmPassword
+      if (!isSamepwd) {
+        this.usernameError = 'Please enter the same password.'
+        return
+      }
       // axios req to register user
       try {
         const response = await axios.post('http://localhost:8000/api/register', {
@@ -143,6 +160,7 @@ export default {
       this.email = ''
       this.password = ''
       this.message = ''
+      this.confirmPassword = ''
     }
   }
 }
@@ -150,7 +168,7 @@ export default {
 
 <style scoped>
 .btn {
-  background-color: #eec0c2ba;
+  background-color: #f7bec1;
   margin-bottom: 10px;
 }
 a {
@@ -198,7 +216,7 @@ a {
 }
 
 .form-container {
-  background-color: rgba(255, 255, 255, 0.341); /* Semi-transparent background for form */
+  background-color: rgba(255, 255, 255, 0.474); /* Semi-transparent background for form */
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
