@@ -18,7 +18,11 @@ export default {
   computed: {
     // Check if the current route is the login page
     isLoginPage() {
-      return this.$route.path === '/'
+      return (
+        this.$route.path === '/login' ||
+        this.$route.path === '/register' ||
+        this.$route.path === '/'
+      )
     }
   }
 }
