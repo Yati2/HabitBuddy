@@ -116,7 +116,7 @@ a:hover {
   position: relative;
   /* background: rgba(0, 0, 0, 0.5); Dark overlay to improve readability */
   padding: auto;
-  width: 100%;
+  width: 90%;
   height: 100%;
   margin: auto;
   border-radius: 10px;
