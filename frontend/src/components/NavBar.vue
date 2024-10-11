@@ -83,15 +83,6 @@ body {
   background-color: black;
 }
 
-.content {
-  padding-top: 80px; /* Adjust this to match the navbar height */
-}
-
-@media (max-width: 991px) {
-  .content {
-    padding-top: 60px; /* Adjust for smaller screen navbar height */
-  }
-}
 
 /* Style the navbar for larger screens */
 .navbar {
