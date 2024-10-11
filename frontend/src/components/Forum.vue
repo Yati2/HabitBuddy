@@ -133,7 +133,7 @@ export default {
 </script>
 
 <style scoped>
-/* Style similar to your registration page */
+
 .forum-title {
   color: white;
   font-size: 2rem; /* Reduced size for mobile responsiveness */
