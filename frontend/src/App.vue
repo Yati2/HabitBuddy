@@ -30,33 +30,27 @@ export default {
 </script>
 
 <style scoped>
-/* Make sure html and body take up full height */
 html,
 body {
   height: 100%;
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
+  margin: 0;
+  padding: 0;
 }
 
-/* Ensure the app takes the full height of the viewport */
 #app {
   display: flex;
-  flex-direction: column; /* Stack navbar and content */
-  min-height: 100vh; /* Full viewport height */
-  width: 100%; /* Full width */
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
 }
 
-/* Content should take the remaining space after navbar */
 .content {
   flex-grow: 1; /* Make content fill the rest of the height */
-  padding: 20px; /* Optional padding */
-  background-color: #f5f5f5; /* Add a background color to distinguish content */
+  background-color: #f5f5f5;
 }
 
-/* Optional: Make sure content is responsive */
 @media (max-width: 768px) {
   .content {
-    padding: 10px;
   }
 }
 </style>

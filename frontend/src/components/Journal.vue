@@ -169,7 +169,7 @@ export default {
         }
       } catch (error) {
         console.error('Error while saving journal entry:', error)
-        this.errorMessage = 'An error occurred while saving your entry.' 
+        this.errorMessage = 'An error occurred while saving your entry.'
       }
     },
 
@@ -190,13 +190,13 @@ export default {
         this.entry = ''
         this.mood = 'mood-neutral'
         this.closeModal()
-      } 
+      }
     },
-   
+
     closeModal() {
       this.isModalOpen = false
-      this.entry = '' 
-      this.mood = 'mood-neutral' 
+      this.entry = ''
+      this.mood = 'mood-neutral'
     }
   },
 
@@ -216,6 +216,7 @@ html,
 body {
   background-color: #fff3e7;
   height: 100%;
+  width: 100%;
   margin: 0;
 }
 
@@ -228,28 +229,21 @@ button {
 }
 
 .journal-container {
-  max-width: 800px; 
-  margin: 0 auto; 
-  padding: 20px; 
+  width: 100%;
+  margin: 0 auto;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 10px;
   min-height: 100vh;
   background-color: #fff3e7;
   overflow: hidden;
 }
 
-/* calendar */
-.calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr); 
-  gap: 5px; 
-  width: 100%; 
-  margin: 0 auto;
-}
-
 .month-header {
-  grid-column: span 7; 
-  text-align: center; 
-  font-size: 1.5em; 
-  background-color: #eec0c2; 
+  grid-column: span 7;
+  text-align: center;
+  font-size: 1.5em;
+  background-color: #eec0c2;
   padding: 10px;
   font-family: 'Jersey 25', sans-serif;
 }
@@ -260,30 +254,39 @@ button {
 }
 
 .day-header {
-  text-align: center; 
+  text-align: center;
   height: 40px;
-  line-height: 40px; 
-  background-color: #f8d1d3; 
+  line-height: 40px;
+  background-color: #f8d1d3;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px; /* Increase gap between days slightly */
+  width: 100%;
+  margin: 0 auto;
 }
 
 .calendar-day {
-  position: relative; 
-  width: 100%; 
-  padding-bottom: 100%; 
-  border: 1px solid #ccc; 
-  text-align: left; 
-  cursor: pointer; 
-  background-color: white; 
-  border-radius: 5px; 
-  transition: background-color 0.3s; 
-  min-width: 50px; 
+  position: relative;
+  width: 100%;
+  padding-bottom: 60%; /* Increase padding-bottom for a slightly larger aspect ratio */
+  border: 1px solid #ccc;
+  text-align: left;
+  cursor: pointer;
+  background-color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+  min-width: 30px; /* Increase minimum width for days */
 }
 
 .day-number {
-  position: absolute; 
-  top: 5px; 
-  left: 5px; 
+  position: absolute;
+  top: 4px; /* Adjust position of day number slightly lower */
+  left: 4px; /* Adjust position of day number slightly to the right */
   font-family: 'Jersey 25', sans-serif;
+  font-size: 10px; /* Increase font size */
 }
 
 .error-message {
@@ -292,29 +295,29 @@ button {
 
 /* mood */
 .mood-excellent {
-  background-color: green; 
+  background-color: green;
 }
 
 .mood-good {
-  background-color: greenyellow; 
+  background-color: greenyellow;
 }
 
 .mood-neutral {
-  background-color: yellow; 
+  background-color: yellow;
 }
 
 .mood-bad {
-  background-color: orange; 
+  background-color: orange;
 }
 
 .mood-terrible {
-  background-color: orangered; 
+  background-color: orangered;
 }
 
 .mood-picker {
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
 }
 
 .mood-option.selected {
@@ -323,19 +326,19 @@ button {
 }
 
 .mood-option {
-  display: flex; 
-  flex-direction: column; 
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  cursor: pointer; 
+  cursor: pointer;
   padding: 10px;
-  border: 1px solid transparent; 
+  border: 1px solid transparent;
   transition: border-color 0.3s;
 }
 
 .mood-option img {
-  width: 40px; 
-  height: 40px; 
-  margin-bottom: 5px; 
+  width: 40px;
+  height: 40px;
+  margin-bottom: 5px;
 }
 
 /* modal */
@@ -345,24 +348,28 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); 
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
 }
 
 .modal-content {
-  background-color: #eec0c2; 
+  background-color: #eec0c2;
   padding: 20px;
-  border-radius: 5px; 
-  width: 80%; 
-  max-width: 600px; 
+  border-radius: 5px;
+  width: 80%;
+  max-width: 600px;
   font-family: 'Jersey 25', sans-serif;
 }
 
 /* Responsive Design */
 
 @media (max-width: 768px) {
+  .journal-container {
+    margin: 0 auto;
+    padding: 10px;
+  }
   h1 {
     font-size: 24px; /* Smaller title font size */
   }
@@ -377,11 +384,11 @@ button {
   }
 
   .calendar-day {
-    padding-bottom: 90%; /* Adjust for smaller aspect ratio */
+    padding-bottom: 50%; /* Slightly decrease for tablets */
   }
 
   .day-number {
-    font-size: 12px; /* Smaller font size for day numbers */
+    font-size: 9px; /* Slightly larger font size for day numbers */
   }
 
   .modal-content {
@@ -396,8 +403,9 @@ button {
 
 @media (max-width: 480px) {
   .journal-container {
-    max-width: 80%; /* Full width on small screens */
-    padding: 5px; /* Minimal padding */
+    /* Full width on small screens */
+    margin: 0 auto; /* Minimal padding */
+    padding: 10px;
   }
 
   h1 {
@@ -412,14 +420,13 @@ button {
   .day-header {
     font-size: 10px; /* Smaller font size for day names */
   }
-
   .calendar-day {
-    padding-bottom: 90%; /* Adjust for smaller aspect ratio */
-    min-width: 30px;
+    padding-bottom: 40%; /* Slightly decrease for phones */
+    min-width: 25px; /* Allow for slightly larger days on mobile */
   }
 
   .day-number {
-    font-size: 10px; /* Smaller font size for day numbers */
+    font-size: 8px; /* Slightly larger font size for day numbers */
   }
 
   .mood-option img {
