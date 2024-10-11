@@ -73,6 +73,7 @@ export default {
           password: this.password
         })
         this.message = response.data.message // Show success message
+        this.$router.push('/dashboard')
 
         // Store the login state (this can be handled globally)
         localStorage.setItem('isLoggedIn', 'true')

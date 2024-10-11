@@ -68,7 +68,6 @@ export default {
   font-family: 'Jersey 25', sans-serif;
   display: flex;
   align-items: center;
-  background-image:;
   padding: 10px 20px;
   height: 80px;
   width: 100%;
