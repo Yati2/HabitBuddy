@@ -1,5 +1,6 @@
 <template>
   <div class="pet-game">
+    <img src="../assets/pet_background.png" />
     <h1>My Virtual Pet</h1>
     <div class="pet-display" :style="{ top: petY + 'px', left: petX + 'px' }">
       <img :src="currentPetSprite" alt="Virtual Pet" />
