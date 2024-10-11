@@ -1,7 +1,430 @@
 <template>
   <div class="journal-container">
-    <h1>Welcome to Journal</h1>
+    <h1 class="text-center">Mood Tracker Journal</h1>
+
+    <div class="calendar">
+      <!-- month -->
+      <div class="month-header" colspan="7">{{ currentMonth }}</div>
+
+      <!-- days -->
+      <div class="day day-header">Sun</div>
+      <div class="day day-header">Mon</div>
+      <div class="day day-header">Tue</div>
+      <div class="day day-header">Wed</div>
+      <div class="day day-header">Thu</div>
+      <div class="day day-header">Fri</div>
+      <div class="day day-header">Sat</div>
+
+      <!-- each day -->
+      <div
+        v-for="(day, index) in days"
+        :key="index"
+        class="calendar-day"
+        :class="getMoodClass(day)"
+        @click="selectDay(day)"
+      >
+        <div class="day-number">{{ day }}</div>
+      </div>
+    </div>
+
+    <!-- form -->
+    <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <h3>{{ selectedDay }} {{ currentMonth }}</h3>
+
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+        <form @submit.prevent="saveJournalEntry">
+          <div class="form-group">
+            <label for="journalEntry">Journal Entry</label>
+            <textarea
+              id="journalEntry"
+              class="form-control"
+              v-model="entry"
+              placeholder="Write your journal entry..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Mood</label>
+            <div class="mood-picker">
+              <div
+                class="mood-option"
+                :class="{ selected: mood === 'mood-excellent' }"
+                @click="mood = 'mood-excellent'"
+              >
+                <img src="../assets/emotions/excellent.png" alt="Excellent" />
+                <span>Excellent</span>
+              </div>
+              <div
+                class="mood-option"
+                :class="{ selected: mood === 'mood-good' }"
+                @click="mood = 'mood-good'"
+              >
+                <img src="../assets/emotions/good.png" alt="Good" />
+                <span>Good</span>
+              </div>
+              <div
+                class="mood-option"
+                :class="{ selected: mood === 'mood-neutral' }"
+                @click="mood = 'mood-neutral'"
+              >
+                <img src="../assets/emotions/neutral.png" alt="Neutral" />
+                <span>Neutral</span>
+              </div>
+              <div
+                class="mood-option"
+                :class="{ selected: mood === 'mood-bad' }"
+                @click="mood = 'mood-bad'"
+              >
+                <img src="../assets/emotions/bad.png" alt="Bad" />
+                <span>Bad</span>
+              </div>
+              <div
+                class="mood-option"
+                :class="{ selected: mood === 'mood-terrible' }"
+                @click="mood = 'mood-terrible'"
+              >
+                <img src="../assets/emotions/terrible.png" alt="Terrible" />
+                <span>Terrible</span>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Save Entry</button>
+          <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            @click="deleteJournalEntry"
+            v-if="moodTracker[selectedDay]"
+          >
+            Delete Entry
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
-<style scoped></style>
+<script>
+export default {
+  name: 'CalendarWithJournal',
+  data() {
+    return {
+      currentMonth: this.getCurrentMonth(),
+      days: this.getDaysInMonth(new Date().getMonth(), new Date().getFullYear()),
+      selectedDay: null,
+      entry: '',
+      mood: 'mood-neutral',
+      moodTracker: {},
+      isModalOpen: false,
+      errorMessage: ''
+    }
+  },
+  methods: {
+    getCurrentMonth() {
+      const date = new Date()
+      return date.toLocaleString('default', { month: 'long', year: 'numeric' })
+    },
+
+    getDaysInMonth(month, year) {
+      return Array.from({ length: new Date(year, month + 1, 0).getDate() }, (_, i) => i + 1)
+    },
+
+    selectDay(day) {
+      this.selectedDay = day
+      const existingEntry = this.moodTracker[day] || { entry: '', mood: 'mood-neutral' }
+      this.entry = existingEntry.entry
+      this.mood = existingEntry.mood
+      this.isModalOpen = true
+    },
+
+    getMoodClass(day) {
+      switch (this.moodTracker[day]?.mood) {
+        case 'mood-excellent':
+          return 'mood-excellent'
+        case 'mood-good':
+          return 'mood-good'
+        case 'mood-neutral':
+          return 'mood-neutral'
+        case 'mood-bad':
+          return 'mood-bad'
+        case 'mood-terrible':
+          return 'mood-terrible'
+        default:
+          return ''
+      }
+    },
+
+    saveJournalEntry() {
+      try {
+        if (this.selectedDay && this.entry.trim()) {
+          this.moodTracker[this.selectedDay] = { entry: this.entry, mood: this.mood }
+          localStorage.setItem('moodTracker', JSON.stringify(this.moodTracker))
+          this.closeModal()
+          this.errorMessage = '' // clear msg
+        } else {
+          this.errorMessage = 'Please enter a journal entry before saving.' // set msg
+        }
+      } catch (error) {
+        console.error('Error while saving journal entry:', error)
+        this.errorMessage = 'An error occurred while saving your entry.' 
+      }
+    },
+
+    deleteJournalEntry() {
+      console.log('Delete button clicked')
+      console.log('Selected Day:', this.selectedDay)
+      console.log('Current Mood Tracker:', this.moodTracker)
+
+      if (this.selectedDay && this.moodTracker[this.selectedDay]) {
+        // delete
+        delete this.moodTracker[this.selectedDay]
+        console.log('Entry deleted for day:', this.selectedDay)
+
+        // update local storage
+        localStorage.setItem('moodTracker', JSON.stringify(this.moodTracker))
+
+        // reset form
+        this.entry = ''
+        this.mood = 'mood-neutral'
+        this.closeModal()
+      } 
+    },
+   
+    closeModal() {
+      this.isModalOpen = false
+      this.entry = '' 
+      this.mood = 'mood-neutral' 
+    }
+  },
+
+  mounted() {
+    if (typeof localStorage !== 'undefined') {
+      const savedData = localStorage.getItem('moodTracker')
+      if (savedData) {
+        this.moodTracker = JSON.parse(savedData)
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+html,
+body {
+  background-color: #fff3e7;
+  height: 100%;
+  margin: 0;
+}
+
+h1 {
+  font-family: 'Jersey 25', sans-serif;
+}
+
+button {
+  margin: 10px;
+}
+
+.journal-container {
+  max-width: 800px; 
+  margin: 0 auto; 
+  padding: 20px; 
+  min-height: 100vh;
+  background-color: #fff3e7;
+  overflow: hidden;
+}
+
+/* calendar */
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); 
+  gap: 5px; 
+  width: 100%; 
+  margin: 0 auto;
+}
+
+.month-header {
+  grid-column: span 7; 
+  text-align: center; 
+  font-size: 1.5em; 
+  background-color: #eec0c2; 
+  padding: 10px;
+  font-family: 'Jersey 25', sans-serif;
+}
+
+.day {
+  text-align: center;
+  font-family: 'Jersey 25', sans-serif;
+}
+
+.day-header {
+  text-align: center; 
+  height: 40px;
+  line-height: 40px; 
+  background-color: #f8d1d3; 
+}
+
+.calendar-day {
+  position: relative; 
+  width: 100%; 
+  padding-bottom: 100%; 
+  border: 1px solid #ccc; 
+  text-align: left; 
+  cursor: pointer; 
+  background-color: white; 
+  border-radius: 5px; 
+  transition: background-color 0.3s; 
+  min-width: 50px; 
+}
+
+.day-number {
+  position: absolute; 
+  top: 5px; 
+  left: 5px; 
+  font-family: 'Jersey 25', sans-serif;
+}
+
+.error-message {
+  color: red;
+}
+
+/* mood */
+.mood-excellent {
+  background-color: green; 
+}
+
+.mood-good {
+  background-color: greenyellow; 
+}
+
+.mood-neutral {
+  background-color: yellow; 
+}
+
+.mood-bad {
+  background-color: orange; 
+}
+
+.mood-terrible {
+  background-color: orangered; 
+}
+
+.mood-picker {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap; 
+}
+
+.mood-option.selected {
+  border: 2px solid #000; /* Highlight selected mood */
+  border-radius: 5px; /* Rounded corners for selection */
+}
+
+.mood-option {
+  display: flex; 
+  flex-direction: column; 
+  align-items: center;
+  cursor: pointer; 
+  padding: 10px;
+  border: 1px solid transparent; 
+  transition: border-color 0.3s;
+}
+
+.mood-option img {
+  width: 40px; 
+  height: 40px; 
+  margin-bottom: 5px; 
+}
+
+/* modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #eec0c2; 
+  padding: 20px;
+  border-radius: 5px; 
+  width: 80%; 
+  max-width: 600px; 
+  font-family: 'Jersey 25', sans-serif;
+}
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px; /* Smaller title font size */
+  }
+
+  h2 {
+    font-size: 20px; /* Smaller month font size */
+  }
+
+  .day,
+  .day-header {
+    font-size: 12px; /* Smaller font size for day names */
+  }
+
+  .calendar-day {
+    padding-bottom: 90%; /* Adjust for smaller aspect ratio */
+  }
+
+  .day-number {
+    font-size: 12px; /* Smaller font size for day numbers */
+  }
+
+  .modal-content {
+    width: 90%; /* Make modal wider on smaller screens */
+  }
+
+  .mood-option img {
+    width: 40px; /* Smaller image size for mobile */
+    height: 40px; /* Smaller image size for mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .journal-container {
+    max-width: 80%; /* Full width on small screens */
+    padding: 5px; /* Minimal padding */
+  }
+
+  h1 {
+    font-size: 20px; /* Even smaller title font size */
+  }
+
+  h2 {
+    font-size: 18px; /* Even smaller month font size */
+  }
+
+  .day,
+  .day-header {
+    font-size: 10px; /* Smaller font size for day names */
+  }
+
+  .calendar-day {
+    padding-bottom: 90%; /* Adjust for smaller aspect ratio */
+    min-width: 30px;
+  }
+
+  .day-number {
+    font-size: 10px; /* Smaller font size for day numbers */
+  }
+
+  .mood-option img {
+    width: 30px; /* Even smaller image size for mobile */
+    height: 30px; /* Even smaller image size for mobile */
+  }
+}
+</style>
