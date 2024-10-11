@@ -37,6 +37,10 @@
 
 <script>
 import axios from 'axios'
+import { useRouter } from 'vue-router' // Import useRouter
+
+
+
 
 export default {
   data() {
@@ -47,6 +51,10 @@ export default {
       usernameError: '',
       passwordError: ''
     }
+  },
+  setup() {
+    const router = useRouter() // Initialize the router
+    return { router }
   },
   methods: {
     async loginUser() {
@@ -73,10 +81,11 @@ export default {
           password: this.password
         })
         this.message = response.data.message // Show success message
-        this.$router.push('/dashboard')
 
         // Store the login state (this can be handled globally)
-        localStorage.setItem('isLoggedIn', 'true')
+        localStorage.setItem('isLoggedIn', true);
+        localStorage.setItem('username', this.username);
+        this.$router.push('/tasks');
       } catch (error) {
         console.error('Error logging in:', error)
         this.message = 'Invalid username or password.'
@@ -117,7 +126,7 @@ a:hover {
   position: relative;
   /* background: rgba(0, 0, 0, 0.5); Dark overlay to improve readability */
   padding: auto;
-  width: 90%;
+  width: 100%;
   height: 100%;
   margin: auto;
   border-radius: 10px;
@@ -154,3 +163,4 @@ a:hover {
   width: 100%;
 }
 </style>
+
