@@ -96,6 +96,7 @@ body {
 /* Style the navbar for larger screens */
 .navbar {
   background-image: url('@/assets/nav_background.jpeg');
+  background-size: cover;
   z-index: 1000;
   position: relative;
   font-size: 1.5rem;
