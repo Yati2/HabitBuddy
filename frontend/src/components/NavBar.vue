@@ -23,7 +23,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Tasks</a>
+              <a class="nav-link active" aria-current="page" href="/tasks">Tasks</a>
             </li>
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="/dashboard">Dashboard</a>
@@ -47,6 +47,10 @@
                 <img src="../assets/profile-icon.png" alt="Profile Icon" class="profile-icon" />
               </a>
             </li>
+            <li class="nav-item">
+              <!-- Logout button -->
+              <button class="btn btn-outline-dark" @click="logoutDev">LogoutDev</button>
+            </li>
           </ul>
         </div>
       </div>
@@ -55,9 +59,27 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
+
 export default {
-  name: 'Navbar'
-}
+  name: 'Navbar',
+  setup() {
+    const router = useRouter();
+
+    // Logout function
+    const logoutDev = () => {
+      localStorage.setItem('isLoggedIn', ''); // Clear the login state
+      localStorage.setItem('username', ''); // Clear the username
+
+      // Redirect to login page
+      router.push('/login');
+    };
+
+    return {
+      logoutDev
+    };
+  }
+};
 </script>
 
 <style scoped>
@@ -83,8 +105,6 @@ body {
   background-color: black;
 }
 
-
-/* Style the navbar for larger screens */
 .navbar {
   background-image: url('@/assets/nav_background.jpeg');
   background-size: cover;
@@ -112,25 +132,28 @@ body {
   text-align: center;
 }
 
-/* Adjustments for smaller screens */
+.btn {
+  font-size: 1rem;
+}
+
+/* Responsive adjustments */
 @media (max-width: 991px) {
   .navbar {
     padding: 10px;
-    height: auto; /* Let the navbar height adjust automatically */
+    height: auto;
   }
 
   .nav-link {
-    font-size: 1rem; /* Reduce font size */
+    font-size: 1rem;
     padding: 5px 0;
   }
 
   .nav-item {
     padding: 5px;
-    text-align: left;
   }
 
   .cat-icon {
-    height: 35px; /* Slightly reduce the size of the cat icon */
+    height: 35px;
   }
 
   .profile-icon {
@@ -138,21 +161,8 @@ body {
     height: 35px;
   }
 
-  /* Make sure the navbar expands properly */
-  .navbar-collapse {
-    position: relative; /* Match navbar background */
-  }
-
-  .navbar-toggler {
-    border-color: rgba(0, 0, 0, 0.1); /* Style the toggle button */
-  }
-
   .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28150, 150, 150, 0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); /* Custom icon */
-  }
-
-  .collapse .nav-item {
-    text-align: left; /* Align items to the left in collapsed mode */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28150, 150, 150, 0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
   }
 }
 </style>
