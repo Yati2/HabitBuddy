@@ -39,9 +39,6 @@
 import axios from 'axios'
 import { useRouter } from 'vue-router' // Import useRouter
 
-
-
-
 export default {
   data() {
     return {
@@ -83,9 +80,9 @@ export default {
         this.message = response.data.message // Show success message
 
         // Store the login state (this can be handled globally)
-        localStorage.setItem('isLoggedIn', true);
-        localStorage.setItem('username', this.username);
-        this.$router.push('/tasks');
+        localStorage.setItem('isLoggedIn', true)
+        localStorage.setItem('username', this.username)
+        this.$router.push('/tasks')
       } catch (error) {
         console.error('Error logging in:', error)
         this.message = 'Invalid username or password.'
@@ -112,7 +109,7 @@ a:hover {
   color: #be9294;
 }
 .container-fluid {
-  background-image: url('@/assets/bg_login_register.gif'); /* Background GIF */
+  background-image: url('@/assets/backgrounds/bg_login_register.gif'); /* Background GIF */
   background-size: cover;
   background-position: center;
   min-height: 100vh;
@@ -163,4 +160,3 @@ a:hover {
   width: 100%;
 }
 </style>
-

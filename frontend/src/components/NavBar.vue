@@ -59,27 +59,27 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'Navbar',
   setup() {
-    const router = useRouter();
+    const router = useRouter()
 
     // Logout function
     const logoutDev = () => {
-      localStorage.setItem('isLoggedIn', ''); // Clear the login state
-      localStorage.setItem('username', ''); // Clear the username
+      localStorage.setItem('isLoggedIn', '') // Clear the login state
+      localStorage.setItem('username', '') // Clear the username
 
       // Redirect to login page
-      router.push('/login');
-    };
+      router.push('/login')
+    }
 
     return {
       logoutDev
-    };
+    }
   }
-};
+}
 </script>
 
 <style scoped>
@@ -106,7 +106,7 @@ body {
 }
 
 .navbar {
-  background-image: url('@/assets/nav_background.jpeg');
+  background-image: url('@/assets/backgrounds/nav_background.jpeg');
   background-size: cover;
   z-index: 1000;
   position: relative;
