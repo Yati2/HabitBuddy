@@ -108,6 +108,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'CalendarWithJournal',
   data() {
@@ -156,43 +158,53 @@ export default {
           return ''
       }
     },
-
     saveJournalEntry() {
-      try {
-        if (this.selectedDay && this.entry.trim()) {
-          this.moodTracker[this.selectedDay] = { entry: this.entry, mood: this.mood }
-          localStorage.setItem('moodTracker', JSON.stringify(this.moodTracker))
-          this.closeModal()
-          this.errorMessage = '' // clear msg
-        } else {
-          this.errorMessage = 'Please enter a journal entry before saving.' // set msg
-        }
-      } catch (error) {
-        console.error('Error while saving journal entry:', error)
-        this.errorMessage = 'An error occurred while saving your entry.'
+      if (this.selectedDay && this.entry.trim()) {
+        const currentMonth = new Date().getMonth() + 1 // getMonth is 0-indexed
+        const currentYear = new Date().getFullYear()
+
+        const fullDate = new Date(`${currentYear}-${currentMonth}-${this.selectedDay}`)
+
+        const user = localStorage.getItem('username')
+
+        axios
+          .post('http://localhost:8000/api/journals', {
+            username: user,
+            date: fullDate, // Send proper date format
+            entry: this.entry,
+            mood: this.mood
+          })
+          .then((response) => {
+            this.moodTracker[this.selectedDay] = response.data.journal
+            this.closeModal()
+            this.errorMessage = '' // clear error message
+          })
+          .catch((error) => {
+            console.error('Error saving journal entry:', error)
+            this.errorMessage = 'An error occurred while saving your entry.'
+          })
+      } else {
+        this.errorMessage = 'Please enter a journal entry before saving.'
       }
     },
-
     deleteJournalEntry() {
-      console.log('Delete button clicked')
-      console.log('Selected Day:', this.selectedDay)
-      console.log('Current Mood Tracker:', this.moodTracker)
+      const journalId = this.moodTracker[this.selectedDay]?._id // Use the stored _id from the moodTracker
 
-      if (this.selectedDay && this.moodTracker[this.selectedDay]) {
-        // delete
-        delete this.moodTracker[this.selectedDay]
-        console.log('Entry deleted for day:', this.selectedDay)
-
-        // update local storage
-        localStorage.setItem('moodTracker', JSON.stringify(this.moodTracker))
-
-        // reset form
-        this.entry = ''
-        this.mood = 'mood-neutral'
-        this.closeModal()
+      if (!journalId) {
+        console.error('No journal entry found to delete.')
+        return
       }
-    },
 
+      axios
+        .delete(`http://localhost:8000/api/journals/${journalId}`)
+        .then(() => {
+          delete this.moodTracker[this.selectedDay]
+          this.closeModal()
+        })
+        .catch((error) => {
+          console.error('Error deleting journal entry:', error)
+        })
+    },
     closeModal() {
       this.isModalOpen = false
       this.entry = ''
@@ -201,12 +213,19 @@ export default {
   },
 
   mounted() {
-    if (typeof localStorage !== 'undefined') {
-      const savedData = localStorage.getItem('moodTracker')
-      if (savedData) {
-        this.moodTracker = JSON.parse(savedData)
-      }
-    }
+    const user = localStorage.getItem('username')
+
+    axios
+      .get(`http://localhost:8000/api/journals/${user}`)
+      .then((response) => {
+        this.moodTracker = response.data.reduce((acc, entry) => {
+          acc[new Date(entry.date).getDate()] = entry // Store by day
+          return acc
+        }, {})
+      })
+      .catch((error) => {
+        console.error('Error fetching journal entries:', error)
+      })
   }
 }
 </script>
