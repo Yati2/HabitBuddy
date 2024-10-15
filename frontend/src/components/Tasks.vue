@@ -269,23 +269,39 @@ export default {
   methods: {
 
     increaseCount(h) {
-      toast('testing',{
-        autoClose:1000,
-      });
-    h.count++;  // Increase count locally
+  // Display toast notification
+  toast('You gained 5 coins!', {
+    icon: "🚀",
+    autoClose: 1000,
+  });
 
-    // Send Axios request to update the count in the backend
-    axios.put('http://localhost:8000/api/habits/' + h._id, {
-      count: h.count
+  h.count++;  // Increase count locally
+
+  // Send Axios request to update the habit count in the backend
+  axios.put('http://localhost:8000/api/habits/' + h._id, {
+    count: h.count
+  })
+  .then(response => {
+    console.log('Count increased:', response.data);
+    
+    // Now send a request to add 5 points to the user's account
+    const username = localStorage.getItem('username') || 'anonymous'; // Get current user's username
+
+    axios.put('http://localhost:8000/api/users/' + username + '/points', {
+      pointsToAdd: 5  // Add 5 points
     })
-    .then(response => {
-      console.log('Count increased:', response.data);
+    .then(res => {
+      console.log('Points added:', res.data);
     })
-    .catch(error => {
-      console.error('Error increasing count:', error);
-      h.count--;  // Revert the count if the request fails
+    .catch(err => {
+      console.error('Error adding points:', err);
     });
-  },
+  })
+  .catch(error => {
+    console.error('Error increasing count:', error);
+    h.count--;  // Revert the count if the request fails
+  });
+},
   decreaseCount(h) {
     if (h.count > 0) {
       h.count--;  // Decrease count locally
@@ -368,6 +384,10 @@ export default {
     },
     markAsDoneh(h) {
     const username = localStorage.getItem('username') || 'anonymous';
+    toast('You gained 10 coins!', {
+    icon: "🚀",
+    autoClose: 1000,
+  });
 
     // Send a DELETE request to the server to remove the todo from the database
     axios.delete('http://localhost:8000/api/user_habits', {
@@ -453,6 +473,20 @@ export default {
     },
     markAsDonelt(lt) {
     const username = localStorage.getItem('username') || 'anonymous';
+    toast('You gained 10 coins!', {
+    icon: "🚀",
+    autoClose: 1000,
+  });
+  axios.put('http://localhost:8000/api/users/' + username + '/points', {
+      pointsToAdd: 10  // Add 5 points
+    })
+    .then(res => {
+      console.log('Points added:', res.data);
+    })
+    .catch(err => {
+      console.error('Error adding points:', err);
+    });
+    
 
     // Send a DELETE request to the server to remove the todo from the database
     axios.delete('http://localhost:8000/api/user_lts', {
@@ -545,6 +579,19 @@ export default {
     },
     markAsDone(todo) {
     const username = localStorage.getItem('username') || 'anonymous';
+    toast('You gained 10 coins!', {
+    icon: "🚀",
+    autoClose: 1000,
+  });
+  axios.put('http://localhost:8000/api/users/' + username + '/points', {
+      pointsToAdd: 10  // Add 5 points
+    })
+    .then(res => {
+      console.log('Points added:', res.data);
+    })
+    .catch(err => {
+      console.error('Error adding points:', err);
+    });
 
     // Send a DELETE request to the server to remove the todo from the database
     axios.delete('http://localhost:8000/api/user_todos', {

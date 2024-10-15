@@ -117,7 +117,8 @@ export default {
         const response = await axios.post('http://localhost:8000/api/register', {
           username: this.username,
           email: this.email,
-          password: this.password
+          password: this.password,
+          points: 0
         })
 
         // success message alert
