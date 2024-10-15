@@ -6,6 +6,7 @@ import ForumView from '../views/ForumView.vue'
 import PetView from '../views/PetView.vue'
 import TasksView from '../views/TasksView.vue'
 import RegisterView from '@/views/RegisterView.vue'
+import LandingPage from '../views/LandingPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +48,11 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterView
+    },
+    {
+      path: '/',
+      name: 'LandingPage',
+      component: LandingPage,
     }
   ]
 })

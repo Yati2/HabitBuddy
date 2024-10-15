@@ -37,7 +37,9 @@
           <!-- Comments Section -->
           <div v-if="post.showComments">
             <div v-for="comment in post.comments" :key="comment._id" class="comment-container">
-              <p><strong>{{ comment.username }}:</strong> {{ comment.comment }}</p>
+              <p>
+                <strong>{{ comment.username }}:</strong> {{ comment.comment }}
+              </p>
             </div>
             <div class="add-comment">
               <textarea
@@ -56,26 +58,26 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 
 export default {
   data() {
     return {
       forumPosts: [], // Holds all forum posts
       newPostContent: '', // For new post input
-      newCommentContent: {}, // For new comment input
-    };
+      newCommentContent: {} // For new comment input
+    }
   },
   methods: {
     async fetchPosts() {
       try {
-        const response = await axios.get('http://localhost:8000/api/posts');
-        this.forumPosts = response.data.map(post => ({
+        const response = await axios.get('http://localhost:8000/api/posts')
+        this.forumPosts = response.data.map((post) => ({
           ...post,
-          showComments: false, // Toggle for showing/hiding comments
-        }));
+          showComments: false // Toggle for showing/hiding comments
+        }))
       } catch (error) {
-        console.error('Error fetching posts:', error.response ? error.response.data : error.message);
+        console.error('Error fetching posts:', error.response ? error.response.data : error.message)
       }
     },
     async submitPost() {
@@ -85,55 +87,57 @@ export default {
           username: 'CurrentUser', // Replace with actual dynamic username
           likes: 0,
           comments: []
-        };
+        }
 
-        const response = await axios.post('http://localhost:8000/api/posts', newPost);
-        this.forumPosts.unshift(response.data.post); // Add the new post to the top of the list
-        this.newPostContent = ''; // Clear the input field
+        const response = await axios.post('http://localhost:8000/api/posts', newPost)
+        this.forumPosts.unshift(response.data.post) // Add the new post to the top of the list
+        this.newPostContent = '' // Clear the input field
       } catch (error) {
-        console.error('Error submitting post:', error.response ? error.response.data : error.message);
+        console.error(
+          'Error submitting post:',
+          error.response ? error.response.data : error.message
+        )
       }
     },
     async likePost(postId) {
-      const post = this.forumPosts.find(p => p._id === postId);
-      post.likes += 1; // Update likes on the frontend
+      const post = this.forumPosts.find((p) => p._id === postId)
+      post.likes += 1 // Update likes on the frontend
       try {
-        await axios.post(`http://localhost:8000/api/posts/${postId}/like`); // Update likes in the backend
+        await axios.post(`http://localhost:8000/api/posts/${postId}/like`) // Update likes in the backend
       } catch (error) {
-        console.error('Error liking post:', error);
+        console.error('Error liking post:', error)
       }
     },
     toggleComments(postId) {
-      const post = this.forumPosts.find(p => p._id === postId);
-      post.showComments = !post.showComments;
+      const post = this.forumPosts.find((p) => p._id === postId)
+      post.showComments = !post.showComments
     },
     async submitComment(postId) {
-      const commentContent = this.newCommentContent[postId];
+      const commentContent = this.newCommentContent[postId]
       if (commentContent) {
-        const post = this.forumPosts.find(p => p._id === postId);
+        const post = this.forumPosts.find((p) => p._id === postId)
         const newComment = {
           comment: commentContent, // Match the schema
-          username: 'CurrentUser', // Replace with dynamic username
-        };
-        post.comments.push(newComment);
-        this.newCommentContent[postId] = ''; // Reset comment input
-        
+          username: 'CurrentUser' // Replace with dynamic username
+        }
+        post.comments.push(newComment)
+        this.newCommentContent[postId] = '' // Reset comment input
+
         try {
-          await axios.post(`http://localhost:8000/api/posts/${postId}/comment`, newComment); // API call to save comment
+          await axios.post(`http://localhost:8000/api/posts/${postId}/comment`, newComment) // API call to save comment
         } catch (error) {
-          console.error('Error adding comment:', error);
+          console.error('Error adding comment:', error)
         }
       }
     }
   },
   mounted() {
-    this.fetchPosts(); // Fetch posts when the component is mounted
+    this.fetchPosts() // Fetch posts when the component is mounted
   }
-};
+}
 </script>
 
 <style scoped>
-
 .forum-title {
   color: white;
   font-size: 2rem; /* Reduced size for mobile responsiveness */
@@ -188,7 +192,7 @@ export default {
   .forum-title {
     font-size: 1.5rem; /* Smaller title font for mobile */
   }
-  
+
   .new-post-container {
     padding: 15px; /* Reduce padding on mobile */
   }
