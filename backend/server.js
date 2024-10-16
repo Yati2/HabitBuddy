@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true }, // Ensure unique usernames
   email: { type: String, required: true },
   password: { type: String, required: true },
+  points:{type: Number, requried: true}
 });
 
 const User = mongoose.model("User", userSchema, "users");
@@ -48,6 +49,29 @@ async function connect() {
 
 connect();
 
+app.put('/api/users/:username/points', async (req, res) => {
+    const { username } = req.params;  // Get the username from the URL
+    const { pointsToAdd } = req.body; // Get the points to add from the request body
+  
+    try {
+      // Increment the points for the user by the given amount
+      const updatedUser = await User.findOneAndUpdate(
+        { username: username },  // Find user by username
+        { $inc: { points: pointsToAdd } },  // Increment points field by pointsToAdd
+        { new: true }  // Return the updated user document
+      );
+  
+      if (!updatedUser) {
+        return res.status(404).send('User not found');
+      }
+  
+      res.json(updatedUser);  // Send the updated user data back
+    } catch (error) {
+      console.error('Error updating points:', error);
+      res.status(500).send('Error updating points');
+    }
+  });
+
 app.get("/api/users", async (req, res) => {
   try {
     const users = await User.find();
@@ -60,7 +84,7 @@ app.get("/api/users", async (req, res) => {
 });
 
 app.post("/api/register", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, points } = req.body;
   try {
     // Check if the username already exists
     const existingUser = await User.findOne({ username });
@@ -69,7 +93,7 @@ app.post("/api/register", async (req, res) => {
     }
 
     // Create a new user
-    const newUser = new User({ username, email, password });
+    const newUser = new User({ username, email, password, points });
     await newUser.save();
     res.status(201).json({ message: "User registered successfully!" });
   } catch (error) {
@@ -507,3 +531,7 @@ app.delete("/api/journals/:id", async (req, res) => {
     res.status(500).json({ message: "Error deleting journal entry" });
   }
 });
+
+
+
+
