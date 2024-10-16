@@ -140,11 +140,19 @@ export default {
       const date = new Date()
       return date.toLocaleString('default', { month: 'long', year: 'numeric' })
     },
-
-    getDaysInMonth(month, year) {
-      return Array.from({ length: new Date(year, month + 1, 0).getDate() }, (_, i) => i + 1)
+    getFirstDayOfMonth(month, year) {
+      const firstDay = new Date(year, month, 1).getDay() // This gives you the weekday of the 1st day (0 for Sunday, 1 for Monday, etc.)
+      return firstDay
     },
+    getDaysInMonth(month, year) {
+      const numDays = new Date(year, month + 1, 0).getDate()
+      const firstDay = new Date(year, month, 1).getDay()
 
+      return [
+        ...Array(firstDay).fill(''), // Fill with empty strings for previous month's days
+        ...Array.from({ length: numDays }, (_, i) => i + 1)
+      ]
+    },
     selectDay(day) {
       this.selectedDay = day
       const existingEntry = this.moodTracker[day] || { entry: '', mood: 'mood-neutral' }
