@@ -87,17 +87,8 @@ export default {
       newCommentContent: {},
       selectedTopic: 'academics',
       username: '', // To store the logged-in username
-      topics: ['academics', 'physical', 'mental'], // List of topics
+      topics: ['academics', 'physical health', 'mental wellness'], // List of topics
     };
-  },
-  created() {
-    // Check if the user is authenticated on creation
-    if (isAuthenticated()) {
-      this.isAuthenticatedUser = true
-    } else {
-      this.isAuthenticatedUser = false
-      this.$router.push('/login') // Redirect to login page if not authenticated
-    }
   },
   computed: {
     filteredPosts() {
@@ -108,7 +99,7 @@ export default {
   methods: {
     async fetchPosts() {
       try {
-        const response = await axios.get('http://localhost:8000/api/posts');
+        const response = await axios.get('http://localhost:8000/api/posts?topic=${this.selectedTopic}');
         this.forumPosts = response.data.map(post => ({
           ...post,
           showComments: false, // Toggle for showing/hiding comments
@@ -210,7 +201,6 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-
 /* Comment Section */
 .comment-container {
   padding-left: 15px;
@@ -219,7 +209,6 @@ export default {
 .add-comment {
   margin-top: 10px;
 }
-
 /* Button Styles */
 .btn {
   background-color: #f7bec1;

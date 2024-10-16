@@ -184,6 +184,7 @@ const postSchema = new mongoose.Schema({
         },
     ],
     createdAt: { type: Date, default: Date.now },
+    topic: { type: String, required: true },
 });
 
 const Post = mongoose.model("Post", postSchema, "posts");
