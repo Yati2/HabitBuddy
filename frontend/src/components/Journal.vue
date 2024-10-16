@@ -1,5 +1,5 @@
 <template>
-  <div class="journal-container">
+  <div v-if="isAuthenticatedUser" class="journal-container">
     <h1 class="text-center">Mood Tracker Journal</h1>
 
     <div class="calendar">
@@ -109,6 +109,7 @@
 
 <script>
 import axios from 'axios'
+import { isAuthenticated } from '@/auth'
 
 export default {
   name: 'CalendarWithJournal',
@@ -121,7 +122,17 @@ export default {
       mood: 'mood-neutral',
       moodTracker: {},
       isModalOpen: false,
-      errorMessage: ''
+      errorMessage: '',
+      isAuthenticatedUser: false
+    }
+  },
+  created() {
+    // Check if the user is authenticated on creation
+    if (isAuthenticated()) {
+      this.isAuthenticatedUser = true
+    } else {
+      this.isAuthenticatedUser = false
+      this.$router.push('/login') // Redirect to login page if not authenticated
     }
   },
   methods: {

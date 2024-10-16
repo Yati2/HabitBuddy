@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div v-if="isAuthenticatedUser" class="container-fluid">
     <div class="forum-container row">
       <!-- Forum Section -->
       <div class="col-lg-8 col-12 mx-auto">
@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import { isAuthenticated } from '@/auth'
 import axios from 'axios'
 
 export default {
@@ -65,7 +66,17 @@ export default {
     return {
       forumPosts: [], // Holds all forum posts
       newPostContent: '', // For new post input
-      newCommentContent: {} // For new comment input
+      newCommentContent: {},
+      isAuthenticatedUser: false // For new comment input
+    }
+  },
+  created() {
+    // Check if the user is authenticated on creation
+    if (isAuthenticated()) {
+      this.isAuthenticatedUser = true
+    } else {
+      this.isAuthenticatedUser = false
+      this.$router.push('/login') // Redirect to login page if not authenticated
     }
   },
   methods: {

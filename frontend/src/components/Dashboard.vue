@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div v-if="isAuthenticatedUser" class="dashboard-container">
     <h1>Welcome to the Dashboard</h1>
     <p>Here is a summary of your tasks and progress.</p>
 
@@ -14,6 +14,27 @@
     </div>
   </div>
 </template>
+<script>
+import { isAuthenticated } from '@/auth'
+export default {
+  name: 'Dashboard',
+  data() {
+    return {
+      isAuthenticatedUser: false
+    }
+  },
+  created() {
+    // Check if the user is authenticated on creation
+    if (isAuthenticated()) {
+      this.isAuthenticatedUser = true
+    } else {
+      this.isAuthenticatedUser = false
+      this.$router.push('/login') // Redirect to login page if not authenticated
+    }
+  },
+  methods: {}
+}
+</script>
 
 <style scoped>
 .dashboard-container {
