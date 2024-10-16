@@ -64,9 +64,9 @@ export default {
       username: '',
       email: '',
       password: '',
+      confirmPassword: '',
       message: '',
       usernameError: '',
-      confirmPassword: '',
       emailError: '',
       passwordError: ''
     }
@@ -79,40 +79,40 @@ export default {
       this.passwordError = ''
       this.message = ''
 
-      // make sure username matches requirement
+      // Validate username
       if (!this.validateUsername(this.username)) {
         this.usernameError =
           'Username must be between 6-10 characters and can only contain letters, numbers, and underscores.'
         return
       }
 
-      // make sure valid email
+      // Validate email
       if (!this.validateEmail(this.email)) {
         this.emailError = 'Please enter a valid email address.'
         return
       }
 
-      // make sure pw matches requirement
+      // Validate password
       if (!this.validatePassword(this.password)) {
         this.passwordError =
           'Password must contain at least 8 characters, including letters and numbers.'
         return
       }
 
-      // make sure username is unique
+      // Check if passwords match
+      if (this.password !== this.confirmPassword) {
+        this.passwordError = 'Passwords do not match.'
+        return
+      }
+
+      // Check if username already exists
       const existingUser = await this.checkUsernameExists(this.username)
       if (existingUser) {
         this.usernameError = 'Username already exists.'
         return
       }
 
-      //check confirm password and password
-      const isSamepwd = this.password === this.confirmPassword
-      if (!isSamepwd) {
-        this.usernameError = 'Please enter the same password.'
-        return
-      }
-      // axios req to register user
+      // Try to register the user
       try {
         const response = await axios.post('http://localhost:8000/api/register', {
           username: this.username,
@@ -121,9 +121,10 @@ export default {
           points: 0
         })
 
-        // success message alert
-        alert('Registration successful!')
-        this.resetForm()
+        // Show success message and redirect to tasks page
+        alert('Registration successful! Redirecting to tasks page...')
+        this.$router.push('/tasks') // Redirect to the tasks page
+        this.resetForm() // Reset the form fields
       } catch (error) {
         console.error('Error registering user:', error)
         this.message = 'Error registering user.'
@@ -147,7 +148,7 @@ export default {
 
     async checkUsernameExists(username) {
       try {
-        const response = await axios.get(`http://localhost:8000/api/users`)
+        const response = await axios.get('http://localhost:8000/api/users')
         const users = response.data
         return users.some((user) => user.username === username)
       } catch (error) {
@@ -160,8 +161,8 @@ export default {
       this.username = ''
       this.email = ''
       this.password = ''
-      this.message = ''
       this.confirmPassword = ''
+      this.message = ''
     }
   }
 }
@@ -184,7 +185,7 @@ a:hover {
   color: #be9294;
 }
 .container-fluid {
-  background-image: url('../assets/backgrounds/bg_login_register.gif'); /* Background GIF */
+  background-image: url('../assets/backgrounds/bg_login_register.gif');
   background-size: cover;
   background-position: center;
   min-height: 100vh;
@@ -196,7 +197,6 @@ a:hover {
 
 .overlay {
   position: relative;
-  /* background: rgba(0, 0, 0, 0.5); Dark overlay to improve readability */
   padding: auto;
   width: 90%;
   height: 100%;
@@ -218,6 +218,7 @@ a:hover {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   margin-bottom: 5px;
 }
+
 .app-info {
   margin-top: auto;
   margin-bottom: auto;
@@ -226,13 +227,14 @@ a:hover {
 
 .form-container {
   font-family: 'Jersey 25', sans-serif;
-  background-color: rgba(255, 255, 255, 0.474); /* Semi-transparent background for form */
+  background-color: rgba(255, 255, 255, 0.474);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   max-width: 400px;
   width: 100%;
 }
+
 .form-label {
   font-size: 1.3rem;
 }
