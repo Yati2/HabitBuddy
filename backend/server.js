@@ -609,7 +609,10 @@ app.delete("/api/journals/:id", async (req, res) => {
 const petSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true }, // Link to user by username
     petName: { type: String, default: "Bluey" }, // Default pet name
-    happinessLevel: { type: Number, default: 100 }, // Happiness level (0-100)
+    happinessLevel: { type: Number, default: 100 },
+    type: { type: String, default: "yellow" },
+    accessory: { type: Boolean, default: false },
+    bg: { type: String, default: "cozy_room" }, // Happiness level (0-100)
 });
 
 // Create the Pet model
