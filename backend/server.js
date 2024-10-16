@@ -190,66 +190,81 @@ const Post = mongoose.model("Post", postSchema, "posts");
 
 // Create new post
 app.post("/api/posts", async (req, res) => {
-    const { content, username } = req.body;
-    try {
-        const newPost = new Post({ content, username, likes: 0, comments: [] });
-        await newPost.save();
-        res.status(201).json({
-            message: "Post created successfully!",
-            post: newPost,
-        });
-    } catch (error) {
-        console.error("Error creating post:", error);
-        res.status(500).json({ message: "Error creating post" });
+    const { content, username, topic } = req.body; // Include topic in the request body
+  
+    // Validate that the topic field is provided
+    if (!topic) {
+      return res.status(400).json({ message: "Topic is required" });
     }
-});
+  
+    try {
+      const newPost = new Post({
+        content,
+        username,
+        topic, // Store the topic in the post
+        likes: 0,
+        comments: []
+      });
+      await newPost.save();
+      res.status(201).json({ message: "Post created successfully!", post: newPost });
+      console.log("New Post:", newPost);
+      console.log(response.data);  // Check what you get in the response
 
-// Fetch all posts
-app.get("/api/posts", async (req, res) => {
-    try {
-        const posts = await Post.find().sort({ createdAt: -1 });
-        res.json(posts);
     } catch (error) {
-        console.error("Error fetching posts:", error);
-        res.status(500).send("Error fetching posts");
+      console.error("Error creating post:", error);
+      res.status(500).json({ message: "Error creating post" });
     }
-});
+  });
+  
+  // Fetch posts by topic
+  app.get("/api/posts", async (req, res) => {
+    const { topic } = req.query; // Get the topic from the query string
+  
+    try {
+      const query = topic ? { topic } : {}; // If topic is provided, filter posts by topic
+      const posts = await Post.find(query).sort({ createdAt: -1 });
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      res.status(500).send("Error fetching posts");
+    }
+  });
 
 // Like post
 app.post("/api/posts/:id/like", async (req, res) => {
-    const postId = req.params.id;
-    try {
-        const post = await Post.findById(postId);
-        if (post) {
-            post.likes += 1;
-            await post.save();
-            res.json({ message: "Post liked successfully!", post });
-        } else {
-            res.status(404).json({ message: "Post not found." });
-        }
-    } catch (error) {
-        console.error("Error liking post:", error);
-        res.status(500).json({ message: "Error liking post" });
+  const postId = req.params.id;
+  try {
+    const post = await Post.findById(postId);
+    if (post) {
+      post.likes += 1;
+      await post.save();
+      res.json({ message: "Post liked successfully!", post });
+    } else {
+      res.status(404).json({ message: "Post not found." });
     }
+  } catch (error) {
+    console.error("Error liking post:", error);
+    res.status(500).json({ message: "Error liking post" });
+  }
 });
 
 // Comment on post
 app.post("/api/posts/:id/comment", async (req, res) => {
-    const postId = req.params.id;
-    const { username, comment } = req.body;
-    try {
-        const post = await Post.findById(postId);
-        if (post) {
-            post.comments.push({ username, comment });
-            await post.save();
-            res.json({ message: "Comment added successfully!", post });
-        } else {
-            res.status(404).json({ message: "Post not found." });
-        }
-    } catch (error) {
-        console.error("Error adding comment:", error);
-        res.status(500).json({ message: "Error adding comment" });
+  const postId = req.params.id;
+  const { username, comment } = req.body;
+  try {
+    const post = await Post.findById(postId);
+    if (post) {
+      post.comments.push({ username, comment });
+      await post.save();
+      res.json({ message: "Comment added successfully!", post });
+    } else {
+      res.status(404).json({ message: "Post not found." });
     }
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    res.status(500).json({ message: "Error adding comment" });
+  }
 });
 
 const habitSchema = new mongoose.Schema({

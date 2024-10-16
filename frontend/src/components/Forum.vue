@@ -1,9 +1,23 @@
 <template>
-  <div v-if="isAuthenticatedUser" class="container-fluid">
+  <div class="container-fluid">
     <div class="forum-container row">
-      <!-- Forum Section -->
+      <!-- Forum Section with Nav Bar -->
       <div class="col-lg-8 col-12 mx-auto">
         <h1 class="forum-title">HabitBuddy Forum</h1>
+
+        <!-- Navigation Bar for Topics -->
+        <nav class="navbar navbar-expand-lg navbar-dark">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item" v-for="topic in topics" :key="topic">
+              <a 
+                href="#"
+                :class="{ 'active-topic': selectedTopic === topic }"
+                class="nav-link"
+                @click.prevent="selectTopic(topic)"
+              >{{ capitalize(topic) }}</a>
+            </li>
+          </ul>
+        </nav>
 
         <!-- Create New Post -->
         <div class="new-post-container">
@@ -22,16 +36,20 @@
           </form>
         </div>
 
-        <!-- List of Forum Posts -->
-        <div v-for="post in forumPosts" :key="post._id" class="post-container">
+        <!-- List of Forum Posts by Topic -->
+        <div v-for="post in filteredPosts" :key="post._id" class="post-container">
           <div class="post-header">
             <h4>{{ post.username }}</h4>
             <p class="post-content">{{ post.content }}</p>
           </div>
 
           <div class="post-actions">
-            <button @click="likePost(post._id)" class="like-btn">👍 {{ post.likes }} Likes</button>
-            <button @click="toggleComments(post._id)" class="comment-btn">💬 Comments</button>
+            <button @click="likePost(post._id)" class="like-btn">
+              👍 {{ post.likes }} Likes
+            </button>
+            <button @click="toggleComments(post._id)" class="comment-btn">
+              💬 Comments
+            </button>
           </div>
 
           <!-- Comments Section -->
@@ -58,17 +76,19 @@
 </template>
 
 <script>
-import { isAuthenticated } from '@/auth'
-import axios from 'axios'
+import axios from 'axios';
+import { isAuthenticated } from '@/auth';
 
 export default {
   data() {
     return {
-      forumPosts: [], // Holds all forum posts
-      newPostContent: '', // For new post input
+      forumPosts: [],
+      newPostContent: '',
       newCommentContent: {},
-      isAuthenticatedUser: false // For new comment input
-    }
+      selectedTopic: 'academics',
+      username: '', // To store the logged-in username
+      topics: ['academics', 'physical', 'mental'], // List of topics
+    };
   },
   created() {
     // Check if the user is authenticated on creation
@@ -79,81 +99,93 @@ export default {
       this.$router.push('/login') // Redirect to login page if not authenticated
     }
   },
+  computed: {
+    filteredPosts() {
+      // Filter posts based on selected topic
+      return this.forumPosts.filter(post => post.topic === this.selectedTopic);
+    },
+  },
   methods: {
     async fetchPosts() {
       try {
-        const response = await axios.get('http://localhost:8000/api/posts')
-        this.forumPosts = response.data.map((post) => ({
+        const response = await axios.get('http://localhost:8000/api/posts');
+        this.forumPosts = response.data.map(post => ({
           ...post,
-          showComments: false // Toggle for showing/hiding comments
-        }))
+          showComments: false, // Toggle for showing/hiding comments
+        }));
       } catch (error) {
-        console.error('Error fetching posts:', error.response ? error.response.data : error.message)
+        console.error('Error fetching posts:', error.response ? error.response.data : error.message);
       }
     },
     async submitPost() {
       try {
         const newPost = {
           content: this.newPostContent,
-          username: 'CurrentUser', // Replace with actual dynamic username
+          username: this.username, // Use the logged-in username
           likes: 0,
-          comments: []
-        }
+          comments: [],
+          topic: this.selectedTopic,
+        };
 
-        const response = await axios.post('http://localhost:8000/api/posts', newPost)
-        this.forumPosts.unshift(response.data.post) // Add the new post to the top of the list
-        this.newPostContent = '' // Clear the input field
+        const response = await axios.post('http://localhost:8000/api/posts', newPost);
+        this.forumPosts.unshift(response.data.post);
+        this.newPostContent = '';
       } catch (error) {
-        console.error(
-          'Error submitting post:',
-          error.response ? error.response.data : error.message
-        )
+        console.error('Error submitting post:', error.response ? error.response.data : error.message);
       }
     },
+    selectTopic(topic) {
+      this.selectedTopic = topic; // Change the current topic when user selects one
+    },
     async likePost(postId) {
-      const post = this.forumPosts.find((p) => p._id === postId)
-      post.likes += 1 // Update likes on the frontend
+      const post = this.forumPosts.find(p => p._id === postId);
+      post.likes += 1; // Update likes on the frontend
       try {
-        await axios.post(`http://localhost:8000/api/posts/${postId}/like`) // Update likes in the backend
+        await axios.post(`http://localhost:8000/api/posts/${postId}/like`);
       } catch (error) {
-        console.error('Error liking post:', error)
+        console.error('Error liking post:', error);
       }
     },
     toggleComments(postId) {
-      const post = this.forumPosts.find((p) => p._id === postId)
-      post.showComments = !post.showComments
+      const post = this.forumPosts.find(p => p._id === postId);
+      post.showComments = !post.showComments;
     },
     async submitComment(postId) {
-      const commentContent = this.newCommentContent[postId]
+      const commentContent = this.newCommentContent[postId];
       if (commentContent) {
-        const post = this.forumPosts.find((p) => p._id === postId)
+        const post = this.forumPosts.find(p => p._id === postId);
         const newComment = {
-          comment: commentContent, // Match the schema
-          username: 'CurrentUser' // Replace with dynamic username
-        }
-        post.comments.push(newComment)
-        this.newCommentContent[postId] = '' // Reset comment input
+          comment: commentContent,
+          username: this.username, // Use the logged-in username
+        };
+        post.comments.push(newComment);
+        this.newCommentContent[postId] = ''; // Reset comment input
 
         try {
-          await axios.post(`http://localhost:8000/api/posts/${postId}/comment`, newComment) // API call to save comment
+          await axios.post(`http://localhost:8000/api/posts/${postId}/comment`, newComment);
         } catch (error) {
-          console.error('Error adding comment:', error)
+          console.error('Error adding comment:', error);
         }
       }
-    }
+    },
+    capitalize(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    },
   },
   mounted() {
-    this.fetchPosts() // Fetch posts when the component is mounted
-  }
-}
+    this.username = localStorage.getItem('username') || 'Guest'; // Retrieve username from localStorage
+    this.fetchPosts(); // Fetch posts when the component is mounted
+  },
+};
 </script>
 
 <style scoped>
+/* General Styles */
 .forum-title {
   color: white;
-  font-size: 2rem; /* Reduced size for mobile responsiveness */
+  font-size: 2rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  text-align: center; /* Center align for better mobile view */
+  text-align: center;
 }
 
 .post-container,
@@ -166,21 +198,20 @@ export default {
 
 .post-header {
   display: flex;
-  flex-direction: column; /* Stack elements for better mobile view */
+  flex-direction: column;
 }
 
 .post-content {
-  word-break: break-word; /* Prevent overflow on small screens */
+  word-break: break-word;
 }
 
-.post-actions,
-.comment-btn,
-.like-btn {
+.post-actions {
   margin-top: 10px;
   display: flex;
-  justify-content: space-between; /* Space actions evenly */
+  justify-content: space-between;
 }
 
+/* Comment Section */
 .comment-container {
   padding-left: 15px;
 }
@@ -189,27 +220,46 @@ export default {
   margin-top: 10px;
 }
 
+/* Button Styles */
 .btn {
   background-color: #f7bec1;
-  width: 100%; /* Make buttons full-width for mobile */
+  width: 100%;
 }
 
 .btn:hover {
   background-color: #be9294;
 }
 
-/* Responsive styles */
+/* Navbar Styles */
+.navbar {
+  background-color: #f7bec1;
+  border-radius: 8px;
+  padding: 10px 0;
+}
+
+.nav-link {
+  color: white;
+  margin: 0 15px;
+}
+
+.nav-link:hover {
+  color: #333;
+}
+
+.active-topic {
+  font-weight: bold;
+  color: #333;
+}
+
+/* Responsive Styles */
 @media (max-width: 576px) {
   .forum-title {
-    font-size: 1.5rem; /* Smaller title font for mobile */
+    font-size: 1.5rem;
   }
 
-  .new-post-container {
-    padding: 15px; /* Reduce padding on mobile */
-  }
-
+  .new-post-container,
   .post-container {
-    padding: 15px; /* Reduce padding on mobile */
+    padding: 15px;
   }
 }
 </style>
