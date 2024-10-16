@@ -6,8 +6,8 @@
           <div class="col-12 col-md-6 text-center">
             <h1>HabitBuddy</h1>
             <p class="desc">Take care of yourself while taking care of your pet</p>
-            <router-link to="/Login" class="btn">Login</router-link>
-            <router-link to="/Register" class="btn">Register</router-link>
+            <router-link to="/login" class="btn">Login</router-link>
+            <router-link to="/register" class="btn">Register</router-link>
           </div>
           <div class="col-12 col-md-6">
             <img
