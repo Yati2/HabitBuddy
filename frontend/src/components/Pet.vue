@@ -40,35 +40,28 @@ export default {
       this.isAuthenticatedUser = true
     } else {
       this.isAuthenticatedUser = false
-      this.$router.push('/login') // Redirect if not authenticated
+      this.$router.push('/login')
     }
   },
   mounted() {
-    // Check if the user is authenticated
-    if (isAuthenticated()) {
-      this.isAuthenticatedUser = true
-      const config = {
-        type: Phaser.AUTO,
-        parent: 'game-container',
-        width: sizes.width,
-        height: sizes.height,
-        transparent: true,
-        physics: {
-          default: 'arcade',
-          arcade: {
-            gravity: { y: 0 },
-            debug: false
-          }
-        },
-        scene: [GameScene] // Define your game scene
-      }
-
-      new Phaser.Game(config)
-    } else {
-      this.isAuthenticatedUser = false
-      // Redirect to login page immediately
-      this.$router.push('/login') // Replace with your login page route
+    this.isAuthenticatedUser = true
+    const config = {
+      type: Phaser.AUTO,
+      parent: 'game-container',
+      width: sizes.width,
+      height: sizes.height,
+      transparent: true,
+      physics: {
+        default: 'arcade',
+        arcade: {
+          gravity: { y: 0 },
+          debug: false
+        }
+      },
+      scene: [GameScene]
     }
+
+    new Phaser.Game(config)
   }
 }
 
@@ -136,14 +129,14 @@ class GameScene extends Phaser.Scene {
 
     this.anims.create({
       key: 'stretchRight',
-      frames: this.anims.generateFrameNumbers('stretchRight', { start: 0, end: 6 }),
+      frames: this.anims.generateFrameNumbers('stretchRight', { start: 0, end: 5 }),
       frameRate: 5,
       repeat: 0 // Play once
     })
 
     this.anims.create({
       key: 'stretchLeft',
-      frames: this.anims.generateFrameNumbers('stretchLeft', { start: 0, end: 6 }),
+      frames: this.anims.generateFrameNumbers('stretchLeft', { start: 0, end: 5 }),
       frameRate: 5,
       repeat: 0 // Play once
     })
@@ -206,8 +199,6 @@ class GameScene extends Phaser.Scene {
       this.cat.play('walkRight')
     } else if (previousAction === 'walkLeft') {
       this.cat.play('walkLeft')
-    } else if (previousAction === 'lick') {
-      this.cat.play('lick')
     } else if (previousAction === 'goUp') {
       this.cat.play('goUp')
     }
@@ -228,7 +219,7 @@ class GameScene extends Phaser.Scene {
     if (this.cat.x >= this.sofaPosition) {
       this.cat.anims.stop()
       this.isWalkingRight = false
-      this.cat.play('lick')
+      this.cat.play('lick').disableInteractive()
       this.isLicking = true
       this.currentAction = 'lick'
 
@@ -271,7 +262,7 @@ class GameScene extends Phaser.Scene {
         this.cat.x -= 5
         if (this.cat.x == 100) {
           this.cat.anims.stop()
-          this.cat.play('lick')
+          this.cat.play('lick').disableInteractive()
           this.isWalkingLeft = false
           this.isLicking = true
           this.currentAction = 'lick'
