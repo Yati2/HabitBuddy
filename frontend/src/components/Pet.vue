@@ -1,15 +1,19 @@
 <template>
-  <div id="game-container">
+  <div v-if="isAuthenticatedUser" id="game-container">
     <img
       id="background-gif"
       src="../assets/pet_related/bg/cozyroom.gif"
       alt="Cozy Room Background"
     />
   </div>
+  <div v-else>
+    <p>You need to be logged in to access this page. Redirecting...</p>
+  </div>
 </template>
 
 <script>
 import Phaser from 'phaser'
+import { isAuthenticated } from '@/auth' // Import authentication functions
 import walkingright from '../assets/pet_related/yellow_cat/walkingright.png'
 import walkingleft from '../assets/pet_related/yellow_cat/walkingleft.png'
 import licking from '../assets/pet_related/yellow_cat/licking.png'
@@ -24,23 +28,66 @@ const sizes = {
   height: 600
 }
 
+export default {
+  data() {
+    return {
+      isAuthenticatedUser: false // Track authentication status
+    }
+  },
+  created() {
+    // Check if the user is authenticated
+    if (isAuthenticated()) {
+      this.isAuthenticatedUser = true
+    } else {
+      this.isAuthenticatedUser = false
+      this.$router.push('/login') // Redirect if not authenticated
+    }
+  },
+  mounted() {
+    // Check if the user is authenticated
+    if (isAuthenticated()) {
+      this.isAuthenticatedUser = true
+      const config = {
+        type: Phaser.AUTO,
+        parent: 'game-container',
+        width: sizes.width,
+        height: sizes.height,
+        transparent: true,
+        physics: {
+          default: 'arcade',
+          arcade: {
+            gravity: { y: 0 },
+            debug: false
+          }
+        },
+        scene: [GameScene] // Define your game scene
+      }
+
+      new Phaser.Game(config)
+    } else {
+      this.isAuthenticatedUser = false
+      // Redirect to login page immediately
+      this.$router.push('/login') // Replace with your login page route
+    }
+  }
+}
+
+// Define your Phaser GameScene below
 class GameScene extends Phaser.Scene {
   constructor() {
     super('scene-game')
   }
 
   preload() {
-    // Load all sprite sheets and images
+    // Load assets here
     this.load.spritesheet('catWalkingRight', walkingright, {
       frameWidth: 64,
       frameHeight: 64
     })
-
     this.load.spritesheet('catWalkingLeft', walkingleft, {
       frameWidth: 64,
       frameHeight: 64
     })
-
     this.load.spritesheet('catLicking', licking, {
       frameWidth: 64,
       frameHeight: 64
@@ -53,18 +100,19 @@ class GameScene extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 64
     })
-
     this.load.image('catUp1', catup1)
     this.load.image('catUp2', catup2)
     this.load.image('catUp3', catup3)
   }
+
   create() {
+    // Game creation logic
     this.cat = this.physics.add
       .sprite(0, this.cameras.main.height - 100, 'catWalkingRight')
       .setScale(2.5)
       .setInteractive()
 
-    // Define animations
+    // Define animations, etc.
     this.anims.create({
       key: 'walkRight',
       frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 7 }),
@@ -92,6 +140,7 @@ class GameScene extends Phaser.Scene {
       frameRate: 5,
       repeat: 0 // Play once
     })
+
     this.anims.create({
       key: 'stretchLeft',
       frames: this.anims.generateFrameNumbers('stretchLeft', { start: 0, end: 6 }),
@@ -106,7 +155,6 @@ class GameScene extends Phaser.Scene {
       repeat: -1
     })
 
-    // Play the initial walking animation
     this.cat.play('walkRight')
     this.currentAction = 'walkRight'
     this.isWalkingRight = true
@@ -118,35 +166,34 @@ class GameScene extends Phaser.Scene {
     this.isStretchingRight = false
     this.isStretchingLeft = false
 
-    // Sofa position
     this.sofaPosition = 700
 
-    // Interaction - trigger stretch when hovering over the cat
+    // Trigger stretch on hover
     this.cat.on('pointerover', () => {
-      this.triggerStretch() // Trigger stretch when the user pets the cat
+      this.triggerStretch()
     })
   }
 
   triggerStretch() {
-    if (this.isStretchingRight && this.isStretchingLeft && this.isGoingUp && this.isLicking) return // If the cat is already stretching, do nothing
+    if (this.isStretchingRight && this.isStretchingLeft && this.isGoingUp && this.isLicking) return
 
     const previousAction = this.currentAction
     previousAction === 'walkRight'
       ? (this.isStretchingRight = true)
       : (this.isStretchingLeft = true)
 
-    this.cat.anims.stop() // Stop the current animation
+    this.cat.anims.stop()
     this.currentAction = previousAction === 'walkRight' ? 'stretchRight' : 'stretchLeft'
     previousAction === 'walkRight'
       ? this.cat.play('stretchRight').setScale(2.5)
       : this.cat.play('stretchLeft').setScale(2.5)
 
     this.time.delayedCall(
-      1000, // Time for the stretch animation
+      1000,
       () => {
         this.isStretchingRight = false
-        this.isStretchingLeft = false // Reset the stretching flag
-        this.resumeAction(previousAction) // Resume the previous action
+        this.isStretchingLeft = false
+        this.resumeAction(previousAction)
       },
       [],
       this
@@ -154,9 +201,7 @@ class GameScene extends Phaser.Scene {
   }
 
   resumeAction(previousAction) {
-    // Resume the previous action (walking, licking, etc.)
-
-    this.currentAction = previousAction // Restore the previous action
+    this.currentAction = previousAction
     if (previousAction === 'walkRight') {
       this.cat.play('walkRight')
     } else if (previousAction === 'walkLeft') {
@@ -169,7 +214,6 @@ class GameScene extends Phaser.Scene {
   }
 
   update() {
-    // If any of the other states (licking, going up, etc.) are active, stop further updates
     if (
       this.isLicking ||
       this.isGoingUp ||
@@ -179,16 +223,14 @@ class GameScene extends Phaser.Scene {
     )
       return
 
-    // Move the cat right if it's not stretching or doing something else
     this.cat.x += 2
 
-    // Check if the cat has reached the sofa position
     if (this.cat.x >= this.sofaPosition) {
       this.cat.anims.stop()
       this.isWalkingRight = false
       this.cat.play('lick')
       this.isLicking = true
-      this.currentAction = 'lick' // Update the current action to licking
+      this.currentAction = 'lick'
 
       this.time.delayedCall(3000, this.startGoingUp, [], this)
     }
@@ -201,18 +243,16 @@ class GameScene extends Phaser.Scene {
 
     this.cat.setTexture('catUp1').setScale(1.5).disableInteractive()
     this.cat.play('goUp')
-
-    this.currentAction = 'goUp' // Update the current action to goUp
+    this.currentAction = 'goUp'
 
     this.upEvent = this.time.addEvent({
       delay: 50,
       callback: () => {
-        this.cat.y -= 5 // Move the cat up by 5 pixels
+        this.cat.y -= 5
         if (this.cat.y == 350) {
-          this.cat.anims.stop() // Stop the upward movement animation
+          this.cat.anims.stop()
           this.upEvent.remove()
-
-          this.startWalkingLeft() // Start walking left
+          this.startWalkingLeft()
         }
       },
       repeat: -1
@@ -223,45 +263,23 @@ class GameScene extends Phaser.Scene {
     this.cat.play('walkLeft').setScale(2.5).setInteractive()
     this.isGoingUp = false
     this.isWalkingLeft = true
-    this.currentAction = 'walkLeft' // Update the current action to walkLeft
+    this.currentAction = 'walkLeft'
 
     this.leftEvent = this.time.addEvent({
       delay: 50,
       callback: () => {
-        this.cat.x -= 5 // Slightly faster left movement
+        this.cat.x -= 5
         if (this.cat.x == 100) {
           this.cat.anims.stop()
           this.cat.play('lick')
           this.isWalkingLeft = false
           this.isLicking = true
-          this.currentAction = 'lick' // Update the current action to licking
+          this.currentAction = 'lick'
           this.leftEvent.remove()
         }
       },
       repeat: -1
     })
-  }
-}
-
-export default {
-  mounted() {
-    const config = {
-      type: Phaser.AUTO,
-      parent: 'game-container',
-      width: sizes.width,
-      height: sizes.height,
-      transparent: true,
-      physics: {
-        default: 'arcade',
-        arcade: {
-          gravity: { y: 0 },
-          debug: false
-        }
-      },
-      scene: [GameScene]
-    }
-
-    new Phaser.Game(config)
   }
 }
 </script>
