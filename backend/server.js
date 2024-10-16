@@ -180,17 +180,18 @@ const postSchema = new mongoose.Schema({
         {
             username: { type: String, required: true },
             comment: { type: String, required: true },
-            createdAt: { type: Date, default: Date.now },
+            createdAt: { type: Date, default: Date.now },  
         },
     ],
-    createdAt: { type: Date, default: Date.now },
     topic: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
 });
 
 const Post = mongoose.model("Post", postSchema, "posts");
 
 // Create new post
 app.post("/api/posts", async (req, res) => {
+    console.log("Request Body:", req.body);
     const { content, username, topic } = req.body; // Include topic in the request body
   
     // Validate that the topic field is provided

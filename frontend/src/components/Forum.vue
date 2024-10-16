@@ -99,7 +99,7 @@ export default {
   methods: {
     async fetchPosts() {
       try {
-        const response = await axios.get('http://localhost:8000/api/posts?topic=${this.selectedTopic}');
+        const response = await axios.get(`http://localhost:8000/api/posts?topic=${this.selectedTopic}`);
         this.forumPosts = response.data.map(post => ({
           ...post,
           showComments: false, // Toggle for showing/hiding comments
@@ -110,6 +110,7 @@ export default {
     },
     async submitPost() {
       try {
+        console.log("Selected topic during post submission:", this.selectedTopic);
         const newPost = {
           content: this.newPostContent,
           username: this.username, // Use the logged-in username
@@ -126,6 +127,7 @@ export default {
       }
     },
     selectTopic(topic) {
+      console.log("Selected topic:", topic);
       this.selectedTopic = topic; // Change the current topic when user selects one
     },
     async likePost(postId) {
