@@ -2,10 +2,13 @@
   <div v-if="isAuthenticatedUser" class="journal-container">
     <h1 class="text-center">Mood Tracker Journal</h1>
 
-    <div class="calendar">
-      <!-- month -->
-      <div class="month-header" colspan="7">{{ currentMonth }}</div>
+    <div class="controls">
+      <button @click="previousMonth">←</button>
+      <span>{{ currentMonthName }} {{ selectedYear }}</span>
+      <button @click="nextMonth">→</button>
+    </div>
 
+    <div class="calendar">
       <!-- days -->
       <div class="day day-header">Sun</div>
       <div class="day day-header">Mon</div>
@@ -30,7 +33,7 @@
     <!-- form -->
     <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
-        <h3>{{ selectedDay }} {{ currentMonth }}</h3>
+        <h3>{{ selectedDay }} {{ currentMonthName }} {{ selectedYear }}</h3>
 
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
@@ -114,16 +117,34 @@ import { isAuthenticated } from '@/auth'
 export default {
   name: 'CalendarWithJournal',
   data() {
+    const now = new Date()
     return {
-      currentMonth: this.getCurrentMonth(),
-      days: this.getDaysInMonth(new Date().getMonth(), new Date().getFullYear()),
+      currentMonth: now.getMonth(),
+      days: [],
       selectedDay: null,
       entry: '',
       mood: 'mood-neutral',
       moodTracker: {},
       isModalOpen: false,
       errorMessage: '',
-      isAuthenticatedUser: false
+      isAuthenticatedUser: false,
+      selectedYear: now.getFullYear(),
+      selectedMonth: now.getMonth() + 1,
+      years: this.getYears(),
+      monthNames: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ]
     }
   },
   created() {
@@ -132,16 +153,17 @@ export default {
       this.isAuthenticatedUser = true
     } else {
       this.isAuthenticatedUser = false
-      this.$router.push('/login') // Redirect to login page if not authenticated
+      this.$router.push('/login')
     }
   },
-  methods: {
-    getCurrentMonth() {
-      const date = new Date()
-      return date.toLocaleString('default', { month: 'long', year: 'numeric' })
+  computed: {
+    currentMonthName() {
+      return this.monthNames[this.currentMonth]; 
     },
+  },
+  methods: {
     getFirstDayOfMonth(month, year) {
-      const firstDay = new Date(year, month, 1).getDay() // This gives you the weekday of the 1st day (0 for Sunday, 1 for Monday, etc.)
+      const firstDay = new Date(year, month, 1).getDay() 
       return firstDay
     },
     getDaysInMonth(month, year) {
@@ -149,9 +171,34 @@ export default {
       const firstDay = new Date(year, month, 1).getDay()
 
       return [
-        ...Array(firstDay).fill(''), // Fill with empty strings for previous month's days
+        ...Array(firstDay).fill(''), 
         ...Array.from({ length: numDays }, (_, i) => i + 1)
       ]
+    },
+    updateCalendar() {
+      this.days = this.getDaysInMonth(this.selectedMonth - 1, this.selectedYear)
+      this.currentMonth = this.selectedMonth - 1;
+    },
+    previousMonth() {
+      if (this.selectedMonth === 1) {
+        this.selectedMonth = 12
+        this.selectedYear--
+      } else {
+        this.selectedMonth--
+      }
+      this.updateCalendar()
+      this.fetchJournalEntries()
+    },
+
+    nextMonth() {
+      if (this.selectedMonth === 12) {
+        this.selectedMonth = 1
+        this.selectedYear++
+      } else {
+        this.selectedMonth++
+      }
+      this.updateCalendar()
+      this.fetchJournalEntries()
     },
     selectDay(day) {
       this.selectedDay = day
@@ -162,41 +209,25 @@ export default {
     },
 
     getMoodClass(day) {
-      switch (this.moodTracker[day]?.mood) {
-        case 'mood-excellent':
-          return 'mood-excellent'
-        case 'mood-good':
-          return 'mood-good'
-        case 'mood-neutral':
-          return 'mood-neutral'
-        case 'mood-bad':
-          return 'mood-bad'
-        case 'mood-terrible':
-          return 'mood-terrible'
-        default:
-          return ''
-      }
+      return this.moodTracker[day]?.mood || ''
     },
     saveJournalEntry() {
       if (this.selectedDay && this.entry.trim()) {
-        const currentMonth = new Date().getMonth() + 1 // getMonth is 0-indexed
-        const currentYear = new Date().getFullYear()
-
-        const fullDate = new Date(`${currentYear}-${currentMonth}-${this.selectedDay}`)
+        const fullDate = new Date(`${this.selectedYear}-${this.selectedMonth}-${this.selectedDay}`)
 
         const user = localStorage.getItem('username')
 
         axios
           .post('http://localhost:8000/api/journals', {
             username: user,
-            date: fullDate, // Send proper date format
+            date: fullDate, 
             entry: this.entry,
             mood: this.mood
           })
           .then((response) => {
             this.moodTracker[this.selectedDay] = response.data.journal
             this.closeModal()
-            this.errorMessage = '' // clear error message
+            this.errorMessage = ''
           })
           .catch((error) => {
             console.error('Error saving journal entry:', error)
@@ -207,7 +238,7 @@ export default {
       }
     },
     deleteJournalEntry() {
-      const journalId = this.moodTracker[this.selectedDay]?._id // Use the stored _id from the moodTracker
+      const journalId = this.moodTracker[this.selectedDay]?._id 
 
       if (!journalId) {
         console.error('No journal entry found to delete.')
@@ -228,23 +259,35 @@ export default {
       this.isModalOpen = false
       this.entry = ''
       this.mood = 'mood-neutral'
+    },
+    fetchJournalEntries() {
+      const username = localStorage.getItem('username')
+      const year = this.selectedYear 
+      const month = this.selectedMonth 
+
+      axios
+        .get(`http://localhost:8000/api/journals/${username}/${year}/${month}`)
+        .then((response) => {
+          this.moodTracker = response.data.reduce((acc, entry) => {
+            acc[new Date(entry.date).getDate()] = entry 
+            return acc
+          }, {})
+          this.updateCalendar() 
+        })
+        .catch((error) => {
+          console.error('Error fetching journal entries:', error)
+          this.errorMessage = 'Could not fetch journal entries. Please try again later.' 
+        })
+    },
+    getYears() {
+      const currentYear = new Date().getFullYear()
+      return Array.from({ length: 10 }, (_, i) => currentYear - i) 
     }
   },
 
   mounted() {
-    const user = localStorage.getItem('username')
-
-    axios
-      .get(`http://localhost:8000/api/journals/${user}`)
-      .then((response) => {
-        this.moodTracker = response.data.reduce((acc, entry) => {
-          acc[new Date(entry.date).getDate()] = entry // Store by day
-          return acc
-        }, {})
-      })
-      .catch((error) => {
-        console.error('Error fetching journal entries:', error)
-      })
+    this.updateCalendar()
+    this.fetchJournalEntries()
   }
 }
 </script>
@@ -264,6 +307,12 @@ h1 {
 
 button {
   margin: 10px;
+  border: none;
+  background: transparent;
+}
+
+button:hover{
+  transform: scale(1.5);
 }
 
 .journal-container {
@@ -277,7 +326,7 @@ button {
   overflow: hidden;
 }
 
-.month-header {
+.controls {
   grid-column: span 7;
   text-align: center;
   font-size: 1.5em;
@@ -301,7 +350,7 @@ button {
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px; /* Increase gap between days slightly */
+  gap: 2px; 
   width: 100%;
   margin: 0 auto;
 }
@@ -309,22 +358,22 @@ button {
 .calendar-day {
   position: relative;
   width: 100%;
-  padding-bottom: 60%; /* Increase padding-bottom for a slightly larger aspect ratio */
+  padding-bottom: 60%; 
   border: 1px solid #ccc;
   text-align: left;
   cursor: pointer;
   background-color: white;
   border-radius: 5px;
   transition: background-color 0.3s;
-  min-width: 30px; /* Increase minimum width for days */
+  min-width: 30px; 
 }
 
 .day-number {
   position: absolute;
-  top: 4px; /* Adjust position of day number slightly lower */
-  left: 4px; /* Adjust position of day number slightly to the right */
+  top: 4px; 
+  left: 4px; 
   font-family: 'Jersey 25', sans-serif;
-  font-size: 10px; /* Increase font size */
+  font-size: 10px; 
 }
 
 .error-message {
@@ -359,8 +408,8 @@ button {
 }
 
 .mood-option.selected {
-  border: 2px solid #000; /* Highlight selected mood */
-  border-radius: 5px; /* Rounded corners for selection */
+  border: 2px solid #000; 
+  border-radius: 5px; 
 }
 
 .mood-option {
@@ -401,7 +450,6 @@ button {
   font-family: 'Jersey 25', sans-serif;
 }
 
-/* Responsive Design */
 
 @media (max-width: 768px) {
   .journal-container {
@@ -409,67 +457,74 @@ button {
     padding: 10px;
   }
   h1 {
-    font-size: 24px; /* Smaller title font size */
+    font-size: 24px;
   }
 
   h2 {
-    font-size: 20px; /* Smaller month font size */
+    font-size: 20px; 
+  }
+
+  .controls{
+    font-size: 1em;
   }
 
   .day,
   .day-header {
-    font-size: 12px; /* Smaller font size for day names */
+    font-size: 12px;
   }
 
   .calendar-day {
-    padding-bottom: 50%; /* Slightly decrease for tablets */
+    padding-bottom: 50%; 
   }
 
   .day-number {
-    font-size: 9px; /* Slightly larger font size for day numbers */
+    font-size: 9px; 
   }
 
   .modal-content {
-    width: 90%; /* Make modal wider on smaller screens */
+    width: 90%;
   }
 
   .mood-option img {
-    width: 40px; /* Smaller image size for mobile */
-    height: 40px; /* Smaller image size for mobile */
+    width: 40px; 
+    height: 40px; 
   }
 }
 
 @media (max-width: 480px) {
   .journal-container {
-    /* Full width on small screens */
-    margin: 0 auto; /* Minimal padding */
+    margin: 0 auto; 
     padding: 10px;
   }
 
   h1 {
-    font-size: 20px; /* Even smaller title font size */
+    font-size: 20px; 
   }
 
   h2 {
-    font-size: 18px; /* Even smaller month font size */
+    font-size: 18px;
+  }
+
+  button{
+    font-size: 0.5em;
   }
 
   .day,
   .day-header {
-    font-size: 10px; /* Smaller font size for day names */
+    font-size: 10px; 
   }
   .calendar-day {
-    padding-bottom: 40%; /* Slightly decrease for phones */
-    min-width: 25px; /* Allow for slightly larger days on mobile */
+    padding-bottom: 40%; 
+    min-width: 25px; 
   }
 
   .day-number {
-    font-size: 8px; /* Slightly larger font size for day numbers */
+    font-size: 8px; 
   }
 
   .mood-option img {
-    width: 30px; /* Even smaller image size for mobile */
-    height: 30px; /* Even smaller image size for mobile */
+    width: 30px;
+    height: 30px; 
   }
 }
 </style>

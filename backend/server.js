@@ -568,24 +568,31 @@ app.post("/api/journals", async (req, res) => {
     }
 });
 
-// retrieve journal entry for users
-app.get("/api/journals/:username", async (req, res) => {
-    const { username } = req.params;
+// retrieve journal entries by month and year
+app.get("/api/journals/:username/:year/:month", async (req, res) => {
+    const { username, year, month } = req.params;
 
-    console.log("Fetching journal entries for username:", username); // Debug log
-
-    if (!username) {
-        return res.status(400).json({ message: "Username is required" });
+    if (!username || !year || !month) {
+        return res.status(400).json({ message: "Username, year, and month are required" });
     }
 
     try {
-        const journalEntries = await Journal.find({ username }); // Check if this matches the schema
+        // Create a date range for the specified month
+        const startDate = new Date(year, month - 1, 1); // month is 0-indexed
+        const endDate = new Date(year, month, 1); // the start of the next month
+
+        const journalEntries = await Journal.find({
+            username,
+            date: { $gte: startDate, $lt: endDate },
+        });
+
         res.json(journalEntries);
     } catch (error) {
         console.error("Error fetching journal entries:", error);
         res.status(500).json({ message: "Error fetching journal entries" });
     }
 });
+
 
 // update journal entry
 app.put("/api/journals/:id", async (req, res) => {
