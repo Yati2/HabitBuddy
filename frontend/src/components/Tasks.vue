@@ -336,7 +336,7 @@ export default {
   },
   methods: {
     increaseCount(h) {
-      // Display toast notification
+      // Display toast notificationxx
       toast('You gained 5 coins!', {
         icon: '🚀',
         autoClose: 1000

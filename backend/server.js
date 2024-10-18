@@ -680,3 +680,30 @@ app.put("/api/pet/:username", async (req, res) => {
         res.status(500).json({ message: "Error updating pet data" });
     }
 });
+
+//profile page api
+
+app.get('/api/users/:username', async (req, res) => {
+    const username = req.params.username;
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    res.json(user);
+  });
+  
+  app.put('/api/users/:username/password', async (req, res) => {
+    const { username } = req.params;
+    const { password } = req.body;
+  
+    try {
+      const user = await User.findOneAndUpdate({ username }, { password });
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+      res.send('Password updated successfully');
+    } catch (error) {
+      res.status(500).send('Error updating password');
+    }
+  });
+  
