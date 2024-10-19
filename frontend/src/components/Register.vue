@@ -118,7 +118,10 @@ export default {
           username: this.username,
           email: this.email,
           password: this.password,
-          points: 0
+          points: 0,
+          habitcompleted:0,
+          longtermcompleted:0,
+          todocompleted:0
         })
 
         // Show success message and redirect to tasks page
