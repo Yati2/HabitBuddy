@@ -1,19 +1,116 @@
-<template>
-  <div v-if="isAuthenticatedUser" id="game-container">
-    <img
-      id="background-gif"
-      src="../assets/pet_related/bg/cozyroom.gif"
-      alt="Cozy Room Background"
-    />
-  </div>
-  <div v-else>
-    <p>You need to be logged in to access this page. Redirecting...</p>
+<template v-if="isAuthenticatedUser" class="container-fluid">
+  <div class="row">
+    <div id="game-container" class="col-lg-10 col-12 position-relative">
+      <img
+        src="../assets/pet_related/bg/cozyroom.gif"
+        alt="Pet Background"
+        id="game-bg"
+        class="position-absolute"
+      />
+    </div>
+
+    <div id="pet-info" class="col-lg-2 col-12">
+      <!-- Pet Name -->
+      <div class="pet-info-content pet-info-name d-flex justify-content-between align-items-center">
+        <h5 id="pet-name" class="text-center flex-grow-1">Name: {{ petName }}</h5>
+        <i class="bi bi-pencil-square font-sm ms-1 mb-2" @click="showModal = true"></i>
+      </div>
+
+      <!-- Pet Happiness -->
+      <div class="pet-info-happiness pet-info-content">
+        <div class="d-flex justify-content-between align-items-center pb-2">
+          <h5 id="pet-happiness" class="text-center mb-0">Happiness: {{ petHappiness }}%</h5>
+          <i
+            class="bi bi-question-circle ms-2 font-sm"
+            @click="showHelpMessage = true"
+            style="cursor: pointer; font-size: 1.2rem"
+            title="Click for help"
+          ></i>
+        </div>
+        <div class="progress">
+          <div
+            class="progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar"
+            id="pet-happiness-bar"
+            :class="progressBarClass"
+            :aria-valuenow="petHappiness"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            :style="{ width: petHappiness + '%' }"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Pet Feeding Section -->
+      <div
+        class="pet-info-feed pet-info-content mt-3 d-flex justify-content-between align-items-center"
+      >
+        <div class="d-flex align-items-center">
+          <i class="bi bi-fish" style="font-size: 1.5rem"></i>
+          <button class="btn btn-primary ms-2" @click="feedPet">Feed</button>
+        </div>
+        <i
+          class="bi bi-question-circle ms-2 font-sm"
+          @click="showFeedHelpMessage = true"
+          style="cursor: pointer; font-size: 1.2rem"
+          title="Click for help"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Modal for editing pet name -->
+    <div
+      v-if="showModal"
+      class="modal fade show"
+      tabindex="-1"
+      role="dialog"
+      style="display: block"
+    >
+      <div class="modal-dialog-centered custom-modal" role="document">
+        <div class="modal-content">
+          <div class="modal-header d-flex justify-content-between align-items-center">
+            <h5 class="modal-title">What do you want to name your pet?</h5>
+            <button type="button" class="close" @click="showModal = false" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input v-model="newPetName" class="form-control" placeholder="Enter new pet name" />
+          </div>
+          <div class="modal-footer d-flex justify-content-between align-items-center">
+            <button type="button" class="btn btn-secondary" @click="showModal = false">
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" @click="savePetName">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal background overlay -->
+    <div v-if="showModal" class="modal-backdrop fade show"></div>
+
+    <!-- Tooltip / Help Message for Happiness -->
+    <div v-if="showHelpMessage" class="custom-tooltip" @click="showHelpMessage = false">
+      Every time you feed your pet, happiness level will increase by 10.
+    </div>
+
+    <!-- Tooltip / Help Message for Feeding -->
+    <div
+      v-if="showFeedHelpMessage"
+      class="custom-tooltip"
+      @click="showFeedHelpMessage = false"
+      width="{tooltipwidth}"
+    >
+      Feed the cat to increase its happiness.
+    </div>
   </div>
 </template>
 
 <script>
 import Phaser from 'phaser'
-import { isAuthenticated } from '@/auth' // Import authentication functions
+import axios from 'axios'
+import 'bootstrap-icons/font/bootstrap-icons.css'
 import walkingright from '../assets/pet_related/yellow_cat/walkingright.png'
 import walkingleft from '../assets/pet_related/yellow_cat/walkingleft.png'
 import licking from '../assets/pet_related/yellow_cat/licking.png'
@@ -22,37 +119,36 @@ import stretchingleft from '../assets/pet_related/yellow_cat/stretchingleft.png'
 import catup1 from '../assets/pet_related/yellow_cat/up1.png'
 import catup2 from '../assets/pet_related/yellow_cat/up2.png'
 import catup3 from '../assets/pet_related/yellow_cat/up3.png'
-
-const sizes = {
-  width: 900,
-  height: 600
-}
+import { Tooltip } from 'bootstrap/dist/js/bootstrap.bundle.min'
 
 export default {
   data() {
     return {
-      isAuthenticatedUser: false // Track authentication status
-    }
-  },
-  created() {
-    // Check if the user is authenticated
-    if (isAuthenticated()) {
-      this.isAuthenticatedUser = true
-    } else {
-      this.isAuthenticatedUser = false
-      this.$router.push('/login')
+      petName: '',
+      username: '',
+      petHappiness: '',
+      showHelpMessage: false,
+      showModal: false,
+      newPetName: '',
+      tooltipwidth: ''
     }
   },
   mounted() {
-    this.isAuthenticatedUser = true
+    this.getCurrentUsername()
+    this.fetchPetName()
+
     const config = {
       type: Phaser.AUTO,
+      width: '100%',
+      height: '100%',
       parent: 'game-container',
-      width: sizes.width,
-      height: sizes.height,
       transparent: true,
+      scale: {
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+      },
       physics: {
-        default: 'arcade',
+        default: 'arcade', // Ensure the physics system is set to 'arcade' or another valid type
         arcade: {
           gravity: { y: 0 },
           debug: false
@@ -62,10 +158,55 @@ export default {
     }
 
     new Phaser.Game(config)
+  },
+  computed: {
+    progressBarClass() {
+      if (this.petHappiness > 50) {
+        return 'bg-success' // Green for happiness above 50
+      } else if (this.petHappiness <= 50 && this.petHappiness > 15) {
+        return 'bg-warning' // Yellow for happiness 15-50
+      } else {
+        return 'bg-danger' // Red for happiness below 15
+      }
+    }
+  },
+  methods: {
+    getCurrentUsername() {
+      this.username = localStorage.getItem('username')
+      console.log(this.username)
+    },
+    async fetchPetName() {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/pet/${this.username}`)
+        this.petName = response.data.petName
+        this.newPetName = this.petName // Set the current name in the modal input
+        this.petHappiness = response.data.happinessLevel
+      } catch (error) {
+        console.error('Error fetching pet name:', error)
+      }
+    },
+    async savePetName() {
+      try {
+        const response = await axios.put(`http://localhost:8000/api/pet/${this.username}`, {
+          petName: this.newPetName // Send the new name to the API
+        })
+        this.petName = response.data.petName // Update the displayed pet name
+        this.showModal = false // Close the modal
+      } catch (error) {
+        console.error('Error updating pet name:', error)
+      }
+    },
+    feedPet() {
+      if (this.petHappiness < 100) {
+        this.petHappiness += 10
+        if (this.petHappiness > 100) {
+          this.petHappiness = 100
+        }
+        // Optionally, make an API call to save the new happiness level
+      }
+    }
   }
 }
-
-// Define your Phaser GameScene below
 class GameScene extends Phaser.Scene {
   constructor() {
     super('scene-game')
@@ -99,13 +240,15 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    // Game creation logic
+    // Start the cat's initial position relative to the canvas size
     this.cat = this.physics.add
       .sprite(0, this.cameras.main.height - 100, 'catWalkingRight')
       .setScale(2.5)
       .setInteractive()
+    console.log('current height' + this.cat.y)
+    console.log('canvas height' + this.cameras.main.height)
 
-    // Define animations, etc.
+    // Define animations
     this.anims.create({
       key: 'walkRight',
       frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 7 }),
@@ -148,6 +291,7 @@ class GameScene extends Phaser.Scene {
       repeat: -1
     })
 
+    // Start cat walking animation
     this.cat.play('walkRight')
     this.currentAction = 'walkRight'
     this.isWalkingRight = true
@@ -159,12 +303,64 @@ class GameScene extends Phaser.Scene {
     this.isStretchingRight = false
     this.isStretchingLeft = false
 
-    this.sofaPosition = 700
+    // Set sofa position dynamically based on canvas width
+    this.sofapositionRight = this.scale.width * 0.8
+    this.sofapositionLeft = this.scale.width * 0.2
+    this.floorUp = this.scale.height * 0.5
 
-    // Trigger stretch on hover
-    this.cat.on('pointerover', () => {
-      this.triggerStretch()
-    })
+    // Handle window resize events
+    this.scale.on('resize', this.resizeHandler, this)
+  }
+
+  // Handle window resizing and adjust the cat's position based on canvas
+  resizeHandler(gameSize) {
+    const width = gameSize.width
+    const height = gameSize.height
+    console.log('Resized to:', width, 'x', height)
+    this.cameras.resize(width, height)
+
+    // Define breakpoints for screen sizes
+    const lgBreakpoint = 1200 // Large screen (lg)
+    const mdBreakpoint = 500 // Medium screen (md)
+    let newScale
+
+    // Check screen size and apply the corresponding scale
+    if (width >= lgBreakpoint) {
+      newScale = 2.5 // Large screens
+    } else if (width >= mdBreakpoint && width < lgBreakpoint) {
+      newScale = 2 // Medium screens
+    } else {
+      newScale = 1.5 // Small screens
+    }
+    console.log('new width')
+    console.log('New scale:', newScale)
+    // Update the cat's scale based on screen size
+    this.cat.setScale(newScale)
+
+    // Recalculate sofa position dynamically
+    this.sofapositionRight = width * 0.8
+    this.sofapositionLeft = width * 0.2
+    this.floorUp = height * 0.6
+
+    // Adjust the cat's y-position based on its direction
+    if (this.currentAction === 'walkRight') {
+      this.cat.y = height - 100
+    } else if (this.currentAction === 'walkLeft') {
+      this.cat.y = height / 2
+    } else if (this.currentAction === 'lick' && this.previousAction === 'walkRight') {
+      this.cat.y = height - 100
+      this.cat.x = this.sofapositionRight
+    } else if (this.currentAction === 'lick' && this.previousAction === 'walkLeft') {
+      this.cat.y = height / 2
+      this.cat.x = this.sofapositionLeft
+    }
+
+    console.log(this.cat.x, this.cat.y)
+
+    // Adjust cat's position if it exceeds new canvas dimensions
+    if (this.cat.x > width) {
+      this.cat.x = width - 100
+    }
   }
 
   triggerStretch() {
@@ -214,9 +410,11 @@ class GameScene extends Phaser.Scene {
     )
       return
 
+    // Move the cat right
     this.cat.x += 2
 
-    if (this.cat.x >= this.sofaPosition) {
+    // Check if the cat reaches the sofa position relative to the canvas width
+    if (this.cat.x >= this.sofapositionRight) {
       this.cat.anims.stop()
       this.isWalkingRight = false
       this.cat.play('lick').disableInteractive()
@@ -240,7 +438,8 @@ class GameScene extends Phaser.Scene {
       delay: 50,
       callback: () => {
         this.cat.y -= 5
-        if (this.cat.y == 350) {
+
+        if (this.cat.y <= this.floorUp) {
           this.cat.anims.stop()
           this.upEvent.remove()
           this.startWalkingLeft()
@@ -252,6 +451,7 @@ class GameScene extends Phaser.Scene {
 
   startWalkingLeft() {
     this.cat.play('walkLeft').setScale(2.5).setInteractive()
+    console.log(this.cat.y)
     this.isGoingUp = false
     this.isWalkingLeft = true
     this.currentAction = 'walkLeft'
@@ -260,7 +460,7 @@ class GameScene extends Phaser.Scene {
       delay: 50,
       callback: () => {
         this.cat.x -= 5
-        if (this.cat.x == 100) {
+        if (this.cat.x <= this.sofapositionLeft) {
           this.cat.anims.stop()
           this.cat.play('lick').disableInteractive()
           this.isWalkingLeft = false
@@ -275,30 +475,138 @@ class GameScene extends Phaser.Scene {
 }
 </script>
 
-<style scoped>
+<style>
 #game-container {
+  height: 90vh;
+  border: 5px solid rgba(160, 154, 154, 0.509);
   position: relative;
-  width: 900px;
-  height: 600px;
-  margin: 50px auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid #000;
-  z-index: 1;
 }
-
-#background-gif {
-  position: absolute;
-  top: 0;
-  left: 0;
+#game-bg {
   width: 100%;
   height: 100%;
-  z-index: -1;
+  padding-right: 10px;
   object-fit: cover;
+  z-index: 1;
+}
+canvas {
+  position: relative;
+  z-index: 2; /* Ensure the Phaser canvas is above the background */
 }
 
-canvas {
-  z-index: 1;
+#pet-info {
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: start;
+  flex-direction: column;
+  align-items: center;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.pet-info-content {
+  background-color: #fef7f6;
+  border: 2px solid #fecfa5;
+  font-family: 'Jersey 25', sans-serif;
+  margin-top: 20px;
+  max-height: 70vh;
+  padding: 10px;
+  width: 80%;
+  align-items: center;
+  border-radius: 10px;
+  overflow-y: auto;
+}
+
+@media (max-width: 992px) {
+  #game-container {
+    height: 70vh;
+  }
+  #pet-info {
+    max-height: 70vh;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  #game-container {
+    height: 50vh;
+  }
+  #pet-info {
+    max-height: 50vh;
+    width: 100%;
+  }
+}
+
+.custom-tooltip {
+  position: absolute;
+  top: 50%; /* Vertical center */
+  left: 0; /* Start from the left side */
+  transform: translateY(-50%); /* Center vertically */
+  background-color: #fecfa5;
+  border: 2px solid #fef7f6;
+  padding: 20px;
+  font-family: 'Jersey 25', sans-serif;
+  text-align: center;
+  z-index: 1050;
+  cursor: pointer;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+@media (max-width: 768px) {
+  .custom-tooltip {
+    padding: 15px; /* Adjust padding for smaller screens */
+  }
+}
+
+/* Adjust tooltip width and font size for smaller screens */
+@media (max-width: 576px) {
+  .custom-tooltip {
+    width: 90%;
+    font-size: 1rem; /* Smaller font for small screens */
+  }
+}
+
+/* Modal styles */
+.custom-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  width: 100%;
+  max-width: 500px;
+}
+
+.modal-backdrop {
+  z-index: 1040; /* Ensure the backdrop is behind the modal */
+}
+
+.modal-content {
+  border-radius: 10px;
+}
+
+.modal-header {
+  background-color: #fecfa5;
+  font-family: 'Jersey 25', sans-serif;
+  border-radius: 10px 10px 0 0;
+}
+
+.modal-body {
+  background-color: #fef7f6;
+  font-family: 'Jersey 25', sans-serif;
+}
+
+.modal-footer button {
+  color: black;
+  background-color: #fecfa5;
+  font-family: 'Jersey 25', sans-serif;
+  border-radius: 0 0 10px 10px;
+}
+
+/* Adjust modal size for smaller screens */
+@media (max-width: 576px) {
+  .custom-modal {
+    max-width: 90%;
+    padding: 10px;
+  }
 }
 </style>
