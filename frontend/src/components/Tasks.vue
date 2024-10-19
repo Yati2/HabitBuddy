@@ -336,41 +336,53 @@ export default {
   },
   methods: {
     increaseCount(h) {
-      // Display toast notificationxx
-      toast('You gained 5 coins!', {
-        icon: '🚀',
-        autoClose: 1000
-      })
+  // Display toast notification
+  toast('You gained 5 coins!', {
+    icon: '🚀',
+    autoClose: 1000
+  });
 
-      h.count++ // Increase count locally
+  h.count++; // Increase count locally
 
-      // Send Axios request to update the habit count in the backend
+  // Send Axios request to update the habit count in the backend
+  axios
+    .put('http://localhost:8000/api/habits/' + h._id, {
+      count: h.count
+    })
+    .then((response) => {
+      console.log('Count increased:', response.data);
+
+      const username = localStorage.getItem('username') || 'anonymous'; // Get current user's username
+
+      // Send Axios request to add 5 points to the user's account
       axios
-        .put('http://localhost:8000/api/habits/' + h._id, {
-          count: h.count
+        .put('http://localhost:8000/api/users/' + username + '/points', {
+          pointsToAdd: 5 // Add 5 points
         })
-        .then((response) => {
-          console.log('Count increased:', response.data)
+        .then((res) => {
+          console.log('Points added:', res.data);
 
-          // Now send a request to add 5 points to the user's account
-          const username = localStorage.getItem('username') || 'anonymous' // Get current user's username
-
+          // Now send another Axios request to increment habitCompleted in the user schema
           axios
-            .put('http://localhost:8000/api/users/' + username + '/points', {
-              pointsToAdd: 5 // Add 5 points
+            .put('http://localhost:8000/api/users/' + username + '/habitCompleted', {
+              incrementBy: 1 // Increment the habitCompleted by 1
             })
             .then((res) => {
-              console.log('Points added:', res.data)
+              console.log('Habit completed count incremented:', res.data);
             })
             .catch((err) => {
-              console.error('Error adding points:', err)
-            })
+              console.error('Error incrementing habitCompleted:', err);
+            });
         })
-        .catch((error) => {
-          console.error('Error increasing count:', error)
-          h.count-- // Revert the count if the request fails
-        })
-    },
+        .catch((err) => {
+          console.error('Error adding points:', err);
+        });
+    })
+    .catch((error) => {
+      console.error('Error increasing count:', error);
+      h.count--; // Revert the count if the request fails
+    });
+  },
     decreaseCount(h) {
       if (h.count > 0) {
         h.count-- // Decrease count locally
@@ -453,10 +465,6 @@ export default {
     },
     markAsDoneh(h) {
       const username = localStorage.getItem('username') || 'anonymous'
-      toast('You gained 10 coins!', {
-        icon: '🚀',
-        autoClose: 1000
-      })
 
       // Send a DELETE request to the server to remove the todo from the database
       axios
@@ -555,6 +563,18 @@ export default {
           console.error('Error adding points:', err)
         })
 
+        // Now send another Axios request to increment longtermcompleted
+        axios
+            .put('http://localhost:8000/api/users/' + username + '/longtermcompleted', {
+              incrementBy: 1 // Increment the longtermcompleted by 1
+            })
+            .then((res) => {
+              console.log('Habit completed count incremented:', res.data);
+            })
+            .catch((err) => {
+              console.error('Error incrementing habitCompleted:', err);
+            });
+
       // Send a DELETE request to the server to remove the todo from the database
       axios
         .delete('http://localhost:8000/api/user_lts', {
@@ -641,6 +661,17 @@ export default {
         icon: '🚀',
         autoClose: 1000
       })
+        // Now send another Axios request to increment todocompleted
+        axios
+            .put('http://localhost:8000/api/users/' + username + '/todocompleted', {
+              incrementBy: 1 // Increment the longtermcompleted by 1
+            })
+            .then((res) => {
+              console.log('todo completed count incremented:', res.data);
+            })
+            .catch((err) => {
+              console.error('Error incrementing todocompleted:', err);
+            });
       axios
         .put('http://localhost:8000/api/users/' + username + '/points', {
           pointsToAdd: 10 // Add 5 points

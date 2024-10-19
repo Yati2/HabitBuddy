@@ -34,6 +34,9 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     points: { type: Number, requried: true },
+    habitcompleted: { type: Number, requried: true },
+    longtermcompleted: { type: Number, requried: true },
+    todocompleted: { type: Number, requried: true }
 });
 
 const User = mongoose.model("User", userSchema, "users");
@@ -61,6 +64,7 @@ app.put("/api/users/:username/points", async (req, res) => {
     }
 });
 
+
 app.get("/api/users", async (req, res) => {
     try {
         const users = await User.find();
@@ -73,7 +77,7 @@ app.get("/api/users", async (req, res) => {
 });
 
 app.post("/api/register", async (req, res) => {
-    const { username, email, password, points } = req.body;
+    const { username, email, password, points, habitcompleted, todocompleted, longtermcompleted } = req.body;
     try {
         // Check if the username already exists
         const existingUser = await User.findOne({ username });
@@ -84,7 +88,7 @@ app.post("/api/register", async (req, res) => {
         }
 
         // Create a new user
-        const newUser = new User({ username, email, password, points });
+        const newUser = new User({ username, email, password, points, habitcompleted, todocompleted, longtermcompleted });
         await newUser.save();
         // Automatically create a pet for the user with default values
         const newPet = new Pet({
@@ -269,6 +273,11 @@ app.post("/api/posts/:id/comment", async (req, res) => {
   }
 });
 
+
+//tasks api endpoints
+
+
+
 const habitSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -279,6 +288,84 @@ const habitSchema = new mongoose.Schema({
 });
 
 const Habit = mongoose.model("Habit", habitSchema);
+
+//update todocompleted
+app.put('/api/users/:username/todocompleted', async (req, res) => {
+    const { username } = req.params;
+    const { incrementBy } = req.body; // The value by which to increment todocompleted (e.g., 1)
+  
+    try {
+      // Find the user by username and increment todocompleted
+      const user = await User.findOneAndUpdate(
+        { username: username },
+        { $inc: { todocompleted: incrementBy } }, // Use $inc operator to increment
+        { new: true } // Return the updated document
+      );
+
+
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.json({ message: 'todo completed count incremented', user });
+    } catch (error) {
+      console.error('Error updating todocompleted:', error);
+      res.status(500).json({ message: 'Error updating todocompleted' });
+    }
+  });
+
+//update longtermcompleted
+app.put('/api/users/:username/longtermcompleted', async (req, res) => {
+    const { username } = req.params;
+    const { incrementBy } = req.body; // The value by which to increment habitCompleted (e.g., 1)
+  
+    try {
+      // Find the user by username and increment habitCompleted
+      const user = await User.findOneAndUpdate(
+        { username: username },
+        { $inc: { longtermcompleted: incrementBy } }, // Use $inc operator to increment
+        { new: true } // Return the updated document
+      );
+
+
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.json({ message: 'longterm completed count incremented', user });
+    } catch (error) {
+      console.error('Error updating longterm:', error);
+      res.status(500).json({ message: 'Error updating longtermcompleted' });
+    }
+  });
+
+// Update habitCompleted field
+app.put('/api/users/:username/habitcompleted', async (req, res) => {
+    const { username } = req.params;
+    const { incrementBy } = req.body; // The value by which to increment habitCompleted (e.g., 1)
+  
+    try {
+      // Find the user by username and increment habitCompleted
+      const user = await User.findOneAndUpdate(
+        { username: username },
+        { $inc: { habitcompleted: incrementBy } }, // Use $inc operator to increment
+        { new: true } // Return the updated document
+      );
+
+
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.json({ message: 'Habit completed count incremented', user });
+    } catch (error) {
+      console.error('Error updating habitCompleted:', error);
+      res.status(500).json({ message: 'Error updating habitCompleted' });
+    }
+  });
 
 app.delete("/api/user_habits", async (req, res) => {
     const { username, title, id } = req.query; // Extract username, title, and id from query parameters

@@ -101,18 +101,6 @@
       width: 100%;
       box-sizing: border-box;
     }
-  
-    /* button {
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-  
-    button:hover {
-      background-color: #45a049;
-    } */
     .avatar {
     vertical-align: middle;
     width: 50px;
