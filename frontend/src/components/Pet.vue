@@ -134,6 +134,9 @@ import stretchingleft from '../assets/pet_related/yellow_cat/stretchingleft.png'
 import catup1 from '../assets/pet_related/yellow_cat/up1.png'
 import catup2 from '../assets/pet_related/yellow_cat/up2.png'
 import catup3 from '../assets/pet_related/yellow_cat/up3.png'
+import catdown1 from '../assets/pet_related/yellow_cat/down1.png'
+import catdown2 from '../assets/pet_related/yellow_cat/down2.png'
+import catdown3 from '../assets/pet_related/yellow_cat/down3.png'
 import fish from '../assets/pet_related/fish/nemo.png'
 import eatenfish_1 from '../assets/pet_related/fish/eatenfish_1.png'
 import eatenfish_2 from '../assets/pet_related/fish/eatenfish_2.png'
@@ -290,6 +293,9 @@ class GameScene extends Phaser.Scene {
     this.load.image('catUp1', catup1)
     this.load.image('catUp2', catup2)
     this.load.image('catUp3', catup3)
+    this.load.image('catDown1', catdown1)
+    this.load.image('catDown2', catdown2)
+    this.load.image('catDown3', catdown3)
     this.load.image('fish', fish)
     this.load.image('eatenfish_1', eatenfish_1)
     this.load.image('eatenfish_2', eatenfish_2)
@@ -346,6 +352,12 @@ class GameScene extends Phaser.Scene {
       frameRate: 5,
       repeat: -1
     })
+    this.anims.create({
+      key: 'goDown',
+      frames: [{ key: 'catDown1' }, { key: 'catDown2' }, { key: 'catDown3' }],
+      frameRate: 5,
+      repeat: -1
+    })
 
     // Start cat walking animation
     this.cat.play('walkRight')
@@ -363,7 +375,7 @@ class GameScene extends Phaser.Scene {
     // Set sofa position dynamically based on canvas width
     this.sofapositionRight = this.scale.width * 0.8
     this.sofapositionLeft = this.scale.width * 0.2
-    this.floorUp = this.scale.height * 0.7
+    this.floorUp = this.scale.height * 0.6
 
     // Handle window resize events
     this.scale.on('resize', this.resizeHandler, this)
@@ -411,11 +423,18 @@ class GameScene extends Phaser.Scene {
     const lgBreakpoint = 1200
 
     let newScale
-
-    if (width >= lgBreakpoint) {
-      newScale = 2.5 // Large screens
+    if (this.currentAction !== 'goUp') {
+      if (width >= lgBreakpoint) {
+        newScale = 2.5 // Large screens
+      } else {
+        newScale = 2 // Medium screens
+      }
     } else {
-      newScale = 2 // Medium screens
+      if (width >= lgBreakpoint) {
+        newScale = 1.5 // Large screens
+      } else {
+        newScale = 1 // Medium screens
+      }
     }
     console.log('previous cat scale:', this.cat.scale)
     this.cat.setScale(newScale)
@@ -423,7 +442,7 @@ class GameScene extends Phaser.Scene {
 
     this.sofapositionRight = width * 0.8
     this.sofapositionLeft = width * 0.2
-    this.floorUp = height * 0.7
+    this.floorUp = height * 0.6
 
     if (this.currentAction === 'walkRight') {
       this.cat.y = height - 100
@@ -475,6 +494,23 @@ class GameScene extends Phaser.Scene {
       this
     )
   }
+  startGoingDown() {
+    this.cat.anims.stop()
+    this.cat.setTexture('catDown1').setScale(2).disableInteractive()
+    this.cat.play('goDown')
+    this.currentAction = 'goDown'
+    this.isGoingDown = true
+
+    this.time.delayedCall(50, () => {
+      this.isGoingDown = false
+    })
+  }
+
+  startWalkingRight() {
+    this.cat.play('walkRight').setScale(2.5).setInteractive()
+    this.currentAction = 'walkRight'
+    this.isWalkingRight = true
+  }
 
   resumeAction(previousAction) {
     this.currentAction = previousAction
@@ -482,8 +518,6 @@ class GameScene extends Phaser.Scene {
       this.cat.play('walkRight')
     } else if (previousAction === 'walkLeft') {
       this.cat.play('walkLeft')
-    } else if (previousAction === 'goUp') {
-      this.cat.play('goUp')
     }
   }
 
@@ -497,19 +531,48 @@ class GameScene extends Phaser.Scene {
     )
       return
 
-    // Move the cat right
-    this.cat.x += 2
-
-    // Check if the cat reaches the sofa position relative to the canvas width
-    if (this.cat.x >= this.sofapositionRight) {
-      this.cat.anims.stop()
-      this.isWalkingRight = false
-      this.cat.play('lick').disableInteractive()
-      this.isLicking = true
-      this.currentAction = 'lick'
-
-      this.time.delayedCall(3000, this.startGoingUp, [], this)
+    if (this.currentAction === 'walkRight') {
+      this.cat.x += 2
+      if (this.cat.x >= this.sofapositionRight) {
+        this.startGoingUp()
+      }
     }
+
+    // Move the cat up
+    if (this.currentAction === 'goUp') {
+      this.cat.y -= 2
+      if (this.cat.y <= this.floorUp) {
+        this.startWalkingLeft()
+      }
+    }
+
+    // Move the cat left
+    if (this.currentAction === 'walkLeft') {
+      this.cat.x -= 2
+      if (this.cat.x <= this.sofapositionLeft) {
+        this.startGoingDown()
+      }
+    }
+
+    // Move the cat down
+    if (this.currentAction === 'goDown') {
+      console.log('going down')
+      this.cat.y += 2
+      if (this.cat.y >= this.cameras.main.height - 100) {
+        this.startWalkingRight() // Restart the loop
+      }
+    }
+
+    // // Check if the cat reaches the sofa position relative to the canvas width
+    // if (this.cat.x >= this.sofapositionRight) {
+    //   this.cat.anims.stop()
+    //   this.isWalkingRight = false
+    //   this.cat.play('lick').disableInteractive()
+    //   this.isLicking = true
+    //   this.currentAction = 'lick'
+
+    //   this.time.delayedCall(3000, this.startGoingUp, [], this)
+    // }
   }
 
   startGoingUp() {
@@ -518,7 +581,7 @@ class GameScene extends Phaser.Scene {
     this.isGoingUp = true
 
     this.cat.setTexture('catUp1').setScale(1.5).disableInteractive()
-    this.cat.play('goUp')
+    this.cat.play('goUp').setScale(1.5)
     this.currentAction = 'goUp'
     this.preActionForResize = 'goUp'
 
@@ -536,6 +599,24 @@ class GameScene extends Phaser.Scene {
       repeat: -1
     })
   }
+  startLicking() {
+    this.cat.anims.stop()
+    this.cat.play('lick').disableInteractive()
+    this.isLicking = true
+    this.currentAction = 'lick'
+
+    this.time.delayedCall(3000, () => {
+      this.isLicking = false
+      // Check the previous action to decide the next step
+      if (this.preActionForResize === 'walkRight') {
+        this.isWalkingRight = false
+        this.startGoingUp() // Next action is going up
+      } else if (this.preActionForResize === 'walkLeft') {
+        this.isWalkingLeft = false
+        this.startGoingDown() // Next action is going down
+      }
+    })
+  }
 
   startWalkingLeft() {
     this.cat.play('walkLeft').setScale(2.5).setInteractive()
@@ -551,10 +632,7 @@ class GameScene extends Phaser.Scene {
         this.cat.x -= 5
         if (this.cat.x <= this.sofapositionLeft) {
           this.cat.anims.stop()
-          this.cat.play('lick').disableInteractive()
-          this.isWalkingLeft = false
-          this.isLicking = true
-          this.currentAction = 'lick'
+          this.startLicking()
           this.leftEvent.remove()
         }
       },
