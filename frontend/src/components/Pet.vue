@@ -22,7 +22,7 @@
           <h5 id="pet-happiness" class="text-center mb-0">Happiness: {{ petHappiness }}%</h5>
           <i
             class="bi bi-question-circle ms-2 font-sm"
-            @click="showHelpMessage = true"
+            @click="showHappinessHelpMsg = true"
             style="cursor: pointer; font-size: 1.2rem"
             title="Click for help"
           ></i>
@@ -41,20 +41,30 @@
         </div>
       </div>
 
-      <!-- Pet Feeding Section -->
       <div
-        class="pet-info-feed pet-info-content mt-3 d-flex justify-content-between align-items-center"
+        class="pet-info-feed pet-info-content mt-3 d-flex flex-column justify-content-start align-items-center"
+        @click="feedPet"
       >
-        <div class="d-flex align-items-center">
-          <i class="bi bi-fish" style="font-size: 1.5rem"></i>
-          <button class="btn btn-primary ms-2" @click="feedPet">Feed</button>
+        <!-- First Row: Fish Image -->
+        <div class="d-flex align-items-center mb-2">
+          <img
+            src="../assets/pet_related/icons/nemo.png"
+            class="img-fluid"
+            style="width: 70px"
+            alt="Fish Icon"
+          />
         </div>
-        <i
-          class="bi bi-question-circle ms-2 font-sm"
-          @click="showFeedHelpMessage = true"
-          style="cursor: pointer; font-size: 1.2rem"
-          title="Click for help"
-        ></i>
+
+        <!-- Second Row: Feed Text and Help Icon -->
+        <div class="d-flex justify-content-center align-items-center w-100">
+          <h5 class="ms-2 text-center feed-text" @click="feedPet" style="cursor: pointer">Feed</h5>
+          <i
+            class="bi bi-question-circle ms-2 font-sm"
+            @click="showFeedHelpMsg = true"
+            style="cursor: pointer; font-size: 1.2rem"
+            title="Click for help"
+          ></i>
+        </div>
       </div>
     </div>
 
@@ -91,18 +101,13 @@
     <div v-if="showModal" class="modal-backdrop fade show"></div>
 
     <!-- Tooltip / Help Message for Happiness -->
-    <div v-if="showHelpMessage" class="custom-tooltip" @click="showHelpMessage = false">
+    <div v-if="showHappinessHelpMsg" class="custom-tooltip" @click="showHappinessHelpMsg = false">
       Every time you feed your pet, happiness level will increase by 10.
     </div>
 
     <!-- Tooltip / Help Message for Feeding -->
-    <div
-      v-if="showFeedHelpMessage"
-      class="custom-tooltip"
-      @click="showFeedHelpMessage = false"
-      width="{tooltipwidth}"
-    >
-      Feed the cat to increase its happiness.
+    <div v-if="showFeedHelpMsg" class="custom-tooltip" @click="showFeedHelpMsg = false">
+      Click on "Feed" to feed the cat and increase its happiness by 10!
     </div>
   </div>
 </template>
@@ -127,7 +132,8 @@ export default {
       petName: '',
       username: '',
       petHappiness: '',
-      showHelpMessage: false,
+      showHappinessHelpMsg: false,
+      showFeedHelpMsg: false,
       showModal: false,
       newPetName: '',
       tooltipwidth: ''
@@ -158,6 +164,9 @@ export default {
     }
 
     new Phaser.Game(config)
+
+    //Decrease happiness every 8 hours (8 * 60 * 60 * 1000 milliseconds)
+    setInterval(this.decreaseHappiness, 60 * 60 * 1000)
   },
   computed: {
     progressBarClass() {
@@ -196,13 +205,34 @@ export default {
         console.error('Error updating pet name:', error)
       }
     },
+    decreaseHappiness() {
+      if (this.petHappiness > 0) {
+        this.petHappiness -= 10
+        if (this.petHappiness < 0) {
+          this.petHappiness = 0
+        }
+        // Optionally, update the server with the new happiness level
+        this.updateHappinessOnServer()
+      }
+    },
     feedPet() {
       if (this.petHappiness < 100) {
         this.petHappiness += 10
-        if (this.petHappiness > 100) {
+        if (this.happinessLevel < 100) {
+          this.happinessLevel = 0
+        } else if (this.petHappiness > 100) {
           this.petHappiness = 100
         }
-        // Optionally, make an API call to save the new happiness level
+        this.updateHappinessOnServer()
+      }
+    },
+    async updateHappinessOnServer() {
+      try {
+        await axios.put(`http://localhost:8000/api/pet/${this.username}`, {
+          happinessLevel: this.petHappiness
+        })
+      } catch (error) {
+        console.error('Error updating happiness level:', error)
       }
     }
   }
@@ -306,7 +336,7 @@ class GameScene extends Phaser.Scene {
     // Set sofa position dynamically based on canvas width
     this.sofapositionRight = this.scale.width * 0.8
     this.sofapositionLeft = this.scale.width * 0.2
-    this.floorUp = this.scale.height * 0.4
+    this.floorUp = this.scale.height * 0.6
 
     // Handle window resize events
     this.scale.on('resize', this.resizeHandler, this)
@@ -341,7 +371,7 @@ class GameScene extends Phaser.Scene {
     // Recalculate sofa position dynamically
     this.sofapositionRight = width * 0.8
     this.sofapositionLeft = width * 0.2
-    this.floorUp = height * 0.4
+    this.floorUp = height * 0.6
 
     // Adjust the cat's y-position based on its direction
     if (this.currentAction === 'walkRight') {
@@ -352,7 +382,7 @@ class GameScene extends Phaser.Scene {
       this.cat.y = height - 100
       this.cat.x = this.sofapositionRight
     } else if (this.currentAction === 'lick' && this.previousAction === 'walkLeft') {
-      this.cat.y = height / 3
+      this.cat.y = this.floorUp
       this.cat.x = this.sofapositionLeft
     }
 
@@ -507,6 +537,7 @@ canvas {
 .pet-info-content {
   background-color: #fef7f6;
   border: 2px solid #fecfa5;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   font-family: 'Jersey 25', sans-serif;
   margin-top: 20px;
   max-height: 70vh;
@@ -609,5 +640,74 @@ canvas {
     max-width: 90%;
     padding: 10px;
   }
+}
+@media (max-width: 768px) {
+  img {
+    max-width: 60px; /* Smaller size for small screens */
+  }
+}
+
+@media (max-width: 576px) {
+  img {
+    max-width: 50px; /* Even smaller size for extra small screens */
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+/* Glowing animation */
+@keyframes glow {
+  0% {
+    text-shadow:
+      0 0 5px #fceabb,
+      0 0 10px #f8b500,
+      0 0 15px #ffb84d;
+  }
+  50% {
+    text-shadow:
+      0 0 10px #ffd700,
+      0 0 20px #f8b500,
+      0 0 30px #ffb84d;
+  }
+  100% {
+    text-shadow:
+      0 0 5px #fceabb,
+      0 0 10px #f8b500,
+      0 0 15px #ffb84d;
+  }
+}
+
+.feed-text:hover {
+  animation: glow 1.5s infinite ease-in-out; /* Glowing animation */
+}
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px); /* Move up */
+  }
+  60% {
+    transform: translateY(-5px); /* Move down a bit */
+  }
+}
+
+.feed-text {
+  display: inline-block;
+  cursor: pointer;
+  animation: bounce 2s infinite; /* Infinite bounce animation */
 }
 </style>
