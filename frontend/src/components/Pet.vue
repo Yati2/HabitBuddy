@@ -306,10 +306,13 @@ class GameScene extends Phaser.Scene {
     // Set sofa position dynamically based on canvas width
     this.sofapositionRight = this.scale.width * 0.8
     this.sofapositionLeft = this.scale.width * 0.2
-    this.floorUp = this.scale.height * 0.5
+    this.floorUp = this.scale.height * 0.4
 
     // Handle window resize events
     this.scale.on('resize', this.resizeHandler, this)
+    this.cat.on('pointerover', () => {
+      this.triggerStretch()
+    })
   }
 
   // Handle window resizing and adjust the cat's position based on canvas
@@ -321,16 +324,14 @@ class GameScene extends Phaser.Scene {
 
     // Define breakpoints for screen sizes
     const lgBreakpoint = 1200 // Large screen (lg)
-    const mdBreakpoint = 500 // Medium screen (md)
+
     let newScale
 
     // Check screen size and apply the corresponding scale
     if (width >= lgBreakpoint) {
       newScale = 2.5 // Large screens
-    } else if (width >= mdBreakpoint && width < lgBreakpoint) {
-      newScale = 2 // Medium screens
     } else {
-      newScale = 1.5 // Small screens
+      newScale = 2 // Medium screens
     }
     console.log('new width')
     console.log('New scale:', newScale)
@@ -340,7 +341,7 @@ class GameScene extends Phaser.Scene {
     // Recalculate sofa position dynamically
     this.sofapositionRight = width * 0.8
     this.sofapositionLeft = width * 0.2
-    this.floorUp = height * 0.6
+    this.floorUp = height * 0.4
 
     // Adjust the cat's y-position based on its direction
     if (this.currentAction === 'walkRight') {
@@ -351,7 +352,7 @@ class GameScene extends Phaser.Scene {
       this.cat.y = height - 100
       this.cat.x = this.sofapositionRight
     } else if (this.currentAction === 'lick' && this.previousAction === 'walkLeft') {
-      this.cat.y = height / 2
+      this.cat.y = height / 3
       this.cat.x = this.sofapositionLeft
     }
 
