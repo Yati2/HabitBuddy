@@ -9,12 +9,13 @@
         <nav class="navbar navbar-expand-lg navbar-dark">
           <ul class="navbar-nav mx-auto">
             <li class="nav-item" v-for="topic in topics" :key="topic">
-              <a 
+              <a
                 href="#"
                 :class="{ 'active-topic': selectedTopic === topic }"
                 class="nav-link"
                 @click.prevent="selectTopic(topic)"
-              >{{ capitalize(topic) }}</a>
+                >{{ capitalize(topic) }}</a
+              >
             </li>
           </ul>
         </nav>
@@ -44,12 +45,8 @@
           </div>
 
           <div class="post-actions">
-            <button @click="likePost(post._id)" class="like-btn">
-              👍 {{ post.likes }} Likes
-            </button>
-            <button @click="toggleComments(post._id)" class="comment-btn">
-              💬 Comments
-            </button>
+            <button @click="likePost(post._id)" class="like-btn">👍 {{ post.likes }} Likes</button>
+            <button @click="toggleComments(post._id)" class="comment-btn">💬 Comments</button>
           </div>
 
           <!-- Comments Section -->
@@ -76,8 +73,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { isAuthenticated } from '@/auth';
+import axios from 'axios'
+import { isAuthenticated } from '@/auth'
 
 export default {
   data() {
@@ -87,89 +84,96 @@ export default {
       newCommentContent: {},
       selectedTopic: 'academics',
       username: '', // To store the logged-in username
-      topics: ['academics', 'physical health', 'mental wellness'], // List of topics
-    };
+      topics: ['academics', 'physical health', 'mental wellness'] // List of topics
+    }
   },
   computed: {
     filteredPosts() {
       // Filter posts based on selected topic
-      return this.forumPosts.filter(post => post.topic === this.selectedTopic);
-    },
+      return this.forumPosts.filter((post) => post.topic === this.selectedTopic)
+    }
   },
   methods: {
     async fetchPosts() {
       try {
-        const response = await axios.get(`http://localhost:8000/api/posts?topic=${this.selectedTopic}`);
-        this.forumPosts = response.data.map(post => ({
+        const response = await axios.get(
+          `http://localhost:8000/api/posts?topic=${this.selectedTopic}`
+        )
+        this.forumPosts = response.data.map((post) => ({
           ...post,
-          showComments: false, // Toggle for showing/hiding comments
-        }));
+          showComments: false
+          // Toggle for showing/hiding comments
+        }))
+        console.log('Fetched posts:', this.forumPosts)
       } catch (error) {
-        console.error('Error fetching posts:', error.response ? error.response.data : error.message);
+        console.error('Error fetching posts:', error.response ? error.response.data : error.message)
       }
     },
     async submitPost() {
       try {
-        console.log("Selected topic during post submission:", this.selectedTopic);
+        console.log('Selected topic during post submission:', this.selectedTopic)
         const newPost = {
           content: this.newPostContent,
           username: this.username, // Use the logged-in username
           likes: 0,
           comments: [],
-          topic: this.selectedTopic,
-        };
+          topic: this.selectedTopic
+        }
 
-        const response = await axios.post('http://localhost:8000/api/posts', newPost);
-        this.forumPosts.unshift(response.data.post);
-        this.newPostContent = '';
+        const response = await axios.post('http://localhost:8000/api/posts', newPost)
+        this.forumPosts.unshift(response.data.post)
+        this.newPostContent = ''
       } catch (error) {
-        console.error('Error submitting post:', error.response ? error.response.data : error.message);
+        console.error(
+          'Error submitting post:',
+          error.response ? error.response.data : error.message
+        )
       }
     },
     selectTopic(topic) {
-      console.log("Selected topic:", topic);
-      this.selectedTopic = topic; // Change the current topic when user selects one
+      console.log('Selected topic:', topic)
+      this.selectedTopic = topic // Change the current topic when user selects one
     },
     async likePost(postId) {
-      const post = this.forumPosts.find(p => p._id === postId);
-      post.likes += 1; // Update likes on the frontend
+      const post = this.forumPosts.find((p) => p._id === postId)
+      post.likes += 1 // Update likes on the frontend
       try {
-        await axios.post(`http://localhost:8000/api/posts/${postId}/like`);
+        await axios.post(`http://localhost:8000/api/posts/${postId}/like`)
       } catch (error) {
-        console.error('Error liking post:', error);
+        console.error('Error liking post:', error)
       }
     },
     toggleComments(postId) {
-      const post = this.forumPosts.find(p => p._id === postId);
-      post.showComments = !post.showComments;
+      const post = this.forumPosts.find((p) => p._id === postId)
+      post.showComments = !post.showComments
     },
     async submitComment(postId) {
-      const commentContent = this.newCommentContent[postId];
+      const commentContent = this.newCommentContent[postId]
       if (commentContent) {
-        const post = this.forumPosts.find(p => p._id === postId);
+        const post = this.forumPosts.find((p) => p._id === postId)
         const newComment = {
           comment: commentContent,
-          username: this.username, // Use the logged-in username
-        };
-        post.comments.push(newComment);
-        this.newCommentContent[postId] = ''; // Reset comment input
+          username: this.username // Use the logged-in username
+        }
+        post.comments.push(newComment)
+        this.newCommentContent[postId] = '' // Reset comment input
 
         try {
-          await axios.post(`http://localhost:8000/api/posts/${postId}/comment`, newComment);
+          await axios.post(`http://localhost:8000/api/posts/${postId}/comment`, newComment)
         } catch (error) {
-          console.error('Error adding comment:', error);
+          console.error('Error adding comment:', error)
         }
       }
     },
     capitalize(string) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    },
+      return string.charAt(0).toUpperCase() + string.slice(1)
+    }
   },
   mounted() {
-    this.username = localStorage.getItem('username') || 'Guest'; // Retrieve username from localStorage
-    this.fetchPosts(); // Fetch posts when the component is mounted
-  },
-};
+    this.username = localStorage.getItem('username') || 'Guest' // Retrieve username from localStorage
+    this.fetchPosts() // Fetch posts when the component is mounted
+  }
+}
 </script>
 
 <style scoped>

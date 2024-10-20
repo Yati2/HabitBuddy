@@ -1,6 +1,6 @@
 <template v-if="isAuthenticatedUser" class="container-fluid">
   <div class="row">
-    <div id="game-container" class="col-lg-10 col-12 position-relative">
+    <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
       <img
         src="../assets/pet_related/bg/cozyroom.gif"
         alt="Pet Background"
@@ -43,7 +43,6 @@
 
       <div
         class="pet-info-feed pet-info-content mt-3 d-flex flex-column justify-content-start align-items-center"
-        @click="feedPet"
       >
         <!-- First Row: Fish Image -->
         <div class="d-flex align-items-center mb-2">
@@ -52,6 +51,7 @@
             class="img-fluid"
             style="width: 70px"
             alt="Fish Icon"
+            @click="feedPet"
           />
         </div>
 
@@ -101,12 +101,22 @@
     <div v-if="showModal" class="modal-backdrop fade show"></div>
 
     <!-- Tooltip / Help Message for Happiness -->
-    <div v-if="showHappinessHelpMsg" class="custom-tooltip" @click="showHappinessHelpMsg = false">
+    <div
+      v-if="showHappinessHelpMsg"
+      ref="tooltip"
+      class="custom-tooltip"
+      @click="showHappinessHelpMsg = false"
+    >
       Every time you feed your pet, happiness level will increase by 10.
     </div>
 
     <!-- Tooltip / Help Message for Feeding -->
-    <div v-if="showFeedHelpMsg" class="custom-tooltip" @click="showFeedHelpMsg = false">
+    <div
+      v-if="showFeedHelpMsg"
+      ref="tooltip"
+      class="custom-tooltip"
+      @click="showFeedHelpMsg = false"
+    >
       Click on "Feed" to feed the cat and increase its happiness by 10!
     </div>
   </div>
@@ -170,8 +180,9 @@ export default {
     this.phaserGame = new Phaser.Game(config)
 
     //Decrease happiness every 8 hours (8 * 60 * 60 * 1000 milliseconds)
-    setInterval(this.decreaseHappiness, 60 * 60 * 1000)
+    setInterval(this.decreaseHappiness, 8 * 60 * 60 * 1000)
   },
+
   computed: {
     progressBarClass() {
       if (this.petHappiness > 50) {
@@ -198,6 +209,7 @@ export default {
         console.error('Error fetching pet name:', error)
       }
     },
+
     async savePetName() {
       try {
         const response = await axios.put(`http://localhost:8000/api/pet/${this.username}`, {
@@ -250,6 +262,7 @@ export default {
 class GameScene extends Phaser.Scene {
   constructor() {
     super('scene-game')
+    this.preActionForResize = null
   }
 
   preload() {
@@ -337,6 +350,7 @@ class GameScene extends Phaser.Scene {
     // Start cat walking animation
     this.cat.play('walkRight')
     this.currentAction = 'walkRight'
+    this.preActionForResize = 'walkRight'
     this.isWalkingRight = true
 
     // Track states
@@ -349,7 +363,7 @@ class GameScene extends Phaser.Scene {
     // Set sofa position dynamically based on canvas width
     this.sofapositionRight = this.scale.width * 0.8
     this.sofapositionLeft = this.scale.width * 0.2
-    this.floorUp = this.scale.height * 0.6
+    this.floorUp = this.scale.height * 0.7
 
     // Handle window resize events
     this.scale.on('resize', this.resizeHandler, this)
@@ -360,12 +374,13 @@ class GameScene extends Phaser.Scene {
   }
   startFishEatingAnimation(onComplete) {
     const fishY = this.cat.y
-    if (this.currentAction === 'walkRight') {
-      var fishX = this.cat.x + 200
+    if (this.currentAction === 'walkRight' && this.cat.x < this.sofapositionRight) {
+      var fishX = this.cat.x + 100
     } else if (this.currentAction === 'walkLeft') {
-      fishX = this.cat.x - 150
+      fishX = this.cat.x - 100
     } else if (this.currentAction === 'lick') {
-      fishX = this.cat.x + 50
+      this.eatenFish.setScale(-1)
+      fishX = this.cat.x - 50
     }
 
     // Set the fish's position and scale it
@@ -386,52 +401,52 @@ class GameScene extends Phaser.Scene {
     })
   }
 
-  // Handle window resizing and adjust the cat's position based on canvas
   resizeHandler(gameSize) {
     const width = gameSize.width
     const height = gameSize.height
-    console.log('Resized to:', width, 'x', height)
-    this.cameras.resize(width, height)
 
-    // Define breakpoints for screen sizes
-    const lgBreakpoint = 1200 // Large screen (lg)
+    this.cameras.resize(width, height)
+    console.log('Resized to:', width, 'x', height)
+
+    const lgBreakpoint = 1200
 
     let newScale
 
-    // Check screen size and apply the corresponding scale
     if (width >= lgBreakpoint) {
       newScale = 2.5 // Large screens
     } else {
       newScale = 2 // Medium screens
     }
-    console.log('new width')
-    console.log('New scale:', newScale)
-    // Update the cat's scale based on screen size
+    console.log('previous cat scale:', this.cat.scale)
     this.cat.setScale(newScale)
+    console.log('new cat scale:', newScale)
 
-    // Recalculate sofa position dynamically
     this.sofapositionRight = width * 0.8
     this.sofapositionLeft = width * 0.2
-    this.floorUp = height * 0.6
+    this.floorUp = height * 0.7
 
-    // Adjust the cat's y-position based on its direction
     if (this.currentAction === 'walkRight') {
       this.cat.y = height - 100
     } else if (this.currentAction === 'walkLeft') {
-      this.cat.y = height / 2
-    } else if (this.currentAction === 'lick' && this.previousAction === 'walkRight') {
+      this.cat.y = this.floorUp
+    } else if (this.currentAction === 'lick' && this.preActionForResize === 'walkRight') {
       this.cat.y = height - 100
       this.cat.x = this.sofapositionRight
-    } else if (this.currentAction === 'lick' && this.previousAction === 'walkLeft') {
+      console.log('adjusting second last condtion')
+    } else if (this.currentAction === 'lick' && this.preActionForResize === 'walkLeft') {
       this.cat.y = this.floorUp
       this.cat.x = this.sofapositionLeft
+      console.log('adjusting last condtion')
     }
 
+    console.log(this.preActionForResize)
     console.log(this.cat.x, this.cat.y)
 
-    // Adjust cat's position if it exceeds new canvas dimensions
     if (this.cat.x > width) {
       this.cat.x = width - 100
+    }
+    if (this.cat.y > height) {
+      this.cat.y = height - 100
     }
   }
 
@@ -505,6 +520,7 @@ class GameScene extends Phaser.Scene {
     this.cat.setTexture('catUp1').setScale(1.5).disableInteractive()
     this.cat.play('goUp')
     this.currentAction = 'goUp'
+    this.preActionForResize = 'goUp'
 
     this.upEvent = this.time.addEvent({
       delay: 50,
@@ -527,6 +543,7 @@ class GameScene extends Phaser.Scene {
     this.isGoingUp = false
     this.isWalkingLeft = true
     this.currentAction = 'walkLeft'
+    this.preActionForResize = 'walkLeft'
 
     this.leftEvent = this.time.addEvent({
       delay: 50,
@@ -608,12 +625,11 @@ canvas {
     width: 100%;
   }
 }
-
 .custom-tooltip {
   position: absolute;
-  top: 50%; /* Vertical center */
-  left: 0; /* Start from the left side */
-  transform: translateY(-50%); /* Center vertically */
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
   background-color: #fecfa5;
   border: 2px solid #fef7f6;
   padding: 20px;
@@ -680,17 +696,6 @@ canvas {
   .custom-modal {
     max-width: 90%;
     padding: 10px;
-  }
-}
-@media (max-width: 768px) {
-  img {
-    max-width: 60px; /* Smaller size for small screens */
-  }
-}
-
-@media (max-width: 576px) {
-  img {
-    max-width: 50px; /* Even smaller size for extra small screens */
   }
 }
 
