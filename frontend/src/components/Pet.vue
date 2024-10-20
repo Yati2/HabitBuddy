@@ -304,7 +304,7 @@ class GameScene extends Phaser.Scene {
   create() {
     // Start the cat's initial position relative to the canvas size
     this.cat = this.physics.add
-      .sprite(0, this.cameras.main.height - 100, 'catWalkingRight')
+      .sprite(0, this.cameras.main.height - 50, 'catWalkingRight')
       .setScale(2.5)
       .setInteractive()
     console.log('current height' + this.cat.y)
@@ -375,7 +375,7 @@ class GameScene extends Phaser.Scene {
     // Set sofa position dynamically based on canvas width
     this.sofapositionRight = this.scale.width * 0.8
     this.sofapositionLeft = this.scale.width * 0.2
-    this.floorUp = this.scale.height * 0.6
+    this.floorUp = this.scale.height * 0.8
 
     // Handle window resize events
     this.scale.on('resize', this.resizeHandler, this)
@@ -385,14 +385,20 @@ class GameScene extends Phaser.Scene {
     })
   }
   startFishEatingAnimation(onComplete) {
-    const fishY = this.cat.y
+    let fishY = this.cat.y
     if (this.currentAction === 'walkRight' && this.cat.x < this.sofapositionRight) {
       var fishX = this.cat.x + 100
+      fishY = this.cat.y - 50
     } else if (this.currentAction === 'walkLeft') {
       fishX = this.cat.x - 100
+      fishY = this.cat.y - 50
     } else if (this.currentAction === 'lick') {
       this.eatenFish.setScale(-1)
       fishX = this.cat.x - 50
+    } else if (this.currentAction === 'goUp') {
+      fishX = this.cat.x + 10
+    } else if (this.currentAction === 'goDown') {
+      fishX = this.cat.x - 10
     }
 
     // Set the fish's position and scale it
@@ -442,14 +448,14 @@ class GameScene extends Phaser.Scene {
 
     this.sofapositionRight = width * 0.8
     this.sofapositionLeft = width * 0.2
-    this.floorUp = height * 0.6
+    this.floorUp = height * 0.8
 
     if (this.currentAction === 'walkRight') {
-      this.cat.y = height - 100
+      this.cat.y = height - 50
     } else if (this.currentAction === 'walkLeft') {
       this.cat.y = this.floorUp
     } else if (this.currentAction === 'lick' && this.preActionForResize === 'walkRight') {
-      this.cat.y = height - 100
+      this.cat.y = height - 50
       this.cat.x = this.sofapositionRight
       console.log('adjusting second last condtion')
     } else if (this.currentAction === 'lick' && this.preActionForResize === 'walkLeft') {
@@ -465,7 +471,7 @@ class GameScene extends Phaser.Scene {
       this.cat.x = width - 100
     }
     if (this.cat.y > height) {
-      this.cat.y = height - 100
+      this.cat.y = height - 50
     }
   }
 
@@ -558,7 +564,7 @@ class GameScene extends Phaser.Scene {
     if (this.currentAction === 'goDown') {
       console.log('going down')
       this.cat.y += 2
-      if (this.cat.y >= this.cameras.main.height - 100) {
+      if (this.cat.y >= this.cameras.main.height - 50) {
         this.startWalkingRight() // Restart the loop
       }
     }
