@@ -48,7 +48,7 @@
         <!-- First Row: Fish Image -->
         <div class="d-flex align-items-center mb-2">
           <img
-            src="../assets/pet_related/icons/nemo.png"
+            src="../assets/pet_related/fish/nemo.png"
             class="img-fluid"
             style="width: 70px"
             alt="Fish Icon"
@@ -124,6 +124,9 @@ import stretchingleft from '../assets/pet_related/yellow_cat/stretchingleft.png'
 import catup1 from '../assets/pet_related/yellow_cat/up1.png'
 import catup2 from '../assets/pet_related/yellow_cat/up2.png'
 import catup3 from '../assets/pet_related/yellow_cat/up3.png'
+import fish from '../assets/pet_related/fish/nemo.png'
+import eatenfish_1 from '../assets/pet_related/fish/eatenfish_1.png'
+import eatenfish_2 from '../assets/pet_related/fish/eatenfish_2.png'
 import { Tooltip } from 'bootstrap/dist/js/bootstrap.bundle.min'
 
 export default {
@@ -136,7 +139,8 @@ export default {
       showFeedHelpMsg: false,
       showModal: false,
       newPetName: '',
-      tooltipwidth: ''
+      tooltipwidth: '',
+      isEating: false
     }
   },
   mounted() {
@@ -163,7 +167,7 @@ export default {
       scene: [GameScene]
     }
 
-    new Phaser.Game(config)
+    this.phaserGame = new Phaser.Game(config)
 
     //Decrease happiness every 8 hours (8 * 60 * 60 * 1000 milliseconds)
     setInterval(this.decreaseHappiness, 60 * 60 * 1000)
@@ -215,17 +219,23 @@ export default {
         this.updateHappinessOnServer()
       }
     },
-    feedPet() {
-      if (this.petHappiness < 100) {
-        this.petHappiness += 10
-        if (this.happinessLevel < 100) {
-          this.happinessLevel = 0
-        } else if (this.petHappiness > 100) {
-          this.petHappiness = 100
-        }
+    async feedPet() {
+      if (this.isEating || this.petHappiness >= 100) return
+
+      // Check if the Phaser game scene exists
+      const gameScene = this.phaserGame.scene.keys['scene-game']
+      if (!gameScene) return
+
+      this.isEating = true
+
+      gameScene.startFishEatingAnimation(() => {
+        // Once the animation completes, update happiness
+        this.petHappiness = Math.min(this.petHappiness + 10, 100)
         this.updateHappinessOnServer()
-      }
+        this.isEating = false
+      })
     },
+
     async updateHappinessOnServer() {
       try {
         await axios.put(`http://localhost:8000/api/pet/${this.username}`, {
@@ -267,6 +277,9 @@ class GameScene extends Phaser.Scene {
     this.load.image('catUp1', catup1)
     this.load.image('catUp2', catup2)
     this.load.image('catUp3', catup3)
+    this.load.image('fish', fish)
+    this.load.image('eatenfish_1', eatenfish_1)
+    this.load.image('eatenfish_2', eatenfish_2)
   }
 
   create() {
@@ -340,8 +353,36 @@ class GameScene extends Phaser.Scene {
 
     // Handle window resize events
     this.scale.on('resize', this.resizeHandler, this)
+    this.eatenFish = this.add.sprite(300, 500, 'eatenfish_1').setVisible(false).setScale(0.5)
     this.cat.on('pointerover', () => {
       this.triggerStretch()
+    })
+  }
+  startFishEatingAnimation(onComplete) {
+    const fishY = this.cat.y
+    if (this.currentAction === 'walkRight') {
+      var fishX = this.cat.x + 200
+    } else if (this.currentAction === 'walkLeft') {
+      fishX = this.cat.x - 150
+    } else if (this.currentAction === 'lick') {
+      fishX = this.cat.x + 50
+    }
+
+    // Set the fish's position and scale it
+    this.eatenFish.setPosition(fishX, fishY).setScale(0.2).setVisible(true)
+
+    // Show the first fish image
+    this.eatenFish.setTexture('eatenfish_1').setVisible(true)
+
+    // Show the second fish image after 1 second
+    this.time.delayedCall(1000, () => {
+      this.eatenFish.setTexture('eatenfish_2')
+    })
+
+    // Hide the fish after 2 seconds and call the completion callback
+    this.time.delayedCall(2000, () => {
+      this.eatenFish.setVisible(false)
+      onComplete() // Call the callback to update happiness
     })
   }
 
