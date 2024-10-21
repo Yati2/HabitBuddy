@@ -133,6 +133,7 @@ export default {
     selectTopic(topic) {
       console.log('Selected topic:', topic)
       this.selectedTopic = topic // Change the current topic when user selects one
+      this.fetchPosts();
     },
     async likePost(postId) {
       const post = this.forumPosts.find((p) => p._id === postId)
@@ -179,7 +180,7 @@ export default {
 <style scoped>
 /* General Styles */
 .forum-title {
-  color: white;
+  font-family: 'Jersey 25', sans-serif;
   font-size: 2rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -187,19 +188,23 @@ export default {
 
 .post-container,
 .new-post-container {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--color-background-soft);
   padding: 20px;
   margin-bottom: 15px;
   border-radius: 10px;
+  border: 1px solid var(--color-border);
+  font-family: 'Jersey 25', sans-serif;
 }
 
 .post-header {
   display: flex;
   flex-direction: column;
+  font-family: 'Jersey 25', sans-serif;
 }
 
 .post-content {
   word-break: break-word;
+  font-family: 'Jersey 25', sans-serif;
 }
 
 .post-actions {
@@ -207,6 +212,7 @@ export default {
   display: flex;
   justify-content: space-between;
 }
+
 /* Comment Section */
 .comment-container {
   padding-left: 15px;
@@ -215,14 +221,17 @@ export default {
 .add-comment {
   margin-top: 10px;
 }
+
 /* Button Styles */
 .btn {
   background-color: #f7bec1;
+  color: var(--color-text);
   width: 100%;
 }
 
 .btn:hover {
   background-color: #be9294;
+  color: var(--color-heading);
 }
 
 /* Navbar Styles */
@@ -230,20 +239,21 @@ export default {
   background-color: #f7bec1;
   border-radius: 8px;
   padding: 10px 0;
+  font-family: 'Jersey 25', sans-serif;
 }
 
 .nav-link {
-  color: white;
+  color: var(--color-heading);
   margin: 0 15px;
 }
 
 .nav-link:hover {
-  color: #333;
+  color: var(--color-text);
 }
 
 .active-topic {
   font-weight: bold;
-  color: #333;
+  color: var(--color-heading);
 }
 
 /* Responsive Styles */
@@ -258,3 +268,4 @@ export default {
   }
 }
 </style>
+
