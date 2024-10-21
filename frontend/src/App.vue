@@ -1,21 +1,27 @@
 <template>
   <div id="app">
     <!-- Conditionally render the Navbar only if the route is not '/login' -->
-    <NavBar v-if="!isLoginPage" />
+    <NavBar v-if="!isLoginPage" :avatar="avatar" />
     <!-- Render the current view -->
     <div class="content">
-      <router-view />
+      <router-view @update-avatar="updateAvatar" />
     </div>
   </div>
 </template>
 
 <script>
 import NavBar from './components/NavBar.vue'
+import axios from 'axios'
 
 export default {
   name: 'App',
   components: {
     NavBar
+  },
+  data() {
+    return {
+      avatar: '' // Shared avatar state
+    }
   },
   computed: {
     isLoginPage() {
@@ -25,6 +31,28 @@ export default {
         this.$route.path === '/'
       )
     }
+  },
+  methods: {
+    updateAvatar(newAvatar) {
+      console.log('Avatar updated to:', newAvatar)
+      this.avatar = newAvatar
+    },
+    fetchAvatar() {
+      const username = localStorage.getItem('username') // Get current username
+      if (username) {
+        axios
+          .get(`http://localhost:8000/api/users/${username}`)
+          .then((response) => {
+            this.avatar = response.data.avatarImage // Set the avatar image from the response
+          })
+          .catch((error) => {
+            console.error('Error fetching user data:', error)
+          })
+      }
+    }
+  },
+  mounted() {
+    this.fetchAvatar() // Fetch avatar when the component mounts
   }
 }
 </script>

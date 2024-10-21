@@ -33,10 +33,12 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true }, // Ensure unique usernames
     email: { type: String, required: true },
     password: { type: String, required: true },
-    points: { type: Number, requried: true },
-    habitcompleted: { type: Number, requried: true },
-    longtermcompleted: { type: Number, requried: true },
-    todocompleted: { type: Number, requried: true }
+    points: { type: Number, required: true },
+    habitcompleted: { type: Number, required: true },
+    longtermcompleted: { type: Number, required: true },
+    todocompleted: { type: Number, required: true },
+    bgImage: { type: String, default: './src/assets/profile/profilebackgrounds/background1.webp'},
+    avatarImage: { type: String, default: '/src/assets/profile/profilepics/pfp1.jpeg'}
 });
 
 const User = mongoose.model("User", userSchema, "users");
@@ -172,6 +174,19 @@ app.delete("/api/users/:username", async (req, res) => {
             message: "Error deleting user and related data",
         });
     }
+});
+
+//profile
+// update background image and avatar
+app.put('/api/users/:username/images', (req, res) => {
+    const { bgImage, avatarImage } = req.body;
+    User.findOneAndUpdate(
+        { username: req.params.username },
+        { bgImage, avatarImage },
+        { new: true } 
+    )
+    .then(updatedUser => res.json(updatedUser))
+    .catch(err => res.status(400).json('Error: ' + err));
 });
 
 //Forum

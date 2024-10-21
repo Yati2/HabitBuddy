@@ -1,9 +1,13 @@
 <script setup>
-import profile from '../components/Profile.vue'
+import { defineEmits } from 'vue';
+import Profile from '../components/Profile.vue';
+
+// Emit the update-avatar event to parent component
+const emit = defineEmits(['update-avatar']);
 </script>
 
 <template>
   <main>
-    <profile />
+    <Profile @update-avatar="(newAvatar) => emit('update-avatar', newAvatar)" />
   </main>
 </template>
