@@ -251,6 +251,25 @@ app.post("/api/posts", async (req, res) => {
     }
   });
 
+  // Delete post by ID
+app.delete("/api/posts/:id", async (req, res) => {
+    const postId = req.params.id; // Get the post ID from the request parameters
+  
+    try {
+      const deletedPost = await Post.findByIdAndDelete(postId); // Find and delete the post by ID
+  
+      if (!deletedPost) {
+        return res.status(404).json({ message: "Post not found" }); // If no post is found, send a 404 error
+      }
+  
+      res.status(200).json({ message: "Post deleted successfully", post: deletedPost }); // Respond with a success message
+    } catch (error) {
+      console.error("Error deleting post:", error); // Log any error
+      res.status(500).json({ message: "Error deleting post" }); // Respond with a 500 error if something goes wrong
+    }
+  });
+  
+
 // Like post
 app.post("/api/posts/:id/like", async (req, res) => {
   const postId = req.params.id;

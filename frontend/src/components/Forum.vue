@@ -47,6 +47,8 @@
           <div class="post-actions">
             <button @click="likePost(post._id)" class="like-btn">👍 {{ post.likes }} Likes</button>
             <button @click="toggleComments(post._id)" class="comment-btn">💬 Comments</button>
+            <!-- Delete Button -->
+            <button @click="deletePost(post._id)" class="delete-btn btn btn-sm btn-danger d-inline" style="width: auto; padding: 0.2rem 0.5rem;">🗑️ Delete</button>
           </div>
 
           <!-- Comments Section -->
@@ -130,6 +132,23 @@ export default {
         )
       }
     },
+    async deletePost(postId) {
+    try {
+      // Sending a DELETE request to the server to remove the post
+      console.log(postId)
+      await axios.delete(`http://localhost:8000/api/posts/${postId}`);
+      
+      // Removing the post from forumPosts in the frontend
+      this.forumPosts = this.forumPosts.filter(post => post._id !== postId);
+
+      console.log(`Post with ID ${postId} deleted successfully.`);
+    } catch (error) {
+      console.error(
+        'Error deleting post:',
+        error.response ? error.response.data : error.message
+      );
+    }
+  },
     selectTopic(topic) {
       console.log('Selected topic:', topic)
       this.selectedTopic = topic // Change the current topic when user selects one
