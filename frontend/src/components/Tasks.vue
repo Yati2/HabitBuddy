@@ -44,7 +44,7 @@
       </div>
 
       <div class="row main-content">
-        <div class="col-12 col-sm-6 col-md-3 card-section">
+        <div class="col-12 col-lg-3 card-section">
           <h4>Habits <i class="fas fa-plus plus-icon" @click="showHabitForm = true"></i></h4>
 
           <div v-if="showHabitForm" class="form-container card2">
@@ -136,7 +136,7 @@
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-3 card-section">
+        <div class="col-12 col-lg-3 card-section">
           <h4>Long Term Tasks <i class="fas fa-plus plus-icon" @click="showLTForm = true"></i></h4>
 
           <div v-if="showLTForm" class="form-container card2">
@@ -207,7 +207,7 @@
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-3 card-section">
+        <div class="col-12 col-lg-3 card-section">
           <h4>
             Daily To-Dos
             <i class="fas fa-plus plus-icon" @click="showToDoForm = true"></i>
@@ -271,25 +271,36 @@
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-3 card-section">
-          <h4>Calendar</h4>
-          <div class="calendar">
-            <div class="week-row">
-              <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span
-              ><span>S</span>
-            </div>
-            <div class="week-row">
-              <span class="circle"></span><span class="circle"></span><span class="circle"></span>
-              <span class="circle"></span><span class="circle"></span><span class="circle"></span
-              ><span class="circle"></span>
-            </div>
-            <div class="week-row">
-              <span class="circle"></span><span class="circle"></span><span class="circle"></span>
-              <span class="circle"></span><span class="circle"></span><span class="circle"></span
-              ><span class="circle"></span>
-            </div>
-          </div>
-        </div>
+        <div class="col-12 col-lg-3 card-section">
+  <h4>The Shopkeeper...</h4>
+  <div class="shop-container" style="height: 400px; background-color: #d2691e; border-radius: 10px; border: solid 0.5px brown; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 10px;">
+    <img src="../assets/shop/storekeeper.gif" width="150px" height="150px">
+    <div class="row" style="justify-content: center; align-items: center; text-align: center;">
+      <div v-for="item in shopitems" :key="item.itemname" class="col-4">
+      <img v-bind:src="item.imgpath" width="80px" style="cursor: pointer;" @click="openModal(item)">
+        <p>{{ item.itemname }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div v-if="isModalOpen" class="modal-overlay" id="itemModal">
+    <div class="modal-content">
+        <h1 class="fs-5" id="itemModalLabel">{{ selectedItem.itemname }}</h1>
+        <button type="button" class="btn-close" @click="closeModal"></button>
+        <img :src="selectedItem.imgpath" width="150px" height="150px" class="d-block mx-auto mb-3">
+        <p>{{ selectedItem.itemdesc }}</p>
+        <p><strong>Cost:</strong> {{ selectedItem.itemcost }} coins</p>
+        <button type="button" class="btn btn-primary">Purchase</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>
+
+
+
+
+
       </div>
     </div>
   </div>
@@ -309,6 +320,29 @@ export default {
   name: 'Tasks',
   data() {
     return {
+      shopitems:[
+        {itemname: "Regular Fish", itemcost: 10, 
+        itemdesc:"Caught in the deep blue sea, this fish will regenerate 10 of your cat's happiness!",
+        imgpath:"src/assets/shop/fish1 copy.png"},
+        {itemname: "Rare Fish", itemcost: 15, 
+        itemdesc:"Caught in the deep blue sea, this fish will regenerate 15 of your cat's happiness!",
+        imgpath:"src/assets/shop/fish2.png"},
+        {itemname: "Ultra Fish", itemcost: 20, 
+        itemdesc:"Caught in the deep blue sea, this fish will regenerate 20 of your cat's happiness!",
+        imgpath:"src/assets/shop/fish3.png"},
+        {itemname: "TempRoom1", itemcost: 50, 
+        itemdesc:"Switch up your room with this all new background!",
+        imgpath:"src/assets/shop/bgbuyable.jpg"},
+        {itemname: "TempRoom2", itemcost: 110, 
+        itemdesc:"Switch up your room with this all new background!",
+        imgpath:"src/assets/shop/bgbuyable.jpg"},
+        {itemname: "TempRoom3", itemcost: 200, 
+        itemdesc:"Switch up your room with this all new background!",
+        imgpath:"src/assets/shop/bgbuyable.jpg"},
+
+      ],
+      isModalOpen: false,
+      selectedItem: {},
       habits: [],
       longTermTasks: [],
       todos: [],
@@ -335,6 +369,13 @@ export default {
     }
   },
   methods: {
+    openModal(item) {
+      this.selectedItem=item;
+      this.isModalOpen = true;
+    },
+    closeModal() {
+      this.isModalOpen = false;
+    },
     increaseCount(h) {
   // Display toast notification
   toast('You gained 5 coins!', {
@@ -863,6 +904,28 @@ export default {
 .habit-content {
   flex-grow: 1;
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #eec0c2;
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 600px;
+  font-family: 'Jersey 25', sans-serif;
+}
+
 
 /* Responsive styling */
 @media (max-width: 576px) {

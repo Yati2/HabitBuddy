@@ -28,6 +28,40 @@ async function connect() {
 
 connect();
 
+//Start of Shop Related 
+
+const shopSchema= new mongoose.Schema({
+    itemname: { type: String, required: true },
+    itemtype: { type: String, required: true },
+    itemdesc: { type: String, required: true },
+    fishnourishment: { type: Number, required: true },
+    imgpath: { type: String, required: true },
+    cost:{ type: Number, required: true }
+});
+
+const Shop = mongoose.model("Shop", shopSchema, "shop" )
+
+//fetch all shop items
+app.get("/api/shop", async (req, res) => {
+    try {
+        const shopitems = await Shop.find();
+        console.log("Fetched shop items:", shopitems);
+        res.json(shopitems);
+    } catch (error) {
+        console.error("Error fetching shopitems:", error);
+        res.status(500).send("Error fetching shopitems");
+    }
+});
+
+
+
+
+
+
+
+
+//End of Shop Related
+
 //User
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true }, // Ensure unique usernames
