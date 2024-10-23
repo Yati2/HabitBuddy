@@ -8,6 +8,7 @@ import TasksView from '../views/TasksView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import LandingPage from '../views/LandingPage.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import HelpPage from '../views/HelpPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,6 +61,11 @@ const router = createRouter({
       path: '/',
       name: 'LandingPage',
       component: LandingPage,
+    },
+    {
+      path: '/help',
+      name: 'HelpPage',
+      component: HelpPage,
     }
   ]
 })

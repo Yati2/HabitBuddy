@@ -48,7 +48,12 @@
             <button @click="likePost(post._id)" class="like-btn">👍 {{ post.likes }} Likes</button>
             <button @click="toggleComments(post._id)" class="comment-btn">💬 Comments</button>
             <!-- Delete Button -->
-            <button @click="deletePost(post._id)" class="delete-btn btn btn-sm btn-danger d-inline" style="width: auto; padding: 0.2rem 0.5rem;">🗑️ Delete</button>
+            <button
+              v-if="post.username === username"
+              @click="deletePost(post._id)"
+              class="delete-btn btn btn-sm btn-danger d-inline"
+              style="width: auto; padding: 0.2rem 0.5rem;"
+            >🗑️ Delete</button>
           </div>
 
           <!-- Comments Section -->

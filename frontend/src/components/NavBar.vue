@@ -38,7 +38,7 @@
               <a class="nav-link active" aria-current="page" href="/forum">Forum</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/">Help</a>
+              <a class="nav-link active" aria-current="page" href="/help">Help</a>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
