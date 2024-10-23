@@ -30,6 +30,9 @@ connect();
 
 //Start of Shop Related 
 
+
+
+//just keeping this in for now, but as of 23 oct all shop items are stored under data in the vue instance in a list. easier that way.
 const shopSchema= new mongoose.Schema({
     itemname: { type: String, required: true },
     itemtype: { type: String, required: true },
@@ -41,7 +44,7 @@ const shopSchema= new mongoose.Schema({
 
 const Shop = mongoose.model("Shop", shopSchema, "shop" )
 
-//fetch all shop items
+//fetch all shop items (depreciated)
 app.get("/api/shop", async (req, res) => {
     try {
         const shopitems = await Shop.find();
@@ -53,6 +56,43 @@ app.get("/api/shop", async (req, res) => {
     }
 });
 
+app.get('/api/users/:username/points', async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await User.findOne({ username: username });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Return the user's points
+        res.status(200).json({ points: user.points });
+    } catch (error) {
+        console.error('Error fetching points:', error);
+        res.status(500).json({ message: 'Error fetching user points' });
+    }
+});
+
+//for purchase and deducting points
+app.put('/api/users/:username/deduct-points', async (req, res) => {
+    const { username } = req.params;
+    const { pointsToDeduct } = req.body;
+  
+    try {
+      const user = await User.findOneAndUpdate(
+        { username },
+        { $inc: { points: -pointsToDeduct } }, 
+        { new: true }
+      );
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.json({ message: 'Points deducted successfully', points: user.points });
+    } catch (error) {
+      res.status(500).json({ message: 'Error deducting points', error });
+    }
+  });
 
 
 
@@ -61,6 +101,63 @@ app.get("/api/shop", async (req, res) => {
 
 
 //End of Shop Related
+
+//Start of Inventory Related
+const inventorySchema = new mongoose.Schema({
+    username: { type: String, required: true},
+    itemname: { type: String, required: true},
+    itemdesc: { type: String, required: true},
+    itemqty: { type: Number, required: true },
+    imgpath: { type: String, required: true}
+})
+
+const Inventory = mongoose.model("Inventory", inventorySchema, "userinventory");
+
+app.get('/api/userinventory/:username', async (req, res) => {
+    const { username } = req.params;
+    
+    try {
+      const inventory = await Inventory.find({ username: username });
+      res.json(inventory);
+    } catch (error) {
+      console.error('Error fetching inventory:', error);
+      res.status(500).send('Error fetching inventory');
+    }
+  });
+
+//add or update an item in the player's inventory
+app.post('/api/inventory/add', async (req, res) => {
+    const { username, itemname, itemdesc, itemqty, imgpath } = req.body;
+    
+    try {
+      // Check if the item already exists in the inventory
+      const existingItem = await Inventory.findOne({ username: username, itemname: itemname });
+      
+      if (existingItem) {
+        // if item exists, update the quantity
+        existingItem.itemqty += itemqty;
+        await existingItem.save();
+        res.status(200).json({ message: 'Item quantity updated successfully' });
+      } else {
+        // if item does not exist, create a new document
+        const newItem = new Inventory({
+          username: username,
+          itemname: itemname,
+          itemdesc: itemdesc,
+          itemqty: itemqty,
+          imgpath: imgpath
+        });
+        await newItem.save();
+        res.status(201).json({ message: 'New item added to inventory' });
+      }
+    } catch (error) {
+      console.error('Error updating inventory:', error);
+      res.status(500).json({ message: 'Error updating inventory', error });
+    }
+  });
+
+
+//End of Inventory Related
 
 //User
 const userSchema = new mongoose.Schema({

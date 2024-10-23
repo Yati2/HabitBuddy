@@ -23,6 +23,7 @@
         <div class="col-10 dashboard-container">
           <div class="dashboard-title">
             <h3>Dashboard</h3>
+            <p><strong>Your Points:</strong> {{ userPoints }} coins</p>
           </div>
           <div class="row">
             <div class="col m-3">
@@ -97,43 +98,46 @@
           </div>
 
           <div class="card brown-card">
-            <div
-              v-for="h in habits"
-              :key="h.title"
-              class="card2 d-flex align-items-center justify-content-between"
-            >
-              <div class="habit-controls d-flex align-items-center">
-                <!-- Minus Button -->
-                <button
-                  class="btn btn-outline-danger btn-circle"
-                  @click="decreaseCount(h)"
-                  :disabled="h.count <= 0"
-                >
-                  <i>-</i>
-                </button>
+  <div v-for="h in habits" :key="h.title" class="card2 p-3" style="overflow:hidden;">
+    <div class="habit-controls d-flex align-items-center justify-content-between">
+      <!-- Minus Button -->
+      <button
+        class="btn btn-outline-danger btn-circle"
+        @click="decreaseCount(h)"
+        :disabled="h.count <= 0"
+        style="min-width: 40px; max-width: 50px; flex-shrink: 0;"
+      >
+        <i>-</i>
+      </button>
 
-                <!-- Habit Content -->
-                <div class="habit-content mx-3">
-                  <h5 class="cardtext">{{ h.title }}</h5>
-                  <p class="cardtext">{{ h.description }}</p>
-                  <small class="cardtext"
-                    ><strong class="cardtext">Tag:</strong> {{ h.tags }}</small
-                  >
-                  <div style="color: black">
-                    <strong class="cardtext">Count:</strong>{{ h.count }}
-                  </div>
-                </div>
+      <!-- Habit Content -->
+      <div class="habit-content mx-3" style="flex-grow: 1; word-wrap: break-word; text-align: center;">
+        <h5 class="cardtext">{{ h.title }}</h5>
+        <p class="cardtext">{{ h.description }}</p>
+        <small class="cardtext"><strong class="cardtext">Tag:</strong> {{ h.tags }}</small>
+        <div style="color: black">
+          <strong class="cardtext">Count:</strong> {{ h.count }}
+        </div>
+      </div>
 
-                <!-- Plus Button -->
-                <button class="btn btn-outline-success btn-circle" @click="increaseCount(h)">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
+      <!-- Plus Button (positioned on the right side) -->
+      <button
+        class="btn btn-outline-success btn-circle"
+        @click="increaseCount(h)"
+        style="min-width: 40px; max-width: 50px; flex-shrink: 0;"
+      >
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
 
-              <!-- Delete Habit Button -->
-              <button class="btn btn-danger btn-sm" @click="markAsDoneh(h)">Delete Habit</button>
-            </div>
-          </div>
+    <!-- Delete Habit Button -->
+    <button class="btn btn-danger btn-sm mt-3 w-100" @click="markAsDoneh(h)">
+      Delete Habit
+    </button>
+  </div>
+</div>
+
+
         </div>
 
         <div class="col-12 col-lg-3 card-section">
@@ -291,11 +295,36 @@
         <button type="button" class="btn-close" @click="closeModal"></button>
         <img :src="selectedItem.imgpath" width="150px" height="150px" class="d-block mx-auto mb-3">
         <p>{{ selectedItem.itemdesc }}</p>
-        <p><strong>Cost:</strong> {{ selectedItem.itemcost }} coins</p>
-        <button type="button" class="btn btn-primary">Purchase</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+        <!-- Quantity Selector -->
+        <div v-if="selectedItem.itemname.includes('Fish')" class="quantity-selector">
+            <button @click="decreaseQty">-</button>
+            <input type="number" v-model="itemqty" min="1">
+            <button @click="increaseQty">+</button>
+        </div>
+
+        <p><strong>Cost:</strong> {{ totalCost }} coins</p>
+
+        <!-- Conditional Purchase Button -->
+        <button 
+            v-if="canAfford"
+            type="button"
+            class="btn btn-primary"
+            @click="buyItem"
+        >
+            Purchase
+        </button>
+        <button
+            v-else
+            type="button"
+            class="btn btn-danger"
+            disabled
+        >
+            Not enough coins!
+        </button>
     </div>
 </div>
+
 
 
 
@@ -320,6 +349,7 @@ export default {
   name: 'Tasks',
   data() {
     return {
+      userPoints: 0,
       shopitems:[
         {itemname: "Regular Fish", itemcost: 10, 
         itemdesc:"Caught in the deep blue sea, this fish will regenerate 10 of your cat's happiness!",
@@ -341,6 +371,7 @@ export default {
         imgpath:"src/assets/shop/bgbuyable.jpg"},
 
       ],
+      itemqty: 1,
       isModalOpen: false,
       selectedItem: {},
       habits: [],
@@ -368,10 +399,86 @@ export default {
       }
     }
   },
+  computed: {
+    totalCost() {
+      // calculate the total cost of the items being bough
+      return this.selectedItem.itemcost * this.itemqty;
+    },
+    canAfford() {
+      // check if userpoints can afford the cost of stuff they are buying
+      return this.userPoints >= this.totalCost;
+    }
+  },
   methods: {
+    fetchUserPoints() {
+      const username = localStorage.getItem('username') || 'anonymous';
+      
+      // Fetch the user's current points from the backend
+      axios.get(`http://localhost:8000/api/users/${username}/points`)
+        .then(response => {
+          this.userPoints = response.data.points; 
+        })
+        .catch(error => {
+          console.error('Error fetching points:', error);
+        });
+    },
+    buyItem() {
+    const username = localStorage.getItem('username') || 'anonymous';
+
+    const totalCost = this.selectedItem.itemcost * this.itemqty;
+    
+
+    axios.put(`http://localhost:8000/api/users/${username}/deduct-points`, {
+      pointsToDeduct: totalCost 
+    })
+    .then(response => {
+      console.log('Points deducted successfully');
+      this.userPoints -= totalCost; 
+      this.updateInventory(username);
+
+      // Check if the itemname doesn't include the word "Fish" (items other than fish can only be bought once...)
+      if (!this.selectedItem.itemname.includes('Fish')) {
+        // Remove the item from the shopitems array
+        this.shopitems = this.shopitems.filter(item => item.itemname !== this.selectedItem.itemname);
+      }
+      this.closeModal(); 
+      
+      toast(`${this.itemqty} x ${this.selectedItem.itemname} was added to your Inventory!`, {
+        icon: '🚀',
+        autoClose: 1000
+      });
+    })
+    .catch(error => {
+      console.error('Error deducting points:', error);
+    });
+  },
+  
+  updateInventory(username) {
+    axios.post('http://localhost:8000/api/inventory/add', {
+      username: username,
+      itemname: this.selectedItem.itemname,
+      itemdesc: this.selectedItem.itemdesc,
+      itemqty: this.itemqty,
+      imgpath: this.selectedItem.imgpath
+    })
+    .then(response => {
+      console.log('Inventory updated successfully:', response.data);
+    })
+    .catch(error => {
+      console.error('Error updating inventory:', error);
+    });
+  },
+    increaseQty() {
+          this.itemqty++;
+        },
+        decreaseQty() {
+          if (this.itemqty > 0) {
+            this.itemqty--;
+          }},
     openModal(item) {
       this.selectedItem=item;
       this.isModalOpen = true;
+      this.itemqty = 1;
     },
     closeModal() {
       this.isModalOpen = false;
@@ -402,6 +509,8 @@ export default {
         })
         .then((res) => {
           console.log('Points added:', res.data);
+          this.userPoints +=5;
+
 
           // Now send another Axios request to increment habitCompleted in the user schema
           axios
@@ -599,6 +708,7 @@ export default {
         })
         .then((res) => {
           console.log('Points added:', res.data)
+          this.userPoints +=10;
         })
         .catch((err) => {
           console.error('Error adding points:', err)
@@ -634,6 +744,8 @@ export default {
           console.error('Error deleting LongTerm:', error)
         })
     },
+
+    //fetch points from user
 
     //todos methods
 
@@ -719,6 +831,7 @@ export default {
         })
         .then((res) => {
           console.log('Points added:', res.data)
+          this.userPoints +=10;
         })
         .catch((err) => {
           console.error('Error adding points:', err)
@@ -744,9 +857,29 @@ export default {
     }
   },
   mounted() {
+    const username = localStorage.getItem('username') || 'anonymous';
+    
+    // Fetch the user's inventory when the component is mounted
+    axios.get(`http://localhost:8000/api/userinventory/${username}`)
+      .then(response => {
+        const inventory = response.data;
+
+        // Check if the user has any of the room items in their inventory
+        const roomItems = ["TempRoom1", "TempRoom2", "TempRoom3"];
+        inventory.forEach(item => {
+          if (roomItems.includes(item.itemname)) {
+            // Remove the room items from the shopitems list
+            this.shopitems = this.shopitems.filter(shopItem => shopItem.itemname !== item.itemname);
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching user inventory:', error);
+      });
     this.fetchTodos() // Fetch todos when the component is mounted
     this.fetchLTs()
     this.fetchHabits()
+    this.fetchUserPoints();
   },
   setup() {
     const router = useRouter()
@@ -925,6 +1058,42 @@ export default {
   max-width: 600px;
   font-family: 'Jersey 25', sans-serif;
 }
+
+.quantity-selector {
+      display: flex;
+      align-items: center;
+      border: 1px solid lightgray;
+      border-radius: 5px;
+      padding: 5px;
+      width: 100px;
+      justify-content: space-between;
+      background-color: wheat;
+    }
+
+    .quantity-selector button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .quantity-selector input {
+      width: 30px;
+      text-align: center;
+      border: none;
+      font-size: 1.2rem;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
 
 
 /* Responsive styling */
