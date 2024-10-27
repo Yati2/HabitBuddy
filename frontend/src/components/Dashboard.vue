@@ -2,13 +2,6 @@
   <div v-if="isAuthenticatedUser" class="dashboard-container">
     <h1>Welcome to the Dashboard</h1>
     <p>Here is a summary of your tasks and progress.</p>
-    <div id="app">
-      <!-- <p>Step Progress Bar</p> -->
-      <h1>You are on a {{currentStreak}} day streak!</h1>
-      <StepProgress :steps="steps" :currentStep="currentStep" /> <!--contains the bubbles and progress -->
-      <button @click="prevStep" :disabled="currentStep === 0">Previous</button>
-      <button @click="nextStep" :disabled="currentStep === steps.length - 1">Next</button>
-    </div>
     <div class="chart-container">
       <div class="controls">
         <label 
@@ -34,24 +27,18 @@
         <li>Task 3: Attend team meeting</li>
       </ul>
     </div>
-  </div>
+</div>
 </template>
 <script>
 import { isAuthenticated } from '@/auth'
 import { ref, onMounted} from 'vue'
 import Chart from 'chart.js/auto'
 
-import StepProgress from './Dashboard-StepProgress.vue';
-import StepProgressSettings from './Dashboard-StepProgressSettings.vue';
-
-
 export default {
   name: 'Dashboard',
   data() {
     return {
-      isAuthenticatedUser: false,
-      steps: ['Step 1', 'Step 2', 'Step 3', 'Step 4'],
-      currentStep: -1,
+      isAuthenticatedUser: false
     }
   },
   created() {
@@ -156,40 +143,14 @@ export default {
       visibleLines,
       toggleLine
     }
-  }, /*this is for chart*/
-
-  methods: {
-
-    nextStep() {
-      if (this.currentStep < this.steps.length - 1) {
-        this.currentStep += 1;
-      }
-    },
-    prevStep() {
-      if (this.currentStep > 0) {
-        this.currentStep -= 1;
-      }
-    },
-  },
-  components: {
-    StepProgress,
-  },
-  computed: {
-    currentStreak(){
-      return this.currentStep + 1;
-    }
   }
+
+  // methods: {
+  // }
 }
 </script>
 
 <style scoped>
-
-
-
-
-
-
-
 .dashboard-container {
   width: 100%;
   margin: 0 auto;
@@ -199,7 +160,6 @@ export default {
   min-height: 100vh;
   background-color: #fff3e7;
   overflow: hidden;
-  font-family: 'Jersey 25', sans-serif;
   /* height: 100%;
   background-color: antiquewhite;
   padding: 20px;
