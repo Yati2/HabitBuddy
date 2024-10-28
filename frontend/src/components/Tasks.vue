@@ -276,53 +276,10 @@
         </div>
 
         <div class="col-12 col-lg-3 card-section">
-  <h4>The Shopkeeper...</h4>
-  <div class="shop-container" style="height: 400px; background-color: #d2691e; border-radius: 10px; border: solid 0.5px brown; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 10px;">
-    <img src="../assets/shop/storekeeper.gif" width="150px" height="150px">
-    <div class="row" style="justify-content: center; align-items: center; text-align: center;">
-      <div v-for="item in shopitems" :key="item.itemname" class="col-4">
-      <img v-bind:src="item.imgpath" width="80px" style="cursor: pointer;" @click="openModal(item)">
-        <p>{{ item.itemname }}</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal -->
-<div v-if="isModalOpen" class="modal-overlay" id="itemModal">
-    <div class="modal-content">
-        <h1 class="fs-5" id="itemModalLabel">{{ selectedItem.itemname }}</h1>
-        <button type="button" class="btn-close" @click="closeModal"></button>
-        <img :src="selectedItem.imgpath" width="150px" height="150px" class="d-block mx-auto mb-3">
-        <p>{{ selectedItem.itemdesc }}</p>
-
-        <!-- Quantity Selector -->
-        <div v-if="selectedItem.itemname.includes('Fish')" class="quantity-selector">
-            <button @click="decreaseQty">-</button>
-            <input type="number" v-model="itemqty" min="1">
-            <button @click="increaseQty">+</button>
-        </div>
-
-        <p><strong>Cost:</strong> {{ totalCost }} coins</p>
-
-        <!-- Conditional Purchase Button -->
-        <button 
-            v-if="canAfford"
-            type="button"
-            class="btn btn-primary"
-            @click="buyItem"
-        >
-            Purchase
-        </button>
-        <button
-            v-else
-            type="button"
-            class="btn btn-danger"
-            disabled
-        >
-            Not enough coins!
-        </button>
-    </div>
+          <Shop
+              :userPoints="userPoints"
+              @points-updated="updateUserPoints"
+            />
 </div>
 
 
@@ -344,36 +301,16 @@ import { toast } from 'vue3-toastify'
 // Import one of the available themes
 //import 'vue-toast-notification/dist/theme-default.css';
 import 'vue3-toastify/dist/index.css'
+import Shop from './Shop.vue'
 
 export default {
   name: 'Tasks',
+  components: {
+    Shop
+  },
   data() {
     return {
       userPoints: 0,
-      shopitems:[
-        {itemname: "Regular Fish", itemcost: 10, 
-        itemdesc:"Caught in the deep blue sea, this fish will regenerate 10 of your cat's happiness!",
-        imgpath:"src/assets/shop/fish1 copy.png"},
-        {itemname: "Rare Fish", itemcost: 15, 
-        itemdesc:"Caught in the deep blue sea, this fish will regenerate 15 of your cat's happiness!",
-        imgpath:"src/assets/shop/fish2.png"},
-        {itemname: "Ultra Fish", itemcost: 20, 
-        itemdesc:"Caught in the deep blue sea, this fish will regenerate 20 of your cat's happiness!",
-        imgpath:"src/assets/shop/fish3.png"},
-        {itemname: "TempRoom1", itemcost: 50, 
-        itemdesc:"Switch up your room with this all new background!",
-        imgpath:"src/assets/shop/bgbuyable.jpg"},
-        {itemname: "TempRoom2", itemcost: 110, 
-        itemdesc:"Switch up your room with this all new background!",
-        imgpath:"src/assets/shop/bgbuyable.jpg"},
-        {itemname: "TempRoom3", itemcost: 200, 
-        itemdesc:"Switch up your room with this all new background!",
-        imgpath:"src/assets/shop/bgbuyable.jpg"},
-
-      ],
-      itemqty: 1,
-      isModalOpen: false,
-      selectedItem: {},
       habits: [],
       longTermTasks: [],
       todos: [],
@@ -399,16 +336,7 @@ export default {
       }
     }
   },
-  computed: {
-    totalCost() {
-      // calculate the total cost of the items being bough
-      return this.selectedItem.itemcost * this.itemqty;
-    },
-    canAfford() {
-      // check if userpoints can afford the cost of stuff they are buying
-      return this.userPoints >= this.totalCost;
-    }
-  },
+
   methods: {
     fetchUserPoints() {
       const username = localStorage.getItem('username') || 'anonymous';
@@ -421,6 +349,9 @@ export default {
         .catch(error => {
           console.error('Error fetching points:', error);
         });
+    },
+    updateUserPoints(pointsChange) {
+      this.userPoints += pointsChange;
     },
     buyItem() {
     const username = localStorage.getItem('username') || 'anonymous';
