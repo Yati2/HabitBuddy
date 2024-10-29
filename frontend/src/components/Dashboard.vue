@@ -2,6 +2,23 @@
   <div v-if="isAuthenticatedUser" class="dashboard-container">
     <h1>Welcome to the Dashboard</h1>
     <p>Here is a summary of your tasks and progress.</p>
+    <div id="app">
+      <!-- <p>Step Progress Bar</p> -->
+      <h1>You are on a {{currentStreak}} day streak! {{encouragement}}</h1>
+      <!-- <StepProgressSettings /> -->
+      <h3>Progress: {{ currentStreak }}/{{ streakGoal }} days; {{ streakPercent }}%</h3>
+      <!-- <div></div>
+      <div>//currentStep = {{ currentStep }}</div> -->
+      <br>
+      <StepProgress :steps="steps" :current-step="currentStep" :streak-percent="streakPercent" /> <!-- contains the bubbles and progress -->
+      <!-- :streakPercent="streakPercent" -->
+      
+      Enter new streak goal (number of days): 
+      <input type="text" class="text-input" maxlength="2" size ="2" v-model="streakInput"><br>
+      
+      <button @click="prevStep" :disabled="streakPercent === 0">Previous</button>
+      <button @click="nextStep" :disabled="streakPercent === 100">Next</button>
+    </div>
     <div class="chart-container">
       <div class="controls">
         <label 
@@ -19,26 +36,34 @@
       </div>
       <canvas ref="chartRef"></canvas>
     </div>
-    <div class="task-summary">
+    <!-- <div class="task-summary">
       <h2>Your Tasks (placeholder)</h2>
       <ul>
         <li>Task 1: Complete Vue.js project</li>
         <li>Task 2: Update habit tracker</li>
         <li>Task 3: Attend team meeting</li>
       </ul>
-    </div>
-</div>
+    </div> -->
+  </div>
 </template>
 <script>
 import { isAuthenticated } from '@/auth'
 import { ref, onMounted} from 'vue'
 import Chart from 'chart.js/auto'
 
+import StepProgress from './Dashboard-StepProgress.vue';
+import StepProgressSettings from './Dashboard-StepProgressSettings.vue';
+
+
+
 export default {
   name: 'Dashboard',
   data() {
     return {
-      isAuthenticatedUser: false
+      isAuthenticatedUser: false,
+      steps: ['Start', '', '', '', 'End'],
+      currentStep: -1,
+      // streakPercent: this.streakPercent(),
     }
   },
   created() {
@@ -67,25 +92,25 @@ export default {
     })
 
     const data = {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
       datasets: [
         {
           label: 'Habits',
-          data: [4000, 3000, 2000, 2780, 1890, 2390],
+          data: [5, 4, 4, 5, 5, 5,3],
           borderColor: '#2563eb',
           tension: 0.1,
           hidden: false
         },
         {
           label: 'Long Term Tasks',
-          data: [2400, 1398, 9800, 3908, 4800, 3800],
+          data: [3, 2, 3, 4, 4, 3,4],
           borderColor: '#16a34a',
           tension: 0.1,
           hidden: false
         },
         {
           label: 'Daily To-dos',
-          data: [1800, 900, 2800, 1500, 2100, 1700],
+          data: [5, 4, 3, 4, 6, 2,3],
           borderColor: '#9333ea',
           tension: 0.1,
           hidden: false
@@ -143,14 +168,59 @@ export default {
       visibleLines,
       toggleLine
     }
-  }
+  }, /*this is for chart*/
 
-  // methods: {
-  // }
+  methods: {
+
+    nextStep() {
+      if (this.streakPercent <= 100) {
+        this.currentStep += 1;
+      }
+    },
+    prevStep() {
+      if (this.streakPercent > 0) {
+        this.currentStep -= 1;
+      }
+    },
+  },
+  components: {
+    StepProgress, StepProgressSettings
+  },
+  computed: {
+    currentStreak(){
+      return this.currentStep + 1;
+    },
+    streakGoal(){
+      // return this.steps.length;
+      return 7;
+    },
+    encouragement(){
+      if (this.streakGoal == this.currentStreak) {
+        return " Yay!! Streak Completed!"
+      } else if (this.currentStreak == 0) {
+        return  'Get started today! "A journey of a thousand miles begins with a single step."'
+      } else {
+        return this.streakGoal - this.currentStreak + " days to go!!";
+      }
+    },
+    
+    streakPercent() {
+      let percentTimesHundred = (this.currentStreak / this.streakGoal) * 100
+      return Math.round(percentTimesHundred)
+      // return (this.currentStreak / this.streakGoal) * 100 + "%"
+    }
+  }
 }
 </script>
 
 <style scoped>
+
+
+
+
+
+
+
 .dashboard-container {
   width: 100%;
   margin: 0 auto;
@@ -160,15 +230,26 @@ export default {
   min-height: 100vh;
   background-color: #fff3e7;
   overflow: hidden;
+  font-family: 'Jersey 25', sans-serif;
   /* height: 100%;
   background-color: antiquewhite;
   padding: 20px;
   border-radius: 8px; */
 }
 
+/* #app {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+} */
+
 h1 {
   color: #4a2a8d;
 }
+
+/* .text-input{
+  maxleng
+} */
 
 .task-summary {
   background-color: #fff;
@@ -189,12 +270,13 @@ ul li {
 
 .chart-container {
   width: 100%;
-  max-width: 800px;
+  /* max-width: 800px; */
   margin: 0 auto;
   padding: 20px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 120%;
 }
 
 .controls {
