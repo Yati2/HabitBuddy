@@ -52,8 +52,10 @@
               v-if="post.username === username"
               @click="deletePost(post._id)"
               class="delete-btn btn btn-sm btn-danger d-inline"
-              style="width: auto; padding: 0.2rem 0.5rem;"
-            >🗑️ Delete</button>
+              style="width: auto; padding: 0.2rem 0.5rem"
+            >
+              🗑️ Delete
+            </button>
           </div>
 
           <!-- Comments Section -->
@@ -90,7 +92,7 @@ export default {
       newPostContent: '',
       newCommentContent: {},
       selectedTopic: 'academics',
-      username: '', // To store the logged-in username
+      username: '', 
       topics: ['academics', 'physical health', 'mental wellness'] // List of topics
     }
   },
@@ -102,6 +104,8 @@ export default {
   },
   methods: {
     async fetchPosts() {
+      console.log('fetching posts')
+      console.log(this.username)
       try {
         const response = await axios.get(
           `http://localhost:8000/api/posts?topic=${this.selectedTopic}`
@@ -138,26 +142,23 @@ export default {
       }
     },
     async deletePost(postId) {
-    try {
-      // Sending a DELETE request to the server to remove the post
-      console.log(postId)
-      await axios.delete(`http://localhost:8000/api/posts/${postId}`);
-      
-      // Removing the post from forumPosts in the frontend
-      this.forumPosts = this.forumPosts.filter(post => post._id !== postId);
+      try {
+        // Sending a DELETE request to the server to remove the post
+        console.log(postId)
+        await axios.delete(`http://localhost:8000/api/posts/${postId}`)
 
-      console.log(`Post with ID ${postId} deleted successfully.`);
-    } catch (error) {
-      console.error(
-        'Error deleting post:',
-        error.response ? error.response.data : error.message
-      );
-    }
-  },
+        // Removing the post from forumPosts in the frontend
+        this.forumPosts = this.forumPosts.filter((post) => post._id !== postId)
+
+        console.log(`Post with ID ${postId} deleted successfully.`)
+      } catch (error) {
+        console.error('Error deleting post:', error.response ? error.response.data : error.message)
+      }
+    },
     selectTopic(topic) {
       console.log('Selected topic:', topic)
       this.selectedTopic = topic // Change the current topic when user selects one
-      this.fetchPosts();
+      this.fetchPosts()
     },
     async likePost(postId) {
       const post = this.forumPosts.find((p) => p._id === postId)
@@ -195,7 +196,8 @@ export default {
     }
   },
   mounted() {
-    this.username = localStorage.getItem('username') || 'Guest' // Retrieve username from localStorage
+    this.username = localStorage.getItem('username')
+    console.log('Username:', this.username)
     this.fetchPosts() // Fetch posts when the component is mounted
   }
 }
@@ -292,4 +294,3 @@ export default {
   }
 }
 </style>
-

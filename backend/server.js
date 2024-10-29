@@ -123,7 +123,8 @@ app.get("/api/userinventory/:username", async (req, res) => {
 
 //add or update an item in the player's inventory
 app.post("/api/inventory/add", async (req, res) => {
-    const { username, itemname, itemtype, itemdesc, itemqty, imgpath } = req.body;
+    const { username, itemname, itemtype, itemdesc, itemqty, imgpath } =
+        req.body;
 
     try {
         // Check if the item already exists in the inventory
@@ -414,7 +415,6 @@ app.post("/api/posts", async (req, res) => {
             post: newPost,
         });
         console.log("New Post:", newPost);
-        console.log(response.data); // Check what you get in the response
     } catch (error) {
         console.error("Error creating post:", error);
         res.status(500).json({ message: "Error creating post" });
