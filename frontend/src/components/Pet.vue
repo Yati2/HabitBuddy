@@ -2,7 +2,7 @@
   <div class="row">
     <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
       <img
-        src="../assets/pet_related/bg/cozyroom.gif"
+        src="../assets/pet_related/bg/christmas.gif"
         alt="Pet Background"
         id="game-bg"
         class="position-absolute"
@@ -11,59 +11,141 @@
 
     <div id="pet-info" class="col-lg-2 col-12">
       <!-- Pet Name -->
-      <div class="pet-info-content pet-info-name d-flex justify-content-between align-items-center">
+      <div class="pet-info-content d-flex justify-content-between align-items-center">
         <h5 id="pet-name" class="text-center flex-grow-1">Name: {{ petName }}</h5>
-        <i class="bi bi-pencil-square font-sm ms-1 mb-2" @click="showModal = true"></i>
+        <i class="bi bi-pencil-square font-sm" @click="showModal = true"></i>
       </div>
 
       <!-- Pet Happiness -->
-      <div class="pet-info-happiness pet-info-content">
-        <div class="d-flex justify-content-between align-items-center pb-2">
-          <h5 id="pet-happiness" class="text-center mb-0">Happiness: {{ petHappiness }}%</h5>
+      <div class="pet-info-content">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 id="pet-happiness" class="text-center flex-grow-1">Happiness: {{ petHappiness }}%</h5>
           <i
-            class="bi bi-question-circle ms-2 font-sm"
+            class="bi bi-question-circle font-sm"
             @click="showHappinessHelpMsg = true"
             style="cursor: pointer; font-size: 1.2rem"
             title="Click for help"
           ></i>
         </div>
-        <div class="progress">
-          <div
-            class="progress-bar progress-bar-striped progress-bar-animated"
-            role="progressbar"
-            id="pet-happiness-bar"
-            :class="progressBarClass"
-            :aria-valuenow="petHappiness"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            :style="{ width: petHappiness + '%' }"
-          ></div>
-        </div>
+
+        <div
+          class="progress progress-bar progress-bar-striped progress-bar-animated"
+          role="progressbar"
+          id="pet-happiness-bar"
+          :class="progressBarClass"
+          :aria-valuenow="petHappiness"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          :style="{ width: petHappiness + '%' }"
+        ></div>
       </div>
 
-      <div
-        class="pet-info-feed pet-info-content mt-3 d-flex flex-column justify-content-start align-items-center"
-      >
-        <!-- First Row: Fish Image -->
-        <div class="d-flex align-items-center mb-2">
-          <img
-            src="../assets/pet_related/fish/nemo.png"
-            class="img-fluid"
-            style="width: 70px"
-            alt="Fish Icon"
-            @click="feedPet"
-          />
+      <div class="mt-3 pet-info-content">
+        <h5 class="text-center">Feed Your Pet</h5>
+        <div id="fishCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div
+              v-for="(fish, index) in allFishItems"
+              :key="fish.itemname"
+              :class="['carousel-item', { active: index === 0 }]"
+            >
+              <div class="d-flex flex-column align-items-center">
+                <img :src="fish.imgpath" class="img-fluid" style="width: 70px" alt="Fish Icon" />
+                <h5 class="pt-2">{{ fish.itemname }}</h5>
+                <small>Owned: {{ fish.itemqty || 0 }}</small>
+                <small>Happiness boost: {{ getHappinessBoost(fish) }}</small>
+                <button
+                  class="petbtn mt-3"
+                  :disabled="!fish.owned || fish.itemqty === 0 || isCatFull"
+                  @click="feedPet(fish)"
+                >
+                  Feed
+                </button>
+                <p
+                  v-if="!fish.owned && !isCatFull"
+                  class="text-danger pt-2"
+                  style="font-size: 0.8rem"
+                >
+                  Buy from Shopkeeper
+                  <router-link to="/tasks" class="text-decoration-underline text-danger"
+                    >here</router-link
+                  >!
+                </p>
+                <p v-if="isCatFull" class="text-danger pt-2" style="font-size: 0.8rem">
+                  Your cat refuses to eat more!
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Carousel controls -->
+          <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#fishCarousel"
+            data-bs-slide="prev"
+          >
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#fishCarousel"
+            data-bs-slide="next"
+          >
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
         </div>
-
-        <!-- Second Row: Feed Text and Help Icon -->
-        <div class="d-flex justify-content-center align-items-center w-100">
-          <h5 class="ms-2 text-center feed-text" @click="feedPet" style="cursor: pointer">Feed</h5>
-          <i
-            class="bi bi-question-circle ms-2 font-sm"
-            @click="showFeedHelpMsg = true"
-            style="cursor: pointer; font-size: 1.2rem"
-            title="Click for help"
-          ></i>
+      </div>
+      <div class="mt-3 pet-info-content">
+        <h5 class="text-center">Choose Background</h5>
+        <div id="backgroundCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div
+              v-for="(bg, index) in allBackgrounds"
+              :key="bg.name"
+              :class="['carousel-item', { active: index === 0 }]"
+            >
+              <div class="d-flex flex-column align-items-center">
+                <img
+                  :src="bg.imgpath"
+                  class="img-fluid"
+                  style="width: 100px"
+                  alt="Background Icon"
+                />
+                <h5 class="pt-2">{{ bg.name }}</h5>
+                <button class="petbtn mt-3" :disabled="!bg.owned" @click="applyBackground(bg)">
+                  Apply
+                </button>
+                <p v-if="!bg.owned" class="text-danger pt-2" style="font-size: 0.8rem">
+                  Purchase from Shopkeeper
+                  <router-link to="/tasks" class="text-decoration-underline text-danger"
+                    >here</router-link
+                  >!
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Carousel controls -->
+          <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#backgroundCarousel"
+            data-bs-slide="prev"
+          >
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#backgroundCarousel"
+            data-bs-slide="next"
+          >
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
         </div>
       </div>
     </div>
@@ -88,10 +170,8 @@
             <input v-model="newPetName" class="form-control" placeholder="Enter new pet name" />
           </div>
           <div class="modal-footer d-flex justify-content-between align-items-center">
-            <button type="button" class="btn btn-secondary" @click="showModal = false">
-              Close
-            </button>
-            <button type="button" class="btn btn-primary" @click="savePetName">Save changes</button>
+            <button type="button" class="petbtn" @click="showModal = false">Close</button>
+            <button type="button" class="petbtn" @click="savePetName">Save changes</button>
           </div>
         </div>
       </div>
@@ -105,19 +185,11 @@
       v-if="showHappinessHelpMsg"
       ref="tooltip"
       class="custom-tooltip"
+      :style="{ width: tooltipWidth }"
       @click="showHappinessHelpMsg = false"
     >
-      Every time you feed your pet, happiness level will increase by 10.
-    </div>
-
-    <!-- Tooltip / Help Message for Feeding -->
-    <div
-      v-if="showFeedHelpMsg"
-      ref="tooltip"
-      class="custom-tooltip"
-      @click="showFeedHelpMsg = false"
-    >
-      Click on "Feed" to feed the cat and increase its happiness by 10!
+      Feed your cat to increase the happiness level! Your cat will refuses to eat more when it's
+      full!
     </div>
   </div>
 </template>
@@ -131,16 +203,31 @@ import walkingleft from '../assets/pet_related/yellow_cat/walkingleft.png'
 import licking from '../assets/pet_related/yellow_cat/licking.png'
 import stretchingright from '../assets/pet_related/yellow_cat/stretchingright.png'
 import stretchingleft from '../assets/pet_related/yellow_cat/stretchingleft.png'
+import jumpingright from '../assets/pet_related/yellow_cat/jumpingright.png'
+import jumpingleft from '../assets/pet_related/yellow_cat/jumpingleft.png'
+import idle from '../assets/pet_related/yellow_cat/idle.png'
+import angryright from '../assets/pet_related/yellow_cat/angryright.png'
+import angryleft from '../assets/pet_related/yellow_cat/angryleft.png'
 import catup1 from '../assets/pet_related/yellow_cat/up1.png'
 import catup2 from '../assets/pet_related/yellow_cat/up2.png'
 import catup3 from '../assets/pet_related/yellow_cat/up3.png'
 import catdown1 from '../assets/pet_related/yellow_cat/down1.png'
 import catdown2 from '../assets/pet_related/yellow_cat/down2.png'
 import catdown3 from '../assets/pet_related/yellow_cat/down3.png'
-import fish from '../assets/pet_related/fish/nemo.png'
-import eatenfish_1 from '../assets/pet_related/fish/eatenfish_1.png'
-import eatenfish_2 from '../assets/pet_related/fish/eatenfish_2.png'
+import reg_1 from '../assets/pet_related/fish/reg_1.png'
+import reg_2 from '../assets/pet_related/fish/reg_2.png'
+import reg_3 from '../assets/pet_related/fish/reg_3.png'
+import rare_1 from '../assets/pet_related/fish/rare_1.png'
+import rare_2 from '../assets/pet_related/fish/rare_2.png'
+import rare_3 from '../assets/pet_related/fish/rare_3.png'
+import ulti_1 from '../assets/pet_related/fish/ulti_1.png'
+import ulti_2 from '../assets/pet_related/fish/ulti_2.png'
+import ulti_3 from '../assets/pet_related/fish/ulti_3.png'
 import { Tooltip } from 'bootstrap/dist/js/bootstrap.bundle.min'
+import Beach from '../assets/pet_related/bg/beach.gif'
+import Christmas from '../assets/pet_related/bg/christmas.gif'
+import Park from '../assets/pet_related/bg/park.gif'
+import Cozyroom from '../assets/pet_related/bg/cozyroom.gif'
 
 export default {
   data() {
@@ -149,16 +236,32 @@ export default {
       username: '',
       petHappiness: '',
       showHappinessHelpMsg: false,
-      showFeedHelpMsg: false,
       showModal: false,
       newPetName: '',
-      tooltipwidth: '',
-      isEating: false
+      isEating: false,
+      tooltipWidth: 'auto',
+      allFishItems: [
+        { itemname: 'Regular Fish', imgpath: reg_1, owned: false },
+        { itemname: 'Rare Fish', imgpath: rare_1, owned: false },
+        { itemname: 'Ultra Fish', imgpath: ulti_1, owned: false }
+      ],
+
+      // Define all background items
+      allBackgrounds: [
+        { name: 'Cozyroom', imgpath: Cozyroom, owned: true },
+        { name: 'Beach ', imgpath: Beach, owned: false },
+        { name: 'Christmas', imgpath: Christmas, owned: false },
+        { name: 'Park ', imgpath: Park, owned: false }
+
+        // Add other backgrounds as needed
+      ]
     }
   },
   mounted() {
     this.getCurrentUsername()
     this.fetchPetName()
+    this.setTooltipWidth()
+    this.fetchUserInventory()
 
     const config = {
       type: Phaser.AUTO,
@@ -183,24 +286,56 @@ export default {
     this.phaserGame = new Phaser.Game(config)
 
     //Decrease happiness every 8 hours (8 * 60 * 60 * 1000 milliseconds)
-    setInterval(this.decreaseHappiness, 8 * 60 * 60 * 1000)
+    setInterval(this.decreaseHappiness, 1 * 60 * 60 * 1000)
   },
 
   computed: {
     progressBarClass() {
       if (this.petHappiness > 50) {
-        return 'bg-success' // Green for happiness above 50
+        return 'bg-success'
       } else if (this.petHappiness <= 50 && this.petHappiness > 15) {
-        return 'bg-warning' // Yellow for happiness 15-50
+        return 'bg-warning'
       } else {
-        return 'bg-danger' // Red for happiness below 15
+        return 'bg-danger'
       }
+    },
+    isCatFull() {
+      return this.petHappiness === 100
     }
   },
   methods: {
     getCurrentUsername() {
       this.username = localStorage.getItem('username')
       console.log(this.username)
+    },
+    setTooltipWidth() {
+      const gameContainer = this.$refs.gameContainer
+      if (gameContainer) {
+        this.tooltipWidth = `${gameContainer.clientWidth}px` // Set tooltip width to match #game-container
+      }
+    },
+    applyBackground(background) {
+      if (background.owned) {
+        const gameBg = document.getElementById('game-bg')
+        if (gameBg) {
+          gameBg.src = background.imgpath
+        }
+
+        this.saveBackgroundToUser(background.name)
+      } else {
+        console.warn('Background not owned and cannot be applied.')
+      }
+    },
+    getHappinessBoost(fish) {
+      if (fish.itemname.includes('Regular')) {
+        return 10
+      } else if (fish.itemname.includes('Rare')) {
+        return 15
+      } else if (fish.itemname.includes('Ultimate')) {
+        return 20
+      } else {
+        return 0
+      }
     },
     async fetchPetName() {
       try {
@@ -234,23 +369,67 @@ export default {
         this.updateHappinessOnServer()
       }
     },
-    async feedPet() {
-      if (this.isEating || this.petHappiness >= 100) return
+    async fetchUserInventory() {
+      const { username } = this
+      try {
+        const response = await axios.get(`http://localhost:8000/api/userinventory/${username}`)
+        const inventory = response.data
 
-      // Check if the Phaser game scene exists
-      const gameScene = this.phaserGame.scene.keys['scene-game']
-      if (!gameScene) return
+        // Update `allFishItems` based on user-owned items
+        this.allFishItems.forEach((fish) => {
+          const userFish = inventory.find((item) => item.itemname === fish.itemname)
+          if (userFish) {
+            fish.owned = true
+            fish.itemqty = userFish.itemqty
+          } else {
+            fish.itemqty = 0
+          }
+        })
 
-      this.isEating = true
-
-      gameScene.startFishEatingAnimation(() => {
-        // Once the animation completes, update happiness
-        this.petHappiness = Math.min(this.petHappiness + 10, 100)
-        this.updateHappinessOnServer()
-        this.isEating = false
-      })
+        // Update `allBackgrounds` based on user-owned backgrounds
+        this.allBackgrounds.forEach((bg) => {
+          const userBg = inventory.find((item) => item.itemname === bg.name)
+          if (userBg) {
+            bg.owned = true
+          }
+        })
+      } catch (error) {
+        console.error('Error fetching inventory:', error)
+      }
     },
+    async feedPet(fish) {
+      if (this.isEating || this.petHappiness >= 100 || fish.itemqty <= 0) return
 
+      // Decrease the quantity of the selected fish
+      try {
+        console.log('decreasing item quantity')
+        // Update the quantity in the database
+        await axios.put(`http://localhost:8000/api/inventory/decrease`, {
+          username: this.username,
+          itemname: fish.itemname,
+          decreaseBy: 1
+        })
+
+        fish.itemqty -= 1
+        let fishType = ''
+        if (fish.itemname.includes('Regular')) {
+          fishType = 'reg'
+        } else if (fish.itemname.includes('Rare')) {
+          fishType = 'rare'
+        } else if (fish.itemname.includes('Ultra')) {
+          fishType = 'ulti'
+        }
+        const gameScene = this.phaserGame.scene.keys['scene-game']
+        if (gameScene) {
+          gameScene.startFishEatingAnimation(fishType, () => {
+            this.petHappiness = Math.min(this.petHappiness + 10, 100)
+            this.updateHappinessOnServer()
+          })
+        }
+      } catch (error) {
+        console.error('Error decreasing item quantity:', error)
+      }
+    },
     async updateHappinessOnServer() {
       try {
         await axios.put(`http://localhost:8000/api/pet/${this.username}`, {
@@ -290,15 +469,42 @@ class GameScene extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 64
     })
+    this.load.spritesheet('jumpingright', jumpingright, {
+      frameWidth: 64,
+      frameHeight: 64
+    })
+    this.load.spritesheet('jumpingleft', jumpingleft, {
+      frameWidth: 64,
+      frameHeight: 64
+    })
+    this.load.spritesheet('idle', idle, {
+      frameWidth: 64,
+      frameHeight: 64
+    })
+    this.load.spritesheet('angryright', angryright, {
+      frameWidth: 64,
+      frameHeight: 64
+    })
+    this.load.spritesheet('angryleft', angryleft, {
+      frameWidth: 64,
+      frameHeight: 64
+    })
+
     this.load.image('catUp1', catup1)
     this.load.image('catUp2', catup2)
     this.load.image('catUp3', catup3)
     this.load.image('catDown1', catdown1)
     this.load.image('catDown2', catdown2)
     this.load.image('catDown3', catdown3)
-    this.load.image('fish', fish)
-    this.load.image('eatenfish_1', eatenfish_1)
-    this.load.image('eatenfish_2', eatenfish_2)
+    this.load.image('reg_1', reg_1)
+    this.load.image('reg_2', reg_2)
+    this.load.image('reg_3', reg_3)
+    this.load.image('rare_1', rare_1)
+    this.load.image('rare_2', rare_2)
+    this.load.image('rare_3', rare_3)
+    this.load.image('ulti_1', ulti_1)
+    this.load.image('ulti_2', ulti_2)
+    this.load.image('ulti_3', ulti_3)
   }
 
   create() {
@@ -379,41 +585,53 @@ class GameScene extends Phaser.Scene {
 
     // Handle window resize events
     this.scale.on('resize', this.resizeHandler, this)
-    this.eatenFish = this.add.sprite(300, 500, 'eatenfish_1').setVisible(false).setScale(0.5)
+    this.eatenFish = this.add.sprite(300, 500, 'reg_1').setVisible(false).setScale(0.5)
     this.cat.on('pointerover', () => {
       this.triggerStretch()
     })
   }
-  startFishEatingAnimation(onComplete) {
-    let fishY = this.cat.y
-    if (this.currentAction === 'walkRight' && this.cat.x < this.sofapositionRight) {
-      var fishX = this.cat.x + 100
-      fishY = this.cat.y - 50
-    } else if (this.currentAction === 'walkLeft') {
-      fishX = this.cat.x - 100
-      fishY = this.cat.y - 50
-    } else if (this.currentAction === 'lick') {
-      this.eatenFish.setScale(-1)
-      fishX = this.cat.x - 50
-    } else if (this.currentAction === 'goUp') {
-      fishX = this.cat.x + 10
-    } else if (this.currentAction === 'goDown') {
-      fishX = this.cat.x - 10
+  startFishEatingAnimation(fishType, onComplete) {
+    // Set the fish images based on the type
+    const fishImages = {
+      reg: ['reg_1', 'reg_2', 'reg_3'],
+      rare: ['rare_1', 'rare_2', 'rare_3'],
+      ulti: ['ulti_1', 'ulti_2', 'ulti_3']
     }
 
-    // Set the fish's position and scale it
-    this.eatenFish.setPosition(fishX, fishY).setScale(0.2).setVisible(true)
+    let fishY = this.cat.y
+    let fishX
 
-    // Show the first fish image
-    this.eatenFish.setTexture('eatenfish_1').setVisible(true)
+    if (this.currentAction === 'walkRight' && this.cat.x < this.sofapositionRight) {
+      fishX = this.cat.x + 50
+      fishY = this.cat.y - 50
+    } else if (this.currentAction === 'walkLeft') {
+      fishX = this.cat.x - 50
+      fishY = this.cat.y - 50
+    }
 
-    // Show the second fish image after 1 second
+    this.eatenFish.setPosition(fishX, fishY).setVisible(true)
+
+    // Apply consistent scaling for all fish types
+    console.log('fish type:', fishType)
+    // Check if the fish type is valid
+    if (!fishImages[fishType]) {
+      console.error(`Invalid fish type '${fishType}'`)
+      return
+    }
+    var scale = fishType === 'reg' || fishType === 'ulti' ? 0.5 : 0.25
+    this.eatenFish.setScale(scale).setTexture(fishImages[fishType][0]).setVisible(true)
+
+    // Animate through the fish images
     this.time.delayedCall(1000, () => {
-      this.eatenFish.setTexture('eatenfish_2')
+      this.eatenFish.setTexture(fishImages[fishType][1])
     })
 
-    // Hide the fish after 2 seconds and call the completion callback
     this.time.delayedCall(2000, () => {
+      this.eatenFish.setTexture(fishImages[fishType][2])
+    })
+
+    // Hide the fish after the animation and call the completion callback
+    this.time.delayedCall(3000, () => {
       this.eatenFish.setVisible(false)
       onComplete() // Call the callback to update happiness
     })
@@ -568,17 +786,6 @@ class GameScene extends Phaser.Scene {
         this.startWalkingRight() // Restart the loop
       }
     }
-
-    // // Check if the cat reaches the sofa position relative to the canvas width
-    // if (this.cat.x >= this.sofapositionRight) {
-    //   this.cat.anims.stop()
-    //   this.isWalkingRight = false
-    //   this.cat.play('lick').disableInteractive()
-    //   this.isLicking = true
-    //   this.currentAction = 'lick'
-
-    //   this.time.delayedCall(3000, this.startGoingUp, [], this)
-    // }
   }
 
   startGoingUp() {
@@ -651,7 +858,8 @@ class GameScene extends Phaser.Scene {
 <style>
 #game-container {
   height: 90vh;
-  border: 5px solid rgba(160, 154, 154, 0.509);
+  border-right: 4px solid rgba(209, 208, 208, 0.552);
+  border-left: 2px solid rgba(209, 208, 208, 0.552);
   position: relative;
 }
 #game-bg {
@@ -681,13 +889,50 @@ canvas {
   border: 2px solid #fecfa5;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   font-family: 'Jersey 25', sans-serif;
-  margin-top: 20px;
+  margin-top: 10px;
+  margin-right: 10px;
   max-height: 70vh;
   padding: 10px;
-  width: 80%;
+  width: 90%;
   align-items: center;
   border-radius: 10px;
   overflow-y: auto;
+}
+
+.carousel-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 5px;
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #fecfa5;
+}
+.carousel-control-prev,
+.carousel-control-next {
+  width: 2%;
+}
+
+.petbtn {
+  color: black;
+  background-color: #fecfa5;
+  font-family: 'Jersey 25', sans-serif;
+  border-radius: 0 0 10px 10px;
+}
+
+.petbtn:disabled {
+  background-color: #d3d3d3;
+  border-color: #d3d3d3;
+}
+.petbtn:hover {
+  background-color: #e4805b;
+  color: white;
+}
+
+.text-danger {
+  color: #ff4500; /* Bright red for alert text */
 }
 
 @media (max-width: 992px) {
@@ -766,13 +1011,6 @@ canvas {
 .modal-body {
   background-color: #fef7f6;
   font-family: 'Jersey 25', sans-serif;
-}
-
-.modal-footer button {
-  color: black;
-  background-color: #fecfa5;
-  font-family: 'Jersey 25', sans-serif;
-  border-radius: 0 0 10px 10px;
 }
 
 /* Adjust modal size for smaller screens */

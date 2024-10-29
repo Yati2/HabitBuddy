@@ -28,21 +28,19 @@ async function connect() {
 
 connect();
 
-//Start of Shop Related 
-
-
+//Start of Shop Related
 
 //just keeping this in for now, but as of 23 oct all shop items are stored under data in the vue instance in a list. easier that way.
-const shopSchema= new mongoose.Schema({
+const shopSchema = new mongoose.Schema({
     itemname: { type: String, required: true },
     itemtype: { type: String, required: true },
     itemdesc: { type: String, required: true },
     fishnourishment: { type: Number, required: true },
     imgpath: { type: String, required: true },
-    cost:{ type: Number, required: true }
+    cost: { type: Number, required: true },
 });
 
-const Shop = mongoose.model("Shop", shopSchema, "shop" )
+const Shop = mongoose.model("Shop", shopSchema, "shop");
 
 //fetch all shop items (depreciated)
 app.get("/api/shop", async (req, res) => {
@@ -56,106 +54,138 @@ app.get("/api/shop", async (req, res) => {
     }
 });
 
-app.get('/api/users/:username/points', async (req, res) => {
+app.get("/api/users/:username/points", async (req, res) => {
     const { username } = req.params;
 
     try {
         const user = await User.findOne({ username: username });
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: "User not found" });
         }
 
         // Return the user's points
         res.status(200).json({ points: user.points });
     } catch (error) {
-        console.error('Error fetching points:', error);
-        res.status(500).json({ message: 'Error fetching user points' });
+        console.error("Error fetching points:", error);
+        res.status(500).json({ message: "Error fetching user points" });
     }
 });
 
 //for purchase and deducting points
-app.put('/api/users/:username/deduct-points', async (req, res) => {
+app.put("/api/users/:username/deduct-points", async (req, res) => {
     const { username } = req.params;
     const { pointsToDeduct } = req.body;
-  
+
     try {
-      const user = await User.findOneAndUpdate(
-        { username },
-        { $inc: { points: -pointsToDeduct } }, 
-        { new: true }
-      );
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      res.json({ message: 'Points deducted successfully', points: user.points });
+        const user = await User.findOneAndUpdate(
+            { username },
+            { $inc: { points: -pointsToDeduct } },
+            { new: true }
+        );
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({
+            message: "Points deducted successfully",
+            points: user.points,
+        });
     } catch (error) {
-      res.status(500).json({ message: 'Error deducting points', error });
+        res.status(500).json({ message: "Error deducting points", error });
     }
-  });
-
-
-
-
-
-
+});
 
 //End of Shop Related
 
 //Start of Inventory Related
 const inventorySchema = new mongoose.Schema({
-    username: { type: String, required: true},
-    itemname: { type: String, required: true},
-    itemdesc: { type: String, required: true},
+    username: { type: String, required: true },
+    itemname: { type: String, required: true },
+    itemtype: { type: String, required: true },
+    itemdesc: { type: String, required: true },
     itemqty: { type: Number, required: true },
-    imgpath: { type: String, required: true}
-})
+    imgpath: { type: String, required: true },
+});
 
 const Inventory = mongoose.model("Inventory", inventorySchema, "userinventory");
 
-app.get('/api/userinventory/:username', async (req, res) => {
+app.get("/api/userinventory/:username", async (req, res) => {
     const { username } = req.params;
-    
+
     try {
-      const inventory = await Inventory.find({ username: username });
-      res.json(inventory);
+        const inventory = await Inventory.find({ username: username });
+        res.json(inventory);
     } catch (error) {
-      console.error('Error fetching inventory:', error);
-      res.status(500).send('Error fetching inventory');
+        console.error("Error fetching inventory:", error);
+        res.status(500).send("Error fetching inventory");
     }
-  });
+});
 
 //add or update an item in the player's inventory
-app.post('/api/inventory/add', async (req, res) => {
-    const { username, itemname, itemdesc, itemqty, imgpath } = req.body;
-    
-    try {
-      // Check if the item already exists in the inventory
-      const existingItem = await Inventory.findOne({ username: username, itemname: itemname });
-      
-      if (existingItem) {
-        // if item exists, update the quantity
-        existingItem.itemqty += itemqty;
-        await existingItem.save();
-        res.status(200).json({ message: 'Item quantity updated successfully' });
-      } else {
-        // if item does not exist, create a new document
-        const newItem = new Inventory({
-          username: username,
-          itemname: itemname,
-          itemdesc: itemdesc,
-          itemqty: itemqty,
-          imgpath: imgpath
-        });
-        await newItem.save();
-        res.status(201).json({ message: 'New item added to inventory' });
-      }
-    } catch (error) {
-      console.error('Error updating inventory:', error);
-      res.status(500).json({ message: 'Error updating inventory', error });
-    }
-  });
+app.post("/api/inventory/add", async (req, res) => {
+    const { username, itemname, itemtype, itemdesc, itemqty, imgpath } = req.body;
 
+    try {
+        // Check if the item already exists in the inventory
+        const existingItem = await Inventory.findOne({
+            username: username,
+            itemname: itemname,
+        });
+
+        if (existingItem) {
+            // if item exists, update the quantity
+            existingItem.itemqty += itemqty;
+            await existingItem.save();
+            res.status(200).json({
+                message: "Item quantity updated successfully",
+            });
+        } else {
+            // if item does not exist, create a new document
+            const newItem = new Inventory({
+                username: username,
+                itemname: itemname,
+                itemtype: itemtype,
+                itemdesc: itemdesc,
+                itemqty: itemqty,
+                imgpath: imgpath,
+            });
+            await newItem.save();
+            res.status(201).json({ message: "New item added to inventory" });
+        }
+    } catch (error) {
+        console.error("Error updating inventory:", error);
+        res.status(500).json({ message: "Error updating inventory", error });
+    }
+});
+
+app.put("/api/inventory/decrease", async (req, res) => {
+    const { username, itemname, decreaseBy } = req.body;
+    console.log("Endpoint hit with data:", req.body);
+    try {
+        const item = await Inventory.findOne({
+            username: username,
+            itemname: itemname,
+        });
+
+        if (!item) {
+            return res.status(404).json({ message: "Item not found" });
+        }
+
+        item.itemqty = Math.max(item.itemqty - decreaseBy, 0);
+        await item.save();
+
+        res.status(200).json({
+            message: "Item quantity decreased successfully",
+            item,
+        });
+    } catch (error) {
+        console.error("Error decreasing item quantity:", error);
+        res.status(500).json({
+            message: "Error decreasing item quantity",
+            error,
+        });
+    }
+});
 
 //End of Inventory Related
 
@@ -168,8 +198,14 @@ const userSchema = new mongoose.Schema({
     habitcompleted: { type: Number, required: true },
     longtermcompleted: { type: Number, required: true },
     todocompleted: { type: Number, required: true },
-    bgImage: { type: String, default: './src/assets/profile/profilebackgrounds/background1.webp'},
-    avatarImage: { type: String, default: '/src/assets/profile/profilepics/pfp1.jpeg'}
+    bgImage: {
+        type: String,
+        default: "./src/assets/profile/profilebackgrounds/background1.webp",
+    },
+    avatarImage: {
+        type: String,
+        default: "/src/assets/profile/profilepics/pfp1.jpeg",
+    },
 });
 
 const User = mongoose.model("User", userSchema, "users");
@@ -197,7 +233,6 @@ app.put("/api/users/:username/points", async (req, res) => {
     }
 });
 
-
 app.get("/api/users", async (req, res) => {
     try {
         const users = await User.find();
@@ -210,7 +245,15 @@ app.get("/api/users", async (req, res) => {
 });
 
 app.post("/api/register", async (req, res) => {
-    const { username, email, password, points, habitcompleted, todocompleted, longtermcompleted } = req.body;
+    const {
+        username,
+        email,
+        password,
+        points,
+        habitcompleted,
+        todocompleted,
+        longtermcompleted,
+    } = req.body;
     try {
         // Check if the username already exists
         const existingUser = await User.findOne({ username });
@@ -221,7 +264,15 @@ app.post("/api/register", async (req, res) => {
         }
 
         // Create a new user
-        const newUser = new User({ username, email, password, points, habitcompleted, todocompleted, longtermcompleted });
+        const newUser = new User({
+            username,
+            email,
+            password,
+            points,
+            habitcompleted,
+            todocompleted,
+            longtermcompleted,
+        });
         await newUser.save();
         // Automatically create a pet for the user with default values
         const newPet = new Pet({
@@ -309,15 +360,15 @@ app.delete("/api/users/:username", async (req, res) => {
 
 //profile
 // update background image and avatar
-app.put('/api/users/:username/images', (req, res) => {
+app.put("/api/users/:username/images", (req, res) => {
     const { bgImage, avatarImage } = req.body;
     User.findOneAndUpdate(
         { username: req.params.username },
         { bgImage, avatarImage },
-        { new: true } 
+        { new: true }
     )
-    .then(updatedUser => res.json(updatedUser))
-    .catch(err => res.status(400).json('Error: ' + err));
+        .then((updatedUser) => res.json(updatedUser))
+        .catch((err) => res.status(400).json("Error: " + err));
 });
 
 //Forum
@@ -330,7 +381,7 @@ const postSchema = new mongoose.Schema({
         {
             username: { type: String, required: true },
             comment: { type: String, required: true },
-            createdAt: { type: Date, default: Date.now },  
+            createdAt: { type: Date, default: Date.now },
         },
     ],
     topic: { type: String, required: true },
@@ -343,105 +394,106 @@ const Post = mongoose.model("Post", postSchema, "posts");
 app.post("/api/posts", async (req, res) => {
     console.log("Request Body:", req.body);
     const { content, username, topic } = req.body; // Include topic in the request body
-  
+
     // Validate that the topic field is provided
     if (!topic) {
-      return res.status(400).json({ message: "Topic is required" });
+        return res.status(400).json({ message: "Topic is required" });
     }
-  
-    try {
-      const newPost = new Post({
-        content,
-        username,
-        topic, // Store the topic in the post
-        likes: 0,
-        comments: []
-      });
-      await newPost.save();
-      res.status(201).json({ message: "Post created successfully!", post: newPost });
-      console.log("New Post:", newPost);
-      console.log(response.data);  // Check what you get in the response
 
+    try {
+        const newPost = new Post({
+            content,
+            username,
+            topic, // Store the topic in the post
+            likes: 0,
+            comments: [],
+        });
+        await newPost.save();
+        res.status(201).json({
+            message: "Post created successfully!",
+            post: newPost,
+        });
+        console.log("New Post:", newPost);
+        console.log(response.data); // Check what you get in the response
     } catch (error) {
-      console.error("Error creating post:", error);
-      res.status(500).json({ message: "Error creating post" });
+        console.error("Error creating post:", error);
+        res.status(500).json({ message: "Error creating post" });
     }
-  });
-  
-  // Fetch posts by topic
-  app.get("/api/posts", async (req, res) => {
+});
+
+// Fetch posts by topic
+app.get("/api/posts", async (req, res) => {
     const { topic } = req.query; // Get the topic from the query string
-  
-    try {
-      const query = topic ? { topic } : {}; // If topic is provided, filter posts by topic
-      const posts = await Post.find(query).sort({ createdAt: -1 });
-      res.json(posts);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-      res.status(500).send("Error fetching posts");
-    }
-  });
 
-  // Delete post by ID
+    try {
+        const query = topic ? { topic } : {}; // If topic is provided, filter posts by topic
+        const posts = await Post.find(query).sort({ createdAt: -1 });
+        res.json(posts);
+    } catch (error) {
+        console.error("Error fetching posts:", error);
+        res.status(500).send("Error fetching posts");
+    }
+});
+
+// Delete post by ID
 app.delete("/api/posts/:id", async (req, res) => {
     const postId = req.params.id; // Get the post ID from the request parameters
-  
+
     try {
-      const deletedPost = await Post.findByIdAndDelete(postId); // Find and delete the post by ID
-  
-      if (!deletedPost) {
-        return res.status(404).json({ message: "Post not found" }); // If no post is found, send a 404 error
-      }
-  
-      res.status(200).json({ message: "Post deleted successfully", post: deletedPost }); // Respond with a success message
+        const deletedPost = await Post.findByIdAndDelete(postId); // Find and delete the post by ID
+
+        if (!deletedPost) {
+            return res.status(404).json({ message: "Post not found" }); // If no post is found, send a 404 error
+        }
+
+        res.status(200).json({
+            message: "Post deleted successfully",
+            post: deletedPost,
+        }); // Respond with a success message
     } catch (error) {
-      console.error("Error deleting post:", error); // Log any error
-      res.status(500).json({ message: "Error deleting post" }); // Respond with a 500 error if something goes wrong
+        console.error("Error deleting post:", error); // Log any error
+        res.status(500).json({ message: "Error deleting post" }); // Respond with a 500 error if something goes wrong
     }
-  });
-  
+});
 
 // Like post
 app.post("/api/posts/:id/like", async (req, res) => {
-  const postId = req.params.id;
-  try {
-    const post = await Post.findById(postId);
-    if (post) {
-      post.likes += 1;
-      await post.save();
-      res.json({ message: "Post liked successfully!", post });
-    } else {
-      res.status(404).json({ message: "Post not found." });
+    const postId = req.params.id;
+    try {
+        const post = await Post.findById(postId);
+        if (post) {
+            post.likes += 1;
+            await post.save();
+            res.json({ message: "Post liked successfully!", post });
+        } else {
+            res.status(404).json({ message: "Post not found." });
+        }
+    } catch (error) {
+        console.error("Error liking post:", error);
+        res.status(500).json({ message: "Error liking post" });
     }
-  } catch (error) {
-    console.error("Error liking post:", error);
-    res.status(500).json({ message: "Error liking post" });
-  }
 });
 
 // Comment on post
 app.post("/api/posts/:id/comment", async (req, res) => {
-  const postId = req.params.id;
-  const { username, comment } = req.body;
-  try {
-    const post = await Post.findById(postId);
-    if (post) {
-      post.comments.push({ username, comment });
-      await post.save();
-      res.json({ message: "Comment added successfully!", post });
-    } else {
-      res.status(404).json({ message: "Post not found." });
+    const postId = req.params.id;
+    const { username, comment } = req.body;
+    try {
+        const post = await Post.findById(postId);
+        if (post) {
+            post.comments.push({ username, comment });
+            await post.save();
+            res.json({ message: "Comment added successfully!", post });
+        } else {
+            res.status(404).json({ message: "Post not found." });
+        }
+    } catch (error) {
+        console.error("Error adding comment:", error);
+        res.status(500).json({ message: "Error adding comment" });
     }
-  } catch (error) {
-    console.error("Error adding comment:", error);
-    res.status(500).json({ message: "Error adding comment" });
-  }
 });
 
-
 //tasks api endpoints
-
-
 
 const habitSchema = new mongoose.Schema({
     title: { type: String, required: true },
@@ -455,82 +507,76 @@ const habitSchema = new mongoose.Schema({
 const Habit = mongoose.model("Habit", habitSchema);
 
 //update todocompleted
-app.put('/api/users/:username/todocompleted', async (req, res) => {
+app.put("/api/users/:username/todocompleted", async (req, res) => {
     const { username } = req.params;
     const { incrementBy } = req.body; // The value by which to increment todocompleted (e.g., 1)
-  
+
     try {
-      // Find the user by username and increment todocompleted
-      const user = await User.findOneAndUpdate(
-        { username: username },
-        { $inc: { todocompleted: incrementBy } }, // Use $inc operator to increment
-        { new: true } // Return the updated document
-      );
+        // Find the user by username and increment todocompleted
+        const user = await User.findOneAndUpdate(
+            { username: username },
+            { $inc: { todocompleted: incrementBy } }, // Use $inc operator to increment
+            { new: true } // Return the updated document
+        );
 
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      res.json({ message: 'todo completed count incremented', user });
+        res.json({ message: "todo completed count incremented", user });
     } catch (error) {
-      console.error('Error updating todocompleted:', error);
-      res.status(500).json({ message: 'Error updating todocompleted' });
+        console.error("Error updating todocompleted:", error);
+        res.status(500).json({ message: "Error updating todocompleted" });
     }
-  });
+});
 
 //update longtermcompleted
-app.put('/api/users/:username/longtermcompleted', async (req, res) => {
+app.put("/api/users/:username/longtermcompleted", async (req, res) => {
     const { username } = req.params;
     const { incrementBy } = req.body; // The value by which to increment habitCompleted (e.g., 1)
-  
+
     try {
-      // Find the user by username and increment habitCompleted
-      const user = await User.findOneAndUpdate(
-        { username: username },
-        { $inc: { longtermcompleted: incrementBy } }, // Use $inc operator to increment
-        { new: true } // Return the updated document
-      );
+        // Find the user by username and increment habitCompleted
+        const user = await User.findOneAndUpdate(
+            { username: username },
+            { $inc: { longtermcompleted: incrementBy } }, // Use $inc operator to increment
+            { new: true } // Return the updated document
+        );
 
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      res.json({ message: 'longterm completed count incremented', user });
+        res.json({ message: "longterm completed count incremented", user });
     } catch (error) {
-      console.error('Error updating longterm:', error);
-      res.status(500).json({ message: 'Error updating longtermcompleted' });
+        console.error("Error updating longterm:", error);
+        res.status(500).json({ message: "Error updating longtermcompleted" });
     }
-  });
+});
 
 // Update habitCompleted field
-app.put('/api/users/:username/habitcompleted', async (req, res) => {
+app.put("/api/users/:username/habitcompleted", async (req, res) => {
     const { username } = req.params;
     const { incrementBy } = req.body; // The value by which to increment habitCompleted (e.g., 1)
-  
+
     try {
-      // Find the user by username and increment habitCompleted
-      const user = await User.findOneAndUpdate(
-        { username: username },
-        { $inc: { habitcompleted: incrementBy } }, // Use $inc operator to increment
-        { new: true } // Return the updated document
-      );
+        // Find the user by username and increment habitCompleted
+        const user = await User.findOneAndUpdate(
+            { username: username },
+            { $inc: { habitcompleted: incrementBy } }, // Use $inc operator to increment
+            { new: true } // Return the updated document
+        );
 
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      res.json({ message: 'Habit completed count incremented', user });
+        res.json({ message: "Habit completed count incremented", user });
     } catch (error) {
-      console.error('Error updating habitCompleted:', error);
-      res.status(500).json({ message: 'Error updating habitCompleted' });
+        console.error("Error updating habitCompleted:", error);
+        res.status(500).json({ message: "Error updating habitCompleted" });
     }
-  });
+});
 
 app.delete("/api/user_habits", async (req, res) => {
     const { username, title, id } = req.query; // Extract username, title, and id from query parameters
@@ -825,7 +871,9 @@ app.get("/api/journals/:username/:year/:month", async (req, res) => {
     const { username, year, month } = req.params;
 
     if (!username || !year || !month) {
-        return res.status(400).json({ message: "Username, year, and month are required" });
+        return res
+            .status(400)
+            .json({ message: "Username, year, and month are required" });
     }
 
     try {
@@ -844,7 +892,6 @@ app.get("/api/journals/:username/:year/:month", async (req, res) => {
         res.status(500).json({ message: "Error fetching journal entries" });
     }
 });
-
 
 // update journal entry
 app.put("/api/journals/:id", async (req, res) => {
@@ -935,27 +982,26 @@ app.put("/api/pet/:username", async (req, res) => {
 
 //profile page api
 
-app.get('/api/users/:username', async (req, res) => {
+app.get("/api/users/:username", async (req, res) => {
     const username = req.params.username;
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(404).send('User not found');
+        return res.status(404).send("User not found");
     }
     res.json(user);
-  });
-  
-  app.put('/api/users/:username/password', async (req, res) => {
+});
+
+app.put("/api/users/:username/password", async (req, res) => {
     const { username } = req.params;
     const { password } = req.body;
-  
+
     try {
-      const user = await User.findOneAndUpdate({ username }, { password });
-      if (!user) {
-        return res.status(404).send('User not found');
-      }
-      res.send('Password updated successfully');
+        const user = await User.findOneAndUpdate({ username }, { password });
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        res.send("Password updated successfully");
     } catch (error) {
-      res.status(500).send('Error updating password');
+        res.status(500).send("Error updating password");
     }
-  });
-  
+});
