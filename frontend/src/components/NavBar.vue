@@ -69,7 +69,7 @@ export default {
       required: true,
     },
   },
-  setup(props) {
+  setup() {
     const router = useRouter();
 
     // Logout function

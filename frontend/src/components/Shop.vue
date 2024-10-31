@@ -29,6 +29,16 @@
           class="d-block mx-auto mb-3"
         />
         <p>{{ selectedItem.itemdesc }}</p>
+        <div v-if="selectedItem.itemname === 'Regular Fish'">
+        <p>You have {{ regularFishQty }} in your Inventory!</p>
+        </div>
+        <div v-if="selectedItem.itemname === 'Rare Fish'">
+        <p>You have {{ rareFishQty }} in your Inventory!</p>
+        </div>
+        <div v-if="selectedItem.itemname === 'Ultra Fish'">
+        <p>You have {{ ultraFishQty }} in your Inventory!</p>
+        </div>
+
 
         <!-- Quantity Selector -->
         <div v-if="selectedItem.itemname?.includes('Fish')" class="quantity-selector">
@@ -64,6 +74,9 @@ export default {
   emits: ['points-updated'],
   data() {
     return {
+      regularFishQty: 0,
+      rareFishQty: 0,
+      ultraFishQty: 0,
       shopitems: [
         {
           itemname: 'Regular Fish',
@@ -119,6 +132,29 @@ export default {
     }
   },
   methods: {
+    fetchUserInventory() {
+      const username = localStorage.getItem('username');
+
+      // API call to fetch user inventory
+      axios.get(`http://localhost:8000/api/userinventory/${username}`)
+        .then(response => {
+          const inventory = response.data;
+          console.log(inventory)
+          // Find quantities of each type of fish
+          inventory.forEach(item => {
+            if (item.itemname === 'Regular Fish') {
+              this.regularFishQty = item.itemqty;
+            } else if (item.itemname === 'Rare Fish') {
+              this.rareFishQty = item.itemqty;
+            } else if (item.itemname === 'Ultra Fish') {
+              this.ultraFishQty = item.itemqty;
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching user inventory:', error);
+        });
+    },
     buyItem() {
       const username = localStorage.getItem('username') || 'anonymous'
       const totalCost = this.selectedItem.itemcost * this.itemqty
@@ -132,9 +168,11 @@ export default {
           this.$emit('points-updated', -totalCost)
           this.updateInventory(username)
 
-          if (!this.selectedItem.itemname.includes('Fish')) {
+          // Remove item from shop if it's a unique background
+          const uniqueBackgrounds = ['src/assets/shop/beach.gif', 'src/assets/shop/christmas.gif', 'src/assets/shop/park.gif']
+          if (uniqueBackgrounds.includes(this.selectedItem.imgpath)) {
             this.shopitems = this.shopitems.filter(
-              (item) => item.itemname !== this.selectedItem.itemname
+              (item) => item.imgpath !== this.selectedItem.imgpath
             )
           }
 
@@ -177,6 +215,7 @@ export default {
       this.selectedItem = item
       this.isModalOpen = true
       this.itemqty = 1
+      this.fetchUserInventory();
     },
     closeModal() {
       this.isModalOpen = false
@@ -184,17 +223,17 @@ export default {
   },
   mounted() {
     const username = localStorage.getItem('username') || 'anonymous'
+    const uniqueBackgrounds = ['src/assets/shop/beach.gif', 'src/assets/shop/christmas.gif', 'src/assets/shop/park.gif']
 
     axios
       .get(`http://localhost:8000/api/userinventory/${username}`)
       .then((response) => {
         const inventory = response.data
-        const roomItems = ['TempRoom1', 'TempRoom2', 'TempRoom3']
 
         inventory.forEach((item) => {
-          if (roomItems.includes(item.itemname)) {
+          if (uniqueBackgrounds.includes(item.imgpath)) {
             this.shopitems = this.shopitems.filter(
-              (shopItem) => shopItem.itemname !== item.itemname
+              (shopItem) => shopItem.imgpath !== item.imgpath
             )
           }
         })
@@ -205,6 +244,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .shop-container {

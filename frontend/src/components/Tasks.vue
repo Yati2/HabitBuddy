@@ -8,6 +8,7 @@
 
   <div class="tasks-container">
     <div class="container-fluid">
+      
       <div class="row header">
         <div class="col-2">
           <h2 class="m-0 text-white">bluey</h2>
@@ -20,28 +21,12 @@
             />
           </div>
         </div>
-        <div class="col-10 dashboard-container">
-          <div class="dashboard-title">
-            <h3>Dashboard</h3>
-            <p><strong>Your Points:</strong> {{ userPoints }} coins</p>
-          </div>
-          <div class="row">
-            <div class="col m-3">
-              <div class="progress">
-                <div class="progress-bar bg-purple" role="progressbar" style="width: 50%"></div>
-              </div>
-              <div class="progress-labels">
-                <span>3</span>
-                <span>6</span>
-                <span>9</span>
-                <span>12</span>
-              </div>
-            </div>
-            <div class="col">
-              <h1 class="mb-0">You're on a <strong>8 Day</strong> Streak!</h1>
-            </div>
-          </div>
-        </div>
+        <div class="col-3 ms-auto d-flex justify-content-end">
+          <div class="d-flex align-items-center">
+  <h4 class="m-0 text-white">{{ userPoints }} &nbsp;</h4>
+  <img width="18px" src="../assets/shop/coin.gif" alt="coins icon" />
+</div>
+  </div>
       </div>
 
       <div class="row main-content">
@@ -198,9 +183,10 @@
               <p class="cardtext">{{ lt.description }}</p>
               <small class="cardtext"><strong class="cardtext">Tag:</strong> {{ lt.tags }}</small>
               <div>
-                <small class="cardtext"
-                  ><strong class="cardtext">Due:</strong> {{ lt.duedate }}</small
-                >
+              <small class="cardtext">
+                <strong class="cardtext">Due:</strong> 
+                {{ new Date(lt.duedate).toLocaleDateString('en-GB') }}
+              </small>
               </div>
               <div>
                 <button class="btn btn-success btn-sm" @click="markAsDonelt(lt)">
@@ -366,6 +352,10 @@ export default {
       console.log('Points deducted successfully');
       this.userPoints -= totalCost; 
       this.updateInventory(username);
+
+      if (this.selectedItem.itemname === "Regular Fish"){
+        this.regularFishQty += this.itemqty;
+      }
 
       // Check if the itemname doesn't include the word "Fish" (items other than fish can only be bought once...)
       if (!this.selectedItem.itemname.includes('Fish')) {
@@ -825,6 +815,23 @@ export default {
 
 <style scoped>
 /* Add your scoped styles here */
+
+.coins-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 5px 15px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.coins-container p {
+  margin: 0;
+  color: #333;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
 .tasks-container {
   font-family: 'Jersey 25', sans-serif;
 }
@@ -843,7 +850,7 @@ export default {
 }
 
 .dashboard-container {
-  background-color: white;
+  background-color:  #fff3e7;
   height: 200px;
   border-radius: 25px;
 }
