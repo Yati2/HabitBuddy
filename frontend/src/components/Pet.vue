@@ -240,6 +240,7 @@ export default {
       newPetName: '',
       isEating: false,
       tooltipWidth: 'auto',
+   
       allFishItems: [
         { itemname: 'Regular Fish', imgpath: reg_1, owned: false },
         { itemname: 'Rare Fish', imgpath: rare_1, owned: false },

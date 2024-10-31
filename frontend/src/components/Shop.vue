@@ -30,15 +30,14 @@
         />
         <p>{{ selectedItem.itemdesc }}</p>
         <div v-if="selectedItem.itemname === 'Regular Fish'">
-        <p>You have {{ regularFishQty }} in your Inventory!</p>
+          <p>You have {{ regularFishQty }} in your Inventory!</p>
         </div>
         <div v-if="selectedItem.itemname === 'Rare Fish'">
-        <p>You have {{ rareFishQty }} in your Inventory!</p>
+          <p>You have {{ rareFishQty }} in your Inventory!</p>
         </div>
         <div v-if="selectedItem.itemname === 'Ultra Fish'">
-        <p>You have {{ ultraFishQty }} in your Inventory!</p>
+          <p>You have {{ ultraFishQty }} in your Inventory!</p>
         </div>
-
 
         <!-- Quantity Selector -->
         <div v-if="selectedItem.itemname?.includes('Fish')" class="quantity-selector">
@@ -48,11 +47,25 @@
         </div>
 
         <p><strong>Cost:</strong> {{ totalCost }} coins</p>
-
-        <button v-if="canAfford" type="button" class="btn btn-primary" @click="buyItem">
-          Purchase
-        </button>
-        <button v-else type="button" class="btn btn-danger" disabled>Not enough coins!</button>
+        <!-- Purchase Button or Ownership Message -->
+        <!-- Purchase Button or Ownership Message -->
+        <div v-if="backgroundOwned">
+          <button type="button" class="btn btn-secondary" disabled>
+            You already own this background!
+          </button>
+        </div>
+        <div v-else>
+          <button
+            v-if="canAfford"
+            type="button"
+            class="btn btn-primary w-100"
+            style="background-color: #d2691e"
+            @click="buyItem"
+          >
+            Purchase
+          </button>
+          <button v-else type="button" class="btn btn-danger" disabled>Not enough coins!</button>
+        </div>
       </div>
     </div>
   </div>
@@ -77,10 +90,12 @@ export default {
       regularFishQty: 0,
       rareFishQty: 0,
       ultraFishQty: 0,
+      backgroundOwned: false,
       shopitems: [
         {
           itemname: 'Regular Fish',
           itemcost: 10,
+          itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 10 of your cat's happiness!",
           imgpath: 'src/assets/shop/fish1.png'
@@ -88,6 +103,7 @@ export default {
         {
           itemname: 'Rare Fish',
           itemcost: 15,
+          itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 15 of your cat's happiness!",
           imgpath: 'src/assets/shop/fish2.png'
@@ -95,6 +111,7 @@ export default {
         {
           itemname: 'Ultra Fish',
           itemcost: 20,
+          itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 20 of your cat's happiness!",
           imgpath: 'src/assets/shop/fish3.png'
@@ -102,20 +119,44 @@ export default {
         {
           itemname: 'Beach',
           itemcost: 50,
+          itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
           imgpath: 'src/assets/shop/beach.gif'
         },
         {
           itemname: 'Christmas',
           itemcost: 110,
+          itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
           imgpath: 'src/assets/shop/christmas.gif'
         },
         {
           itemname: 'Park',
           itemcost: 200,
+          itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
           imgpath: 'src/assets/shop/park.gif'
+        },
+        {
+          itemname: 'Seamese',
+          itemcost: 1000,
+          itemtype: 'Cat',
+          itemdesc: 'Change your cat type to Seamese!',
+          imgpath: 'src/assets/shop/Siamese.gif'
+        },
+        {
+          itemname: 'Black',
+          itemcost: 1000,
+          itemtype: 'Cat',
+          itemdesc: 'Change your cat type to Black!',
+          imgpath: 'src/assets/shop/Black.gif'
+        },
+        {
+          itemname: 'Pink',
+          itemcost: 1000,
+          itemtype: 'Cat',
+          itemdesc: 'Change your cat type to Pinkie!',
+          imgpath: 'src/assets/shop/Pinkie.gif'
         }
       ],
       itemqty: 1,
@@ -133,27 +174,28 @@ export default {
   },
   methods: {
     fetchUserInventory() {
-      const username = localStorage.getItem('username');
+      const username = localStorage.getItem('username')
 
       // API call to fetch user inventory
-      axios.get(`http://localhost:8000/api/userinventory/${username}`)
-        .then(response => {
-          const inventory = response.data;
+      axios
+        .get(`http://localhost:8000/api/userinventory/${username}`)
+        .then((response) => {
+          const inventory = response.data
           console.log(inventory)
           // Find quantities of each type of fish
-          inventory.forEach(item => {
+          inventory.forEach((item) => {
             if (item.itemname === 'Regular Fish') {
-              this.regularFishQty = item.itemqty;
+              this.regularFishQty = item.itemqty
             } else if (item.itemname === 'Rare Fish') {
-              this.rareFishQty = item.itemqty;
+              this.rareFishQty = item.itemqty
             } else if (item.itemname === 'Ultra Fish') {
-              this.ultraFishQty = item.itemqty;
+              this.ultraFishQty = item.itemqty
             }
-          });
+          })
         })
-        .catch(error => {
-          console.error('Error fetching user inventory:', error);
-        });
+        .catch((error) => {
+          console.error('Error fetching user inventory:', error)
+        })
     },
     buyItem() {
       const username = localStorage.getItem('username') || 'anonymous'
@@ -169,7 +211,11 @@ export default {
           this.updateInventory(username)
 
           // Remove item from shop if it's a unique background
-          const uniqueBackgrounds = ['src/assets/shop/beach.gif', 'src/assets/shop/christmas.gif', 'src/assets/shop/park.gif']
+          const uniqueBackgrounds = [
+            'src/assets/shop/beach.gif',
+            'src/assets/shop/christmas.gif',
+            'src/assets/shop/park.gif'
+          ]
           if (uniqueBackgrounds.includes(this.selectedItem.imgpath)) {
             this.shopitems = this.shopitems.filter(
               (item) => item.imgpath !== this.selectedItem.imgpath
@@ -215,7 +261,37 @@ export default {
       this.selectedItem = item
       this.isModalOpen = true
       this.itemqty = 1
-      this.fetchUserInventory();
+      this.backgroundOwned = false
+
+      const username = localStorage.getItem('username')
+
+      // Fetch user inventory and check if they already own the selected background
+      axios
+        .get(`http://localhost:8000/api/userinventory/${username}`)
+        .then((response) => {
+          const inventory = response.data
+          console.log(this.selectedItem)
+          if (this.selectedItem.itemtype == 'Background') {
+            const ownedBackground = inventory.some(
+              (inventoryItem) => inventoryItem.imgpath === this.selectedItem.imgpath
+            )
+            this.backgroundOwned = ownedBackground
+          }
+
+          // Update inventory counts if the selected item is a type of fish
+          inventory.forEach((item) => {
+            if (item.itemname === 'Regular Fish') {
+              this.regularFishQty = item.itemqty
+            } else if (item.itemname === 'Rare Fish') {
+              this.rareFishQty = item.itemqty
+            } else if (item.itemname === 'Ultra Fish') {
+              this.ultraFishQty = item.itemqty
+            }
+          })
+        })
+        .catch((error) => {
+          console.error('Error fetching user inventory:', error)
+        })
     },
     closeModal() {
       this.isModalOpen = false
@@ -223,18 +299,20 @@ export default {
   },
   mounted() {
     const username = localStorage.getItem('username') || 'anonymous'
-    const uniqueBackgrounds = ['src/assets/shop/beach.gif', 'src/assets/shop/christmas.gif', 'src/assets/shop/park.gif']
 
     axios
       .get(`http://localhost:8000/api/userinventory/${username}`)
       .then((response) => {
         const inventory = response.data
 
+        // Keeping all items in the shop
         inventory.forEach((item) => {
-          if (uniqueBackgrounds.includes(item.imgpath)) {
-            this.shopitems = this.shopitems.filter(
-              (shopItem) => shopItem.imgpath !== item.imgpath
-            )
+          if (item.itemname === 'Regular Fish') {
+            this.regularFishQty = item.itemqty
+          } else if (item.itemname === 'Rare Fish') {
+            this.rareFishQty = item.itemqty
+          } else if (item.itemname === 'Ultra Fish') {
+            this.ultraFishQty = item.itemqty
           }
         })
       })
@@ -245,10 +323,9 @@ export default {
 }
 </script>
 
-
 <style scoped>
 .shop-container {
-  height: 400px;
+  height: fit-content;
   background-color: #d2691e;
   border-radius: 10px;
   border: solid 0.5px brown;
