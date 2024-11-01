@@ -1,5 +1,6 @@
 <template>
-  <div class="container-fluid">
+  <body>
+    <div class="container-fluid">
     <div class="forum-container row">
       <!-- Forum Section with Nav Bar -->
       <div class="col-lg-8 col-12 mx-auto">
@@ -79,6 +80,7 @@
       </div>
     </div>
   </div>
+  </body>
 </template>
 
 <script>
@@ -205,6 +207,12 @@ export default {
 
 <style scoped>
 /* General Styles */
+body {
+  background-color: #fff3e7;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
 .forum-title {
   font-family: 'Jersey 25', sans-serif;
   font-size: 2rem;
