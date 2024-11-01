@@ -213,6 +213,7 @@ body {
 .profile-container {
   background-color: #fff3e7;
   margin: 0px;
+  min-height: 100vh;
 }
 
 .jumbotron,
