@@ -213,9 +213,9 @@ export default {
 
           // Remove item from shop if it's a unique background
           const uniqueBackgrounds = [
-            'src/assets/shop/beach.gif',
-            'src/assets/shop/christmas.gif',
-            'src/assets/shop/park.gif'
+            '../assets/shop/beach.gif',
+            '../assets/shop/christmas.gif',
+            '../assets/shop/park.gif'
           ]
           if (uniqueBackgrounds.includes(this.selectedItem.imgpath)) {
             this.shopitems = this.shopitems.filter(
@@ -235,7 +235,9 @@ export default {
     },
     async updateInventory(username) {
       try {
-        const response = await axios.get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
+        const response = await axios.get(
+          `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
+        )
         const inventory = response.data
 
         const existingItem = inventory.find((item) => item.itemname === this.selectedItem.itemname)
