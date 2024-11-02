@@ -200,6 +200,18 @@ import s_down1 from '../assets/pet_related/siamese/down1.png'
 import s_down2 from '../assets/pet_related/siamese/down2.png'
 import s_down3 from '../assets/pet_related/siamese/down3.png'
 
+import p_walkingright from '../assets/pet_related/pinkie/walkingright.png'
+import p_walkingleft from '../assets/pet_related/pinkie/walkingleft.png'
+import p_licking from '../assets/pet_related/pinkie/licking.png'
+import p_stretchingright from '../assets/pet_related/pinkie/stretchingright.png'
+import p_stretchingleft from '../assets/pet_related/pinkie/stretchingleft.png'
+import p_up1 from '../assets/pet_related/pinkie/up1.png'
+import p_up2 from '../assets/pet_related/pinkie/up2.png'
+import p_up3 from '../assets/pet_related/pinkie/up3.png'
+import p_down1 from '../assets/pet_related/pinkie/down1.png'
+import p_down2 from '../assets/pet_related/pinkie/down2.png'
+import p_down3 from '../assets/pet_related/pinkie/down3.png'
+
 import reg_1 from '../assets/pet_related/fish/reg_1.png'
 import reg_2 from '../assets/pet_related/fish/reg_2.png'
 import reg_3 from '../assets/pet_related/fish/reg_3.png'
@@ -500,12 +512,12 @@ class GameScene extends Phaser.Scene {
       this.load.image('catDown3', o_down3)
     } else if (this.petType === 'Siamese') {
       console.log('loading siamese pet assets')
-      // Load all assets for the siamese cat
-      this.load.spritesheet('catWalkingRight', s_walkingright, { frameWidth: 60, frameHeight: 50 })
-      this.load.spritesheet('catWalkingLeft', s_walkingleft, { frameWidth: 64, frameHeight: 64 })
+
+      this.load.spritesheet('catWalkingRight', s_walkingright, { frameWidth: 64, frameHeight: 54 })
+      this.load.spritesheet('catWalkingLeft', s_walkingleft, { frameWidth: 64, frameHeight: 54 })
       this.load.spritesheet('catLicking', s_licking, { frameWidth: 64, frameHeight: 64 })
-      this.load.spritesheet('stretchRight', s_stretchingright, { frameWidth: 64, frameHeight: 64 })
-      this.load.spritesheet('stretchLeft', s_stretchingleft, { frameWidth: 64, frameHeight: 64 })
+      this.load.spritesheet('stretchRight', s_stretchingright, { frameWidth: 64, frameHeight: 54 })
+      this.load.spritesheet('stretchLeft', s_stretchingleft, { frameWidth: 64, frameHeight: 54 })
 
       this.load.image('catUp1', s_up1)
       this.load.image('catUp2', s_up2)
@@ -513,6 +525,21 @@ class GameScene extends Phaser.Scene {
       this.load.image('catDown1', s_down1)
       this.load.image('catDown2', s_down2)
       this.load.image('catDown3', s_down3)
+    } else if (this.petType === 'Pinkie') {
+      console.log('loading siamese pet assets')
+
+      this.load.spritesheet('catWalkingRight', p_walkingright, { frameWidth: 64, frameHeight: 54 })
+      this.load.spritesheet('catWalkingLeft', p_walkingleft, { frameWidth: 64, frameHeight: 54 })
+      this.load.spritesheet('catLicking', p_licking, { frameWidth: 64, frameHeight: 64 })
+      this.load.spritesheet('stretchRight', p_stretchingright, { frameWidth: 64, frameHeight: 54 })
+      this.load.spritesheet('stretchLeft', p_stretchingleft, { frameWidth: 64, frameHeight: 54 })
+
+      this.load.image('catUp1', p_up1)
+      this.load.image('catUp2', p_up2)
+      this.load.image('catUp3', p_up3)
+      this.load.image('catDown1', p_down1)
+      this.load.image('catDown2', p_down2)
+      this.load.image('catDown3', p_down3)
     }
 
     // Load common assets, like fish
@@ -541,7 +568,21 @@ class GameScene extends Phaser.Scene {
       this.defineOrangeCatAnimations()
     } else if (this.petType === 'Siamese') {
       this.defineSiameseCatAnimations()
+    } else if (this.petType === 'Pinkie') {
+      this.definePinkieCatAnimations()
     }
+    this.anims.create({
+      key: 'goUp',
+      frames: [{ key: 'catUp1' }, { key: 'catUp2' }, { key: 'catUp3' }],
+      frameRate: 10,
+      repeat: -1
+    })
+    this.anims.create({
+      key: 'goDown',
+      frames: [{ key: 'catDown1' }, { key: 'catDown2' }, { key: 'catDown3' }],
+      frameRate: 10,
+      repeat: -1
+    })
 
     this.cat.play('walkRight')
     this.currentAction = 'walkRight'
@@ -563,14 +604,14 @@ class GameScene extends Phaser.Scene {
   defineOrangeCatAnimations() {
     this.anims.create({
       key: 'walkRight',
-      frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 7 }),
+      frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 5 }),
       frameRate: 10,
       repeat: -1
     })
 
     this.anims.create({
       key: 'walkLeft',
-      frames: this.anims.generateFrameNumbers('catWalkingLeft', { start: 0, end: 7 }),
+      frames: this.anims.generateFrameNumbers('catWalkingLeft', { start: 0, end: 5 }),
       frameRate: 10,
       repeat: -1
     })
@@ -601,7 +642,7 @@ class GameScene extends Phaser.Scene {
     // Define all animations for the siamese cat
     this.anims.create({
       key: 'walkRight',
-      frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 6 }),
+      frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 2 }),
       frameRate: 10,
       repeat: -1
     })
@@ -630,6 +671,44 @@ class GameScene extends Phaser.Scene {
     this.anims.create({
       key: 'stretchLeft',
       frames: this.anims.generateFrameNumbers('stretchLeft', { start: 0, end: 5 }),
+      frameRate: 5,
+      repeat: 0
+    })
+  }
+
+  definePinkieCatAnimations() {
+    // Define all animations for the pinkie cat
+    this.anims.create({
+      key: 'walkRight',
+      frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 6 }),
+      frameRate: 10,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'walkLeft',
+      frames: this.anims.generateFrameNumbers('catWalkingLeft', { start: 0, end: 6 }),
+      frameRate: 10,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'lick',
+      frames: this.anims.generateFrameNumbers('catLicking', { start: 0, end: 14 }),
+      frameRate: 5,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'stretchRight',
+      frames: this.anims.generateFrameNumbers('stretchRight', { start: 0, end: 4 }),
+      frameRate: 5,
+      repeat: 0
+    })
+
+    this.anims.create({
+      key: 'stretchLeft',
+      frames: this.anims.generateFrameNumbers('stretchLeft', { start: 0, end: 4 }),
       frameRate: 5,
       repeat: 0
     })
@@ -837,7 +916,7 @@ class GameScene extends Phaser.Scene {
     this.cat.anims.stop()
     this.isLicking = false
     this.isGoingUp = true
-
+    console.log('going up')
     this.cat.setTexture('catUp1').setScale(1.5).disableInteractive()
     this.cat.play('goUp').setScale(1.5)
     this.currentAction = 'goUp'
