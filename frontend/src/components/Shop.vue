@@ -47,11 +47,11 @@
         </div>
 
         <p><strong>Cost:</strong> {{ totalCost }} coins</p>
-
         <!-- Purchase Button or Ownership Message -->
-        <div v-if="backgroundOwned || catOwned">
+        <!-- Purchase Button or Ownership Message -->
+        <div v-if="backgroundOwned">
           <button type="button" class="btn btn-secondary" disabled>
-            You already own this {{ selectedItem.itemtype.toLowerCase() }}!
+            You already own this background!
           </button>
         </div>
         <div v-else>
@@ -90,7 +90,6 @@ export default {
       regularFishQty: 0,
       rareFishQty: 0,
       ultraFishQty: 0,
-      catOwned: false,
       backgroundOwned: false,
       shopitems: [
         {
@@ -139,21 +138,21 @@ export default {
           imgpath: 'src/assets/shop/park.gif'
         },
         {
-          itemname: 'Siamese',
+          itemname: 'Seamese',
           itemcost: 1000,
           itemtype: 'Cat',
-          itemdesc: 'Change your cat type to Siamese!',
+          itemdesc: 'Change your cat type to Seamese!',
           imgpath: 'src/assets/shop/Siamese.gif'
         },
         {
-          itemname: 'Charcoal',
+          itemname: 'Black',
           itemcost: 1000,
           itemtype: 'Cat',
           itemdesc: 'Change your cat type to Black!',
           imgpath: 'src/assets/shop/Black.gif'
         },
         {
-          itemname: 'Pinkie',
+          itemname: 'Pink',
           itemcost: 1000,
           itemtype: 'Cat',
           itemdesc: 'Change your cat type to Pinkie!',
@@ -233,36 +232,23 @@ export default {
           console.error('Error deducting points:', error)
         })
     },
-    async updateInventory(username) {
-      try {
-        const response = await axios.get(`http://localhost:8000/api/userinventory/${username}`)
-        const inventory = response.data
-
-        const existingItem = inventory.find((item) => item.itemname === this.selectedItem.itemname)
-
-        if (existingItem) {
-          await axios.put(`http://localhost:8000/api/inventory/update`, {
-            username: username,
-            itemname: this.selectedItem.itemname,
-            itemqty: existingItem.itemqty + this.itemqty
-          })
-          console.log('Item quantity updated successfully')
-        } else {
-          await axios.post('http://localhost:8000/api/inventory/add', {
-            username: username,
-            itemname: this.selectedItem.itemname,
-            itemtype: this.selectedItem.itemtype,
-            itemdesc: this.selectedItem.itemdesc,
-            itemqty: this.itemqty,
-            imgpath: this.selectedItem.imgpath
-          })
-          console.log('New item added successfully')
-        }
-      } catch (error) {
-        console.error('Error updating inventory:', error)
-      }
+    updateInventory(username) {
+      axios
+        .post('http://localhost:8000/api/inventory/add', {
+          username: username,
+          itemname: this.selectedItem.itemname,
+          itemtype: this.selectedItem.itemname.includes('Fish') ? 'Fish' : 'Background',
+          itemdesc: this.selectedItem.itemdesc,
+          itemqty: this.itemqty,
+          imgpath: this.selectedItem.imgpath
+        })
+        .then((response) => {
+          console.log('Inventory updated successfully:', response.data)
+        })
+        .catch((error) => {
+          console.error('Error updating inventory:', error)
+        })
     },
-
     increaseQty() {
       this.itemqty++
     },
@@ -276,26 +262,20 @@ export default {
       this.isModalOpen = true
       this.itemqty = 1
       this.backgroundOwned = false
-      this.catOwned = false
 
       const username = localStorage.getItem('username')
 
-      // Fetch user inventory and check if they already own the selected background or cat
+      // Fetch user inventory and check if they already own the selected background
       axios
         .get(`http://localhost:8000/api/userinventory/${username}`)
         .then((response) => {
           const inventory = response.data
-
-          if (this.selectedItem.itemtype === 'Background') {
+          console.log(this.selectedItem)
+          if (this.selectedItem.itemtype == 'Background') {
             const ownedBackground = inventory.some(
               (inventoryItem) => inventoryItem.imgpath === this.selectedItem.imgpath
             )
             this.backgroundOwned = ownedBackground
-          } else if (this.selectedItem.itemtype === 'Cat') {
-            const ownedCat = inventory.some(
-              (inventoryItem) => inventoryItem.itemname === this.selectedItem.itemname
-            )
-            this.catOwned = ownedCat
           }
 
           // Update inventory counts if the selected item is a type of fish
@@ -313,7 +293,6 @@ export default {
           console.error('Error fetching user inventory:', error)
         })
     },
-
     closeModal() {
       this.isModalOpen = false
     }
