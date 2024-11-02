@@ -24,7 +24,7 @@
         <div class="col-3 ms-auto d-flex justify-content-end">
           <div class="d-flex align-items-center">
   <h4 class="m-0 text-white">{{ userPoints }} &nbsp;</h4>
-  <img width="18px" src="../assets/shop/coin.gif" alt="coins icon" />
+  <img width="18px" src="/assets/shop/coin.gif" alt="coins icon" />
 </div>
   </div>
       </div>

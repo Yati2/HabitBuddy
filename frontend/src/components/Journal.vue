@@ -56,7 +56,7 @@
                 :class="{ selected: mood === 'mood-excellent' }"
                 @click="mood = 'mood-excellent'"
               >
-                <img src="../assets/emotions/excellent.png" alt="Excellent" />
+                <img src="/assets/emotions/excellent.png" alt="Excellent" />
                 <span>Excellent</span>
               </div>
               <div
@@ -64,7 +64,7 @@
                 :class="{ selected: mood === 'mood-good' }"
                 @click="mood = 'mood-good'"
               >
-                <img src="../assets/emotions/good.png" alt="Good" />
+                <img src="/assets/emotions/good.png" alt="Good" />
                 <span>Good</span>
               </div>
               <div
@@ -72,7 +72,7 @@
                 :class="{ selected: mood === 'mood-neutral' }"
                 @click="mood = 'mood-neutral'"
               >
-                <img src="../assets/emotions/neutral.png" alt="Neutral" />
+                <img src="/assets/emotions/neutral.png" alt="Neutral" />
                 <span>Neutral</span>
               </div>
               <div
@@ -80,7 +80,7 @@
                 :class="{ selected: mood === 'mood-bad' }"
                 @click="mood = 'mood-bad'"
               >
-                <img src="../assets/emotions/bad.png" alt="Bad" />
+                <img src="/assets/emotions/bad.png" alt="Bad" />
                 <span>Bad</span>
               </div>
               <div
@@ -88,7 +88,7 @@
                 :class="{ selected: mood === 'mood-terrible' }"
                 @click="mood = 'mood-terrible'"
               >
-                <img src="../assets/emotions/terrible.png" alt="Terrible" />
+                <img src="/assets/emotions/terrible.png" alt="Terrible" />
                 <span>Terrible</span>
               </div>
             </div>

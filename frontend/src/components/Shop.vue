@@ -3,7 +3,7 @@
   <div class="shop-section">
     <h4>The Shopkeeper...</h4>
     <div class="shop-container">
-      <img src="../assets/shop/storekeeper.gif" width="150px" height="150px" />
+      <img src="/assets/shop/storekeeper.gif" width="150px" height="150px" />
       <div class="row" style="justify-content: center; align-items: center; text-align: center">
         <div v-for="item in shopitems" :key="item.itemname" class="col-4">
           <img
@@ -99,7 +99,7 @@ export default {
           itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 10 of your cat's happiness!",
-          imgpath: '../assets/shop/fish1.png'
+          imgpath: '/assets/shop/fish1.png'
         },
         {
           itemname: 'Rare Fish',
@@ -107,7 +107,7 @@ export default {
           itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 15 of your cat's happiness!",
-          imgpath: '../assets/shop/fish2.png'
+          imgpath: '/assets/shop/fish2.png'
         },
         {
           itemname: 'Ultra Fish',
@@ -115,49 +115,49 @@ export default {
           itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 20 of your cat's happiness!",
-          imgpath: '../assets/shop/fish3.png'
+          imgpath: '/assets/shop/fish3.png'
         },
         {
           itemname: 'Beach',
           itemcost: 50,
           itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
-          imgpath: '../assets/shop/beach.gif'
+          imgpath: '/assets/shop/beach.gif'
         },
         {
           itemname: 'Christmas',
           itemcost: 110,
           itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
-          imgpath: '../assets/shop/christmas.gif'
+          imgpath: '/assets/shop/christmas.gif'
         },
         {
           itemname: 'Park',
           itemcost: 200,
           itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
-          imgpath: '../assets/shop/park.gif'
+          imgpath: '/assets/shop/park.gif'
         },
         {
           itemname: 'Siamese',
           itemcost: 1000,
           itemtype: 'Cat',
           itemdesc: 'Change your cat type to Siamese!',
-          imgpath: '../assets/shop/Siamese.gif'
+          imgpath: '/assets/shop/Siamese.gif'
         },
         {
           itemname: 'Charcoal',
           itemcost: 1000,
           itemtype: 'Cat',
           itemdesc: 'Change your cat type to Black!',
-          imgpath: '../assets/shop/Black.gif'
+          imgpath: '/assets/shop/Black.gif'
         },
         {
           itemname: 'Pinkie',
           itemcost: 1000,
           itemtype: 'Cat',
           itemdesc: 'Change your cat type to Pinkie!',
-          imgpath: '../assets/shop/Pinkie.gif'
+          imgpath: '/assets/shop/Pinkie.gif'
         }
       ],
       itemqty: 1,
@@ -213,9 +213,9 @@ export default {
 
           // Remove item from shop if it's a unique background
           const uniqueBackgrounds = [
-            '../assets/shop/beach.gif',
-            '../assets/shop/christmas.gif',
-            '../assets/shop/park.gif'
+            '/assets/shop/beach.gif',
+            '/assets/shop/christmas.gif',
+            '/assets/shop/park.gif'
           ]
           if (uniqueBackgrounds.includes(this.selectedItem.imgpath)) {
             this.shopitems = this.shopitems.filter(

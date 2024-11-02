@@ -4,7 +4,7 @@
       <div class="container-fluid">
         <a class="navbar-brand" href="/">
           <img
-            src="../assets/cat-icon.png"
+            src="/assets/cat-icon.png"
             alt="Cat Icon"
             class="cat-icon d-inline-block align-text-top"
           />
