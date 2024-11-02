@@ -13,7 +13,6 @@
       <!-- Pet Name -->
       <div class="pet-info-content d-flex justify-content-between align-items-center">
         <h5 id="pet-name" class="text-center flex-grow-1">Name: {{ petName }}</h5>
-        <i class="bi bi-pencil-square font-sm" @click="showModal = true"></i>
       </div>
 
       <!-- Pet Happiness -->
@@ -99,26 +98,30 @@
         </div>
       </div>
       <div class="mt-3 pet-info-content">
-        <h5 class="text-center">Choose Background</h5>
+        <h5 class="text-center">Customise Here</h5>
         <div id="backgroundCarousel" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
             <div
-              v-for="(bg, index) in allBackgrounds"
-              :key="bg.name"
+              v-for="(item, index) in allCustomItems"
+              :key="item.name"
               :class="['carousel-item', { active: index === 0 }]"
             >
               <div class="d-flex flex-column align-items-center">
                 <img
-                  :src="bg.imgpath"
+                  :src="item.imgpath"
                   class="img-fluid"
                   style="width: 100px"
                   alt="Background Icon"
                 />
-                <h5 class="pt-2">{{ bg.name }}</h5>
-                <button class="petbtn mt-3" :disabled="!bg.owned" @click="applyBackground(bg)">
+                <h5 class="pt-2">{{ item.name }}</h5>
+                <button
+                  class="petbtn mt-3"
+                  :disabled="!item.owned"
+                  @click="applyCustomization(item)"
+                >
                   Apply
                 </button>
-                <p v-if="!bg.owned" class="text-danger pt-2" style="font-size: 0.8rem">
+                <p v-if="!item.owned" class="text-danger pt-2" style="font-size: 0.8rem">
                   Purchase from Shopkeeper
                   <router-link to="/tasks" class="text-decoration-underline text-danger"
                     >here</router-link
@@ -150,36 +153,6 @@
       </div>
     </div>
 
-    <!-- Modal for editing pet name -->
-    <div
-      v-if="showModal"
-      class="modal fade show"
-      tabindex="-1"
-      role="dialog"
-      style="display: block"
-    >
-      <div class="modal-dialog-centered custom-modal" role="document">
-        <div class="modal-content">
-          <div class="modal-header d-flex justify-content-between align-items-center">
-            <h5 class="modal-title">What do you want to name your pet?</h5>
-            <button type="button" class="close" @click="showModal = false" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <input v-model="newPetName" class="form-control" placeholder="Enter new pet name" />
-          </div>
-          <div class="modal-footer d-flex justify-content-between align-items-center">
-            <button type="button" class="petbtn" @click="showModal = false">Close</button>
-            <button type="button" class="petbtn" @click="savePetName">Save changes</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal background overlay -->
-    <div v-if="showModal" class="modal-backdrop fade show"></div>
-
     <!-- Tooltip / Help Message for Happiness -->
     <div
       v-if="showHappinessHelpMsg"
@@ -198,22 +171,35 @@
 import Phaser from 'phaser'
 import axios from 'axios'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import walkingright from '../assets/pet_related/yellow_cat/walkingright.png'
-import walkingleft from '../assets/pet_related/yellow_cat/walkingleft.png'
-import licking from '../assets/pet_related/yellow_cat/licking.png'
-import stretchingright from '../assets/pet_related/yellow_cat/stretchingright.png'
-import stretchingleft from '../assets/pet_related/yellow_cat/stretchingleft.png'
-import jumpingright from '../assets/pet_related/yellow_cat/jumpingright.png'
-import jumpingleft from '../assets/pet_related/yellow_cat/jumpingleft.png'
-import idle from '../assets/pet_related/yellow_cat/idle.png'
-import angryright from '../assets/pet_related/yellow_cat/angryright.png'
-import angryleft from '../assets/pet_related/yellow_cat/angryleft.png'
-import catup1 from '../assets/pet_related/yellow_cat/up1.png'
-import catup2 from '../assets/pet_related/yellow_cat/up2.png'
-import catup3 from '../assets/pet_related/yellow_cat/up3.png'
-import catdown1 from '../assets/pet_related/yellow_cat/down1.png'
-import catdown2 from '../assets/pet_related/yellow_cat/down2.png'
-import catdown3 from '../assets/pet_related/yellow_cat/down3.png'
+import orange from '../assets/pet_related/orange/orange.gif'
+import siamese from '../assets/pet_related/siamese/siamese.gif'
+import pinkie from '../assets/pet_related/pinkie/pinkie.gif'
+
+import o_walkingright from '../assets/pet_related/orange/walkingright.png'
+import o_walkingleft from '../assets/pet_related/orange/walkingleft.png'
+import o_licking from '../assets/pet_related/orange/licking.png'
+import o_stretchingright from '../assets/pet_related/orange/stretchingright.png'
+import o_stretchingleft from '../assets/pet_related/orange/stretchingleft.png'
+
+import o_up1 from '../assets/pet_related/orange/up1.png'
+import o_up2 from '../assets/pet_related/orange/up2.png'
+import o_up3 from '../assets/pet_related/orange/up3.png'
+import o_down1 from '../assets/pet_related/orange/down1.png'
+import o_down2 from '../assets/pet_related/orange/down2.png'
+import o_down3 from '../assets/pet_related/orange/down3.png'
+
+import s_walkingright from '../assets/pet_related/siamese/walkingright.png'
+import s_walkingleft from '../assets/pet_related/siamese/walkingleft.png'
+import s_licking from '../assets/pet_related/siamese/licking.png'
+import s_stretchingright from '../assets/pet_related/siamese/stretchingright.png'
+import s_stretchingleft from '../assets/pet_related/siamese/stretchingleft.png'
+import s_up1 from '../assets/pet_related/siamese/up1.png'
+import s_up2 from '../assets/pet_related/siamese/up2.png'
+import s_up3 from '../assets/pet_related/siamese/up3.png'
+import s_down1 from '../assets/pet_related/siamese/down1.png'
+import s_down2 from '../assets/pet_related/siamese/down2.png'
+import s_down3 from '../assets/pet_related/siamese/down3.png'
+
 import reg_1 from '../assets/pet_related/fish/reg_1.png'
 import reg_2 from '../assets/pet_related/fish/reg_2.png'
 import reg_3 from '../assets/pet_related/fish/reg_3.png'
@@ -223,7 +209,7 @@ import rare_3 from '../assets/pet_related/fish/rare_3.png'
 import ulti_1 from '../assets/pet_related/fish/ulti_1.png'
 import ulti_2 from '../assets/pet_related/fish/ulti_2.png'
 import ulti_3 from '../assets/pet_related/fish/ulti_3.png'
-import { Tooltip } from 'bootstrap/dist/js/bootstrap.bundle.min'
+
 import Beach from '../assets/pet_related/bg/beach.gif'
 import Christmas from '../assets/pet_related/bg/christmas.gif'
 import Park from '../assets/pet_related/bg/park.gif'
@@ -236,11 +222,9 @@ export default {
       username: '',
       petHappiness: '',
       showHappinessHelpMsg: false,
-      showModal: false,
-      newPetName: '',
       isEating: false,
       tooltipWidth: 'auto',
-   
+
       allFishItems: [
         { itemname: 'Regular Fish', imgpath: reg_1, owned: false },
         { itemname: 'Rare Fish', imgpath: rare_1, owned: false },
@@ -248,13 +232,14 @@ export default {
       ],
 
       // Define all background items
-      allBackgrounds: [
-        { name: 'Cozyroom', imgpath: Cozyroom, owned: true },
-        { name: 'Beach ', imgpath: Beach, owned: false },
-        { name: 'Christmas', imgpath: Christmas, owned: false },
-        { name: 'Park ', imgpath: Park, owned: false }
-
-        // Add other backgrounds as needed
+      allCustomItems: [
+        { name: 'Cozyroom', imgpath: Cozyroom, owned: true, type: 'background' },
+        { name: 'Beach', imgpath: Beach, owned: false, type: 'background' },
+        { name: 'Christmas', imgpath: Christmas, owned: false, type: 'background' },
+        { name: 'Park', imgpath: Park, owned: false, type: 'background' },
+        { name: 'Orange', imgpath: orange, owned: true, type: 'Cat' },
+        { name: 'Siamese', imgpath: siamese, owned: false, type: 'Cat' },
+        { name: 'Pinkie', imgpath: pinkie, owned: false, type: 'Cat' }
       ]
     }
   },
@@ -264,6 +249,22 @@ export default {
     this.setTooltipWidth()
     this.fetchUserInventory()
 
+    const savedCustomization = localStorage.getItem('selectedCustomization')
+    if (savedCustomization) {
+      const savedBackgroundItem = this.allCustomItems.find(
+        (item) => item.name === savedCustomization
+      )
+      if (savedBackgroundItem && savedBackgroundItem.type === 'background') {
+        this.applyCustomization(savedBackgroundItem)
+      } else {
+        console.warn('The saved item is not a background, and thus cannot be applied as one.')
+      }
+    }
+
+    // Retrieve the saved pet or use 'orange' as default
+    const savedPet = localStorage.getItem('selectedPet') || 'orange'
+
+    // Configure Phaser game instance
     const config = {
       type: Phaser.AUTO,
       width: '100%',
@@ -275,18 +276,18 @@ export default {
         autoCenter: Phaser.Scale.CENTER_BOTH
       },
       physics: {
-        default: 'arcade', // Ensure the physics system is set to 'arcade' or another valid type
+        default: 'arcade',
         arcade: {
           gravity: { y: 0 },
           debug: false
         }
       },
-      scene: [GameScene]
+      scene: [new GameScene(savedPet)] // Make sure `savedPet` is used here.
     }
 
     this.phaserGame = new Phaser.Game(config)
 
-    //Decrease happiness every 8 hours (8 * 60 * 60 * 1000 milliseconds)
+    // Decrease happiness every 8 hours (8 * 60 * 60 * 1000 milliseconds)
     setInterval(this.decreaseHappiness, 1 * 60 * 60 * 1000)
   },
 
@@ -312,21 +313,58 @@ export default {
     setTooltipWidth() {
       const gameContainer = this.$refs.gameContainer
       if (gameContainer) {
-        this.tooltipWidth = `${gameContainer.clientWidth}px` // Set tooltip width to match #game-container
+        this.tooltipWidth = `${gameContainer.clientWidth}px`
       }
     },
-    applyBackground(background) {
-      if (background.owned) {
-        const gameBg = document.getElementById('game-bg')
-        if (gameBg) {
-          gameBg.src = background.imgpath
-        }
 
-        this.saveBackgroundToUser(background.name)
+    updateGameWithNewPet(newPetType) {
+      if (this.phaserGame) {
+        this.phaserGame.destroy(true)
+      }
+
+      const config = {
+        type: Phaser.AUTO,
+        width: '100%',
+        height: '100%',
+        parent: 'game-container',
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.RESIZE,
+          autoCenter: Phaser.Scale.CENTER_BOTH
+        },
+        physics: {
+          default: 'arcade',
+          arcade: {
+            gravity: { y: 0 },
+            debug: false
+          }
+        },
+        scene: [new GameScene(newPetType)]
+      }
+
+      this.phaserGame = new Phaser.Game(config)
+    },
+
+    applyCustomization(selectedItem) {
+      console.log('Applying customization:', selectedItem)
+      if (selectedItem.owned) {
+        if (selectedItem.type === 'background') {
+          const gameBg = document.getElementById('game-bg')
+          if (gameBg) {
+            gameBg.src = selectedItem.imgpath
+          }
+
+          localStorage.setItem('selectedBackground', selectedItem.name)
+        } else if (selectedItem.type === 'Cat') {
+          localStorage.setItem('selectedPet', selectedItem.name)
+          console.log('updating game with new pet', selectedItem.name)
+          this.updateGameWithNewPet(selectedItem.name)
+        }
       } else {
-        console.warn('Background not owned and cannot be applied.')
+        console.warn('This item is either not owned or not applicable as a background or pet.')
       }
     },
+
     getHappinessBoost(fish) {
       if (fish.itemname.includes('Regular')) {
         return 10
@@ -349,17 +387,6 @@ export default {
       }
     },
 
-    async savePetName() {
-      try {
-        const response = await axios.put(`http://localhost:8000/api/pet/${this.username}`, {
-          petName: this.newPetName // Send the new name to the API
-        })
-        this.petName = response.data.petName // Update the displayed pet name
-        this.showModal = false // Close the modal
-      } catch (error) {
-        console.error('Error updating pet name:', error)
-      }
-    },
     decreaseHappiness() {
       if (this.petHappiness > 0) {
         this.petHappiness -= 10
@@ -387,17 +414,19 @@ export default {
           }
         })
 
-        // Update `allBackgrounds` based on user-owned backgrounds
-        this.allBackgrounds.forEach((bg) => {
-          const userBg = inventory.find((item) => item.itemname === bg.name)
-          if (userBg) {
-            bg.owned = true
+        // Update `allCustomItems` based on user-owned backgrounds and pets
+        this.allCustomItems.forEach((item) => {
+          const userItem = inventory.find((inventoryItem) => inventoryItem.itemname === item.name)
+          if (userItem) {
+            item.owned = true
+            console.log('item owned:', item.name)
           }
         })
       } catch (error) {
         console.error('Error fetching inventory:', error)
       }
     },
+
     async feedPet(fish) {
       if (this.isEating || this.petHappiness >= 100 || fish.itemqty <= 0) return
 
@@ -443,81 +472,95 @@ export default {
   }
 }
 class GameScene extends Phaser.Scene {
-  constructor() {
+  constructor(petType) {
     super('scene-game')
     this.preActionForResize = null
+    this.petType = petType // Store the selected pet type
   }
 
   preload() {
-    // Load assets here
-    this.load.spritesheet('catWalkingRight', walkingright, {
-      frameWidth: 64,
-      frameHeight: 64
-    })
-    this.load.spritesheet('catWalkingLeft', walkingleft, {
-      frameWidth: 64,
-      frameHeight: 64
-    })
-    this.load.spritesheet('catLicking', licking, {
-      frameWidth: 64,
-      frameHeight: 64
-    })
-    this.load.spritesheet('stretchRight', stretchingright, {
-      frameWidth: 64,
-      frameHeight: 64
-    })
-    this.load.spritesheet('stretchLeft', stretchingleft, {
-      frameWidth: 64,
-      frameHeight: 64
-    })
-    this.load.spritesheet('jumpingright', jumpingright, {
-      frameWidth: 64,
-      frameHeight: 64
-    })
-    this.load.spritesheet('jumpingleft', jumpingleft, {
-      frameWidth: 64,
-      frameHeight: 64
-    })
-    this.load.spritesheet('idle', idle, {
-      frameWidth: 64,
-      frameHeight: 64
-    })
-    this.load.spritesheet('angryright', angryright, {
-      frameWidth: 64,
-      frameHeight: 64
-    })
-    this.load.spritesheet('angryleft', angryleft, {
-      frameWidth: 64,
-      frameHeight: 64
-    })
+    this.loadAssetsForPet() // Load pet-specific assets based on petType
+  }
 
-    this.load.image('catUp1', catup1)
-    this.load.image('catUp2', catup2)
-    this.load.image('catUp3', catup3)
-    this.load.image('catDown1', catdown1)
-    this.load.image('catDown2', catdown2)
-    this.load.image('catDown3', catdown3)
-    this.load.image('reg_1', reg_1)
-    this.load.image('reg_2', reg_2)
-    this.load.image('reg_3', reg_3)
-    this.load.image('rare_1', rare_1)
-    this.load.image('rare_2', rare_2)
-    this.load.image('rare_3', rare_3)
-    this.load.image('ulti_1', ulti_1)
-    this.load.image('ulti_2', ulti_2)
-    this.load.image('ulti_3', ulti_3)
+  loadAssetsForPet() {
+    if (this.petType === 'Orange') {
+      console.log('loading orange pet assets')
+      // Load all assets for the orange cat
+      this.load.spritesheet('catWalkingRight', o_walkingright, { frameWidth: 64, frameHeight: 64 })
+      this.load.spritesheet('catWalkingLeft', o_walkingleft, { frameWidth: 64, frameHeight: 64 })
+      this.load.spritesheet('catLicking', o_licking, { frameWidth: 64, frameHeight: 64 })
+      this.load.spritesheet('stretchRight', o_stretchingright, { frameWidth: 64, frameHeight: 64 })
+      this.load.spritesheet('stretchLeft', o_stretchingleft, { frameWidth: 64, frameHeight: 64 })
+
+      this.load.image('catUp1', o_up1)
+      this.load.image('catUp2', o_up2)
+      this.load.image('catUp3', o_up3)
+      this.load.image('catDown1', o_down1)
+      this.load.image('catDown2', o_down2)
+      this.load.image('catDown3', o_down3)
+    } else if (this.petType === 'Siamese') {
+      console.log('loading siamese pet assets')
+      // Load all assets for the siamese cat
+      this.load.spritesheet('catWalkingRight', s_walkingright, { frameWidth: 60, frameHeight: 50 })
+      this.load.spritesheet('catWalkingLeft', s_walkingleft, { frameWidth: 64, frameHeight: 64 })
+      this.load.spritesheet('catLicking', s_licking, { frameWidth: 64, frameHeight: 64 })
+      this.load.spritesheet('stretchRight', s_stretchingright, { frameWidth: 64, frameHeight: 64 })
+      this.load.spritesheet('stretchLeft', s_stretchingleft, { frameWidth: 64, frameHeight: 64 })
+
+      this.load.image('catUp1', s_up1)
+      this.load.image('catUp2', s_up2)
+      this.load.image('catUp3', s_up3)
+      this.load.image('catDown1', s_down1)
+      this.load.image('catDown2', s_down2)
+      this.load.image('catDown3', s_down3)
+    }
+
+    // Load common assets, like fish
+    this.load.image('regularFish1', reg_1)
+    this.load.image('regularFish2', reg_2)
+    this.load.image('regularFish3', reg_3)
+    this.load.image('rareFish1', rare_1)
+    this.load.image('rareFish2', rare_2)
+    this.load.image('rareFish3', rare_3)
+    this.load.image('ultimateFish1', ulti_1)
+    this.load.image('ultimateFish2', ulti_2)
+    this.load.image('ultimateFish3', ulti_3)
   }
 
   create() {
-    // Start the cat's initial position relative to the canvas size
+    let initialTexture = this.petType === 'Orange' ? 'catWalkingRight' : 'catWalkingRight'
+
     this.cat = this.physics.add
-      .sprite(0, this.cameras.main.height - 50, 'catWalkingRight')
+      .sprite(0, this.cameras.main.height - 50, initialTexture)
       .setScale(2.5)
       .setInteractive()
-    console.log('current height' + this.cat.y)
-    console.log('canvas height' + this.cameras.main.height)
 
-    // Define animations
+    console.log('pettype', this.petType)
+
+    if (this.petType === 'Orange') {
+      this.defineOrangeCatAnimations()
+    } else if (this.petType === 'Siamese') {
+      this.defineSiameseCatAnimations()
+    }
+
+    this.cat.play('walkRight')
+    this.currentAction = 'walkRight'
+    this.preActionForResize = 'walkRight'
+    this.isWalkingRight = true
+
+    this.sofapositionRight = this.scale.width * 0.8
+    this.sofapositionLeft = this.scale.width * 0.2
+    this.floorUp = this.scale.height * 0.8
+
+    this.scale.on('resize', this.resizeHandler, this)
+    this.eatenFish = this.add.sprite(300, 500, 'reg_1').setVisible(false).setScale(0.5)
+
+    this.cat.on('pointerover', () => {
+      this.triggerStretch()
+    })
+  }
+
+  defineOrangeCatAnimations() {
     this.anims.create({
       key: 'walkRight',
       frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 7 }),
@@ -543,54 +586,55 @@ class GameScene extends Phaser.Scene {
       key: 'stretchRight',
       frames: this.anims.generateFrameNumbers('stretchRight', { start: 0, end: 5 }),
       frameRate: 5,
-      repeat: 0 // Play once
+      repeat: 0
     })
 
     this.anims.create({
       key: 'stretchLeft',
       frames: this.anims.generateFrameNumbers('stretchLeft', { start: 0, end: 5 }),
       frameRate: 5,
-      repeat: 0 // Play once
-    })
-
-    this.anims.create({
-      key: 'goUp',
-      frames: [{ key: 'catUp1' }, { key: 'catUp2' }, { key: 'catUp3' }],
-      frameRate: 5,
-      repeat: -1
-    })
-    this.anims.create({
-      key: 'goDown',
-      frames: [{ key: 'catDown1' }, { key: 'catDown2' }, { key: 'catDown3' }],
-      frameRate: 5,
-      repeat: -1
-    })
-
-    // Start cat walking animation
-    this.cat.play('walkRight')
-    this.currentAction = 'walkRight'
-    this.preActionForResize = 'walkRight'
-    this.isWalkingRight = true
-
-    // Track states
-    this.isLicking = false
-    this.isGoingUp = false
-    this.isWalkingLeft = false
-    this.isStretchingRight = false
-    this.isStretchingLeft = false
-
-    // Set sofa position dynamically based on canvas width
-    this.sofapositionRight = this.scale.width * 0.8
-    this.sofapositionLeft = this.scale.width * 0.2
-    this.floorUp = this.scale.height * 0.8
-
-    // Handle window resize events
-    this.scale.on('resize', this.resizeHandler, this)
-    this.eatenFish = this.add.sprite(300, 500, 'reg_1').setVisible(false).setScale(0.5)
-    this.cat.on('pointerover', () => {
-      this.triggerStretch()
+      repeat: 0
     })
   }
+
+  defineSiameseCatAnimations() {
+    // Define all animations for the siamese cat
+    this.anims.create({
+      key: 'walkRight',
+      frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 6 }),
+      frameRate: 10,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'walkLeft',
+      frames: this.anims.generateFrameNumbers('catWalkingLeft', { start: 0, end: 5 }),
+      frameRate: 10,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'lick',
+      frames: this.anims.generateFrameNumbers('catLicking', { start: 0, end: 14 }),
+      frameRate: 5,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'stretchRight',
+      frames: this.anims.generateFrameNumbers('stretchRight', { start: 0, end: 5 }),
+      frameRate: 5,
+      repeat: 0
+    })
+
+    this.anims.create({
+      key: 'stretchLeft',
+      frames: this.anims.generateFrameNumbers('stretchLeft', { start: 0, end: 5 }),
+      frameRate: 5,
+      repeat: 0
+    })
+  }
+
   startFishEatingAnimation(fishType, onComplete) {
     // Set the fish images based on the type
     const fishImages = {
@@ -882,7 +926,6 @@ canvas {
   flex-direction: column;
   align-items: center;
   max-height: 90vh;
-  overflow-y: auto;
 }
 
 .pet-info-content {
@@ -895,9 +938,9 @@ canvas {
   max-height: 70vh;
   padding: 10px;
   width: 90%;
+  height: fit-content;
   align-items: center;
   border-radius: 10px;
-  overflow-y: auto;
 }
 
 .carousel-item {
