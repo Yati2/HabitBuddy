@@ -41,7 +41,7 @@ export default {
       const username = localStorage.getItem('username') // Get current username
       if (username) {
         axios
-          .get(`http://localhost:8000/api/users/${username}`)
+          .get(`https://habit-buddy-server.vercel.app/api/users/${username}`)
           .then((response) => {
             this.avatar = response.data.avatarImage // Set the avatar image from the response
           })
