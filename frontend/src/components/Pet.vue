@@ -243,7 +243,6 @@ export default {
         { itemname: 'Ultra Fish', imgpath: ulti_1, owned: false }
       ],
 
-      // Define all background items
       allCustomItems: [
         { name: 'Cozyroom', imgpath: Cozyroom, owned: true, type: 'background' },
         { name: 'Beach', imgpath: Beach, owned: false, type: 'background' },
