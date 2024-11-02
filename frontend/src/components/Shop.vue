@@ -99,7 +99,7 @@ export default {
           itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 10 of your cat's happiness!",
-          imgpath: 'src/assets/shop/fish1.png'
+          imgpath: '../assets/shop/fish1.png'
         },
         {
           itemname: 'Rare Fish',
@@ -107,7 +107,7 @@ export default {
           itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 15 of your cat's happiness!",
-          imgpath: 'src/assets/shop/fish2.png'
+          imgpath: '../assets/shop/fish2.png'
         },
         {
           itemname: 'Ultra Fish',
@@ -115,49 +115,49 @@ export default {
           itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 20 of your cat's happiness!",
-          imgpath: 'src/assets/shop/fish3.png'
+          imgpath: '../assets/shop/fish3.png'
         },
         {
           itemname: 'Beach',
           itemcost: 50,
           itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
-          imgpath: 'src/assets/shop/beach.gif'
+          imgpath: '../assets/shop/beach.gif'
         },
         {
           itemname: 'Christmas',
           itemcost: 110,
           itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
-          imgpath: 'src/assets/shop/christmas.gif'
+          imgpath: '../assets/shop/christmas.gif'
         },
         {
           itemname: 'Park',
           itemcost: 200,
           itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
-          imgpath: 'src/assets/shop/park.gif'
+          imgpath: '../assets/shop/park.gif'
         },
         {
           itemname: 'Siamese',
           itemcost: 1000,
           itemtype: 'Cat',
           itemdesc: 'Change your cat type to Siamese!',
-          imgpath: 'src/assets/shop/Siamese.gif'
+          imgpath: '../assets/shop/Siamese.gif'
         },
         {
           itemname: 'Charcoal',
           itemcost: 1000,
           itemtype: 'Cat',
           itemdesc: 'Change your cat type to Black!',
-          imgpath: 'src/assets/shop/Black.gif'
+          imgpath: '../assets/shop/Black.gif'
         },
         {
           itemname: 'Pinkie',
           itemcost: 1000,
           itemtype: 'Cat',
           itemdesc: 'Change your cat type to Pinkie!',
-          imgpath: 'src/assets/shop/Pinkie.gif'
+          imgpath: '../assets/shop/Pinkie.gif'
         }
       ],
       itemqty: 1,
