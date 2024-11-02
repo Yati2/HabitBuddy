@@ -132,7 +132,7 @@ export default {
     getUserInfo() {
       const username = localStorage.getItem('username')
       axios
-        .get(`http://localhost:8000/api/users/${username}`)
+        .get(`https://habit-buddy-server.vercel.app/api/users/${username}`)
         .then((response) => {
           this.user = response.data
           this.bgImage = response.data.bgImage
@@ -153,7 +153,7 @@ export default {
         return
       }
       axios
-        .put(`http://localhost:8000/api/users/${this.user.username}/password`, {
+        .put(`https://habit-buddy-server.vercel.app/api/users/${this.user.username}/password`, {
           password: this.newPassword
         })
         .then((response) => {
@@ -186,7 +186,7 @@ export default {
     updateUserImages() {
       const username = this.user.username
       axios
-        .put(`http://localhost:8000/api/users/${username}/images`, {
+        .put(`https://habit-buddy-server.vercel.app/api/users/${username}/images`, {
           bgImage: this.user.bgImage,
           avatarImage: this.user.avatarImage
         })

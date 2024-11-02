@@ -218,7 +218,7 @@ export default {
         const user = localStorage.getItem('username')
 
         axios
-          .post('http://localhost:8000/api/journals', {
+          .post('https://habit-buddy-server.vercel.app/api/journals', {
             username: user,
             date: fullDate, 
             entry: this.entry,
@@ -246,7 +246,7 @@ export default {
       }
 
       axios
-        .delete(`http://localhost:8000/api/journals/${journalId}`)
+        .delete(`https://habit-buddy-server.vercel.app/api/journals/${journalId}`)
         .then(() => {
           delete this.moodTracker[this.selectedDay]
           this.closeModal()
@@ -266,7 +266,7 @@ export default {
       const month = this.selectedMonth 
 
       axios
-        .get(`http://localhost:8000/api/journals/${username}/${year}/${month}`)
+        .get(`https://habit-buddy-server.vercel.app/api/journals/${username}/${year}/${month}`)
         .then((response) => {
           this.moodTracker = response.data.reduce((acc, entry) => {
             acc[new Date(entry.date).getDate()] = entry 

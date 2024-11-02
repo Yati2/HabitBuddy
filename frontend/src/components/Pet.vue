@@ -390,7 +390,7 @@ export default {
     },
     async fetchPetName() {
       try {
-        const response = await axios.get(`http://localhost:8000/api/pet/${this.username}`)
+        const response = await axios.get(`https://habit-buddy-server.vercel.app/api/pet/${this.username}`)
         this.petName = response.data.petName
         this.newPetName = this.petName // Set the current name in the modal input
         this.petHappiness = response.data.happinessLevel
@@ -412,7 +412,7 @@ export default {
     async fetchUserInventory() {
       const { username } = this
       try {
-        const response = await axios.get(`http://localhost:8000/api/userinventory/${username}`)
+        const response = await axios.get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
         const inventory = response.data
 
         // Update `allFishItems` based on user-owned items
@@ -446,7 +446,7 @@ export default {
       try {
         console.log('decreasing item quantity')
         // Update the quantity in the database
-        await axios.put(`http://localhost:8000/api/inventory/decrease`, {
+        await axios.put(`https://habit-buddy-server.vercel.app/api/inventory/decrease`, {
           username: this.username,
           itemname: fish.itemname,
           decreaseBy: 1
@@ -474,7 +474,7 @@ export default {
     },
     async updateHappinessOnServer() {
       try {
-        await axios.put(`http://localhost:8000/api/pet/${this.username}`, {
+        await axios.put(`https://habit-buddy-server.vercel.app/api/pet/${this.username}`, {
           happinessLevel: this.petHappiness
         })
       } catch (error) {
