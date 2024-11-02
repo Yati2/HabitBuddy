@@ -268,6 +268,7 @@ export default {
       )
       if (savedBackgroundItem && savedBackgroundItem.type === 'background') {
         this.applyCustomization(savedBackgroundItem)
+        console.log('Applied saved background:', savedBackgroundItem)
       } else {
         console.warn('The saved item is not a background, and thus cannot be applied as one.')
       }
@@ -390,7 +391,9 @@ export default {
     },
     async fetchPetName() {
       try {
-        const response = await axios.get(`https://habit-buddy-server.vercel.app/api/pet/${this.username}`)
+        const response = await axios.get(
+          `https://habit-buddy-server.vercel.app/api/pet/${this.username}`
+        )
         this.petName = response.data.petName
         this.newPetName = this.petName // Set the current name in the modal input
         this.petHappiness = response.data.happinessLevel
@@ -412,7 +415,9 @@ export default {
     async fetchUserInventory() {
       const { username } = this
       try {
-        const response = await axios.get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
+        const response = await axios.get(
+          `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
+        )
         const inventory = response.data
 
         // Update `allFishItems` based on user-owned items
