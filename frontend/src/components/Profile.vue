@@ -91,17 +91,17 @@ import axios from 'axios'
 import { isAuthenticated } from '@/auth'
 
 // Import default images
-import bg1 from '../assets/profile/profilebackgrounds/background1.webp'
-import bg2 from '../assets/profile/profilebackgrounds/background2.webp'
-import bg3 from '../assets/profile/profilebackgrounds/background3.webp'
-import bg4 from '../assets/profile/profilebackgrounds/background4.webp'
-import bg5 from '../assets/profile/profilebackgrounds/background5.jpg'
-import avatar1 from '../assets/profile/profilepics/pfp1.jpeg'
-import avatar2 from '../assets/profile/profilepics/pfp2.jpeg'
-import avatar3 from '../assets/profile/profilepics/pfp3.jpeg'
-import avatar4 from '../assets/profile/profilepics/pfp4.jpeg'
-import avatar5 from '../assets/profile/profilepics/pfp5.jpg'
-import avatar6 from '../assets/profile/profilepics/pfp6.jpg'
+import bg1 from '/assets/profile/profilebackgrounds/background1.webp'
+import bg2 from '/assets/profile/profilebackgrounds/background2.webp'
+import bg3 from '/assets/profile/profilebackgrounds/background3.webp'
+import bg4 from '/assets/profile/profilebackgrounds/background4.webp'
+import bg5 from '/assets/profile/profilebackgrounds/background5.jpg'
+import avatar1 from '/assets/profile/profilepics/pfp1.jpeg'
+import avatar2 from '/assets/profile/profilepics/pfp2.jpeg'
+import avatar3 from '/assets/profile/profilepics/pfp3.jpeg'
+import avatar4 from '/assets/profile/profilepics/pfp4.jpeg'
+import avatar5 from '/assets/profile/profilepics/pfp5.jpg'
+import avatar6 from '/assets/profile/profilepics/pfp6.jpg'
 
 export default {
   name: 'Profile',
@@ -132,7 +132,7 @@ export default {
     getUserInfo() {
       const username = localStorage.getItem('username')
       axios
-        .get(`http://localhost:8000/api/users/${username}`)
+        .get(`https://habit-buddy-server.vercel.app/api/users/${username}`)
         .then((response) => {
           this.user = response.data
           this.bgImage = response.data.bgImage
@@ -153,7 +153,7 @@ export default {
         return
       }
       axios
-        .put(`http://localhost:8000/api/users/${this.user.username}/password`, {
+        .put(`https://habit-buddy-server.vercel.app/api/users/${this.user.username}/password`, {
           password: this.newPassword
         })
         .then((response) => {
@@ -186,7 +186,7 @@ export default {
     updateUserImages() {
       const username = this.user.username
       axios
-        .put(`http://localhost:8000/api/users/${username}/images`, {
+        .put(`https://habit-buddy-server.vercel.app/api/users/${username}/images`, {
           bgImage: this.user.bgImage,
           avatarImage: this.user.avatarImage
         })

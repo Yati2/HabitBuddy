@@ -106,7 +106,7 @@ export default {
       console.log(this.username)
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/posts?topic=${this.selectedTopic}`
+          `https://habit-buddy-server.vercel.app/api/posts?topic=${this.selectedTopic}`
         )
         this.forumPosts = response.data.map((post) => ({
           ...post,
@@ -129,7 +129,7 @@ export default {
           topic: this.selectedTopic
         }
 
-        const response = await axios.post('http://localhost:8000/api/posts', newPost)
+        const response = await axios.post('https://habit-buddy-server.vercel.app/api/posts', newPost)
         this.forumPosts.unshift(response.data.post)
         this.newPostContent = ''
       } catch (error) {
@@ -143,7 +143,7 @@ export default {
       try {
         // Sending a DELETE request to the server to remove the post
         console.log(postId)
-        await axios.delete(`http://localhost:8000/api/posts/${postId}`)
+        await axios.delete(`https://habit-buddy-server.vercel.app/api/posts/${postId}`)
 
         // Removing the post from forumPosts in the frontend
         this.forumPosts = this.forumPosts.filter((post) => post._id !== postId)
@@ -162,7 +162,7 @@ export default {
       const post = this.forumPosts.find((p) => p._id === postId)
       post.likes += 1 // Update likes on the frontend
       try {
-        await axios.post(`http://localhost:8000/api/posts/${postId}/like`)
+        await axios.post(`https://habit-buddy-server.vercel.app/api/posts/${postId}/like`)
       } catch (error) {
         console.error('Error liking post:', error)
       }
@@ -183,7 +183,7 @@ export default {
         this.newCommentContent[postId] = '' // Reset comment input
 
         try {
-          await axios.post(`http://localhost:8000/api/posts/${postId}/comment`, newComment)
+          await axios.post(`https://habit-buddy-server.vercel.app/api/posts/${postId}/comment`, newComment)
         } catch (error) {
           console.error('Error adding comment:', error)
         }

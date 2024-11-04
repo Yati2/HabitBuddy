@@ -3,7 +3,7 @@
   <div class="shop-section">
     <h4>The Shopkeeper...</h4>
     <div class="shop-container">
-      <img src="../assets/shop/storekeeper.gif" width="150px" height="150px" />
+      <img src="/assets/shop/storekeeper.gif" width="150px" height="150px" />
       <div class="row" style="justify-content: center; align-items: center; text-align: center">
         <div v-for="item in shopitems" :key="item.itemname" class="col-4">
           <img
@@ -47,11 +47,11 @@
         </div>
 
         <p><strong>Cost:</strong> {{ totalCost }} coins</p>
+
         <!-- Purchase Button or Ownership Message -->
-        <!-- Purchase Button or Ownership Message -->
-        <div v-if="backgroundOwned">
+        <div v-if="backgroundOwned || catOwned">
           <button type="button" class="btn btn-secondary" disabled>
-            You already own this background!
+            You already own this {{ selectedItem.itemtype.toLowerCase() }}!
           </button>
         </div>
         <div v-else>
@@ -90,6 +90,7 @@ export default {
       regularFishQty: 0,
       rareFishQty: 0,
       ultraFishQty: 0,
+      catOwned: false,
       backgroundOwned: false,
       shopitems: [
         {
@@ -98,7 +99,7 @@ export default {
           itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 10 of your cat's happiness!",
-          imgpath: 'src/assets/shop/fish1.png'
+          imgpath: '/assets/shop/fish1.png'
         },
         {
           itemname: 'Rare Fish',
@@ -106,7 +107,7 @@ export default {
           itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 15 of your cat's happiness!",
-          imgpath: 'src/assets/shop/fish2.png'
+          imgpath: '/assets/shop/fish2.png'
         },
         {
           itemname: 'Ultra Fish',
@@ -114,49 +115,49 @@ export default {
           itemtype: 'Fish',
           itemdesc:
             "Caught in the deep blue sea, this fish will regenerate 20 of your cat's happiness!",
-          imgpath: 'src/assets/shop/fish3.png'
+          imgpath: '/assets/shop/fish3.png'
         },
         {
           itemname: 'Beach',
           itemcost: 50,
           itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
-          imgpath: 'src/assets/shop/beach.gif'
+          imgpath: '/assets/shop/beach.gif'
         },
         {
           itemname: 'Christmas',
           itemcost: 110,
           itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
-          imgpath: 'src/assets/shop/christmas.gif'
+          imgpath: '/assets/shop/christmas.gif'
         },
         {
           itemname: 'Park',
           itemcost: 200,
           itemtype: 'Background',
           itemdesc: 'Switch up your room with this all new background!',
-          imgpath: 'src/assets/shop/park.gif'
+          imgpath: '/assets/shop/park.gif'
         },
         {
-          itemname: 'Seamese',
+          itemname: 'Siamese',
           itemcost: 1000,
           itemtype: 'Cat',
-          itemdesc: 'Change your cat type to Seamese!',
-          imgpath: 'src/assets/shop/Siamese.gif'
+          itemdesc: 'Change your cat type to Siamese!',
+          imgpath: '/assets/shop/Siamese.gif'
         },
         {
-          itemname: 'Black',
+          itemname: 'Charcoal',
           itemcost: 1000,
           itemtype: 'Cat',
           itemdesc: 'Change your cat type to Black!',
-          imgpath: 'src/assets/shop/Black.gif'
+          imgpath: '/assets/shop/Black.gif'
         },
         {
-          itemname: 'Pink',
+          itemname: 'Pinkie',
           itemcost: 1000,
           itemtype: 'Cat',
           itemdesc: 'Change your cat type to Pinkie!',
-          imgpath: 'src/assets/shop/Pinkie.gif'
+          imgpath: '/assets/shop/Pinkie.gif'
         }
       ],
       itemqty: 1,
@@ -178,7 +179,7 @@ export default {
 
       // API call to fetch user inventory
       axios
-        .get(`http://localhost:8000/api/userinventory/${username}`)
+        .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
         .then((response) => {
           const inventory = response.data
           console.log(inventory)
@@ -202,7 +203,7 @@ export default {
       const totalCost = this.selectedItem.itemcost * this.itemqty
 
       axios
-        .put(`http://localhost:8000/api/users/${username}/deduct-points`, {
+        .put(`https://habit-buddy-server.vercel.app/api/users/${username}/deduct-points`, {
           pointsToDeduct: totalCost
         })
         .then((response) => {
@@ -212,9 +213,9 @@ export default {
 
           // Remove item from shop if it's a unique background
           const uniqueBackgrounds = [
-            'src/assets/shop/beach.gif',
-            'src/assets/shop/christmas.gif',
-            'src/assets/shop/park.gif'
+            '/assets/shop/beach.gif',
+            '/assets/shop/christmas.gif',
+            '/assets/shop/park.gif'
           ]
           if (uniqueBackgrounds.includes(this.selectedItem.imgpath)) {
             this.shopitems = this.shopitems.filter(
@@ -232,23 +233,38 @@ export default {
           console.error('Error deducting points:', error)
         })
     },
-    updateInventory(username) {
-      axios
-        .post('http://localhost:8000/api/inventory/add', {
-          username: username,
-          itemname: this.selectedItem.itemname,
-          itemtype: this.selectedItem.itemname.includes('Fish') ? 'Fish' : 'Background',
-          itemdesc: this.selectedItem.itemdesc,
-          itemqty: this.itemqty,
-          imgpath: this.selectedItem.imgpath
-        })
-        .then((response) => {
-          console.log('Inventory updated successfully:', response.data)
-        })
-        .catch((error) => {
-          console.error('Error updating inventory:', error)
-        })
+    async updateInventory(username) {
+      try {
+        const response = await axios.get(
+          `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
+        )
+        const inventory = response.data
+
+        const existingItem = inventory.find((item) => item.itemname === this.selectedItem.itemname)
+
+        if (existingItem) {
+          await axios.put(`https://habit-buddy-server.vercel.app/api/inventory/update`, {
+            username: username,
+            itemname: this.selectedItem.itemname,
+            itemqty: existingItem.itemqty + this.itemqty
+          })
+          console.log('Item quantity updated successfully')
+        } else {
+          await axios.post('https://habit-buddy-server.vercel.app/api/inventory/add', {
+            username: username,
+            itemname: this.selectedItem.itemname,
+            itemtype: this.selectedItem.itemtype,
+            itemdesc: this.selectedItem.itemdesc,
+            itemqty: this.itemqty,
+            imgpath: this.selectedItem.imgpath
+          })
+          console.log('New item added successfully')
+        }
+      } catch (error) {
+        console.error('Error updating inventory:', error)
+      }
     },
+
     increaseQty() {
       this.itemqty++
     },
@@ -262,20 +278,26 @@ export default {
       this.isModalOpen = true
       this.itemqty = 1
       this.backgroundOwned = false
+      this.catOwned = false
 
       const username = localStorage.getItem('username')
 
-      // Fetch user inventory and check if they already own the selected background
+      // Fetch user inventory and check if they already own the selected background or cat
       axios
-        .get(`http://localhost:8000/api/userinventory/${username}`)
+        .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
         .then((response) => {
           const inventory = response.data
-          console.log(this.selectedItem)
-          if (this.selectedItem.itemtype == 'Background') {
+
+          if (this.selectedItem.itemtype === 'Background') {
             const ownedBackground = inventory.some(
               (inventoryItem) => inventoryItem.imgpath === this.selectedItem.imgpath
             )
             this.backgroundOwned = ownedBackground
+          } else if (this.selectedItem.itemtype === 'Cat') {
+            const ownedCat = inventory.some(
+              (inventoryItem) => inventoryItem.itemname === this.selectedItem.itemname
+            )
+            this.catOwned = ownedCat
           }
 
           // Update inventory counts if the selected item is a type of fish
@@ -293,6 +315,7 @@ export default {
           console.error('Error fetching user inventory:', error)
         })
     },
+
     closeModal() {
       this.isModalOpen = false
     }
@@ -301,7 +324,7 @@ export default {
     const username = localStorage.getItem('username') || 'anonymous'
 
     axios
-      .get(`http://localhost:8000/api/userinventory/${username}`)
+      .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
       .then((response) => {
         const inventory = response.data
 

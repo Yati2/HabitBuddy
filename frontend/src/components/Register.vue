@@ -114,7 +114,7 @@ export default {
 
       // Try to register the user
       try {
-        const response = await axios.post('http://localhost:8000/api/register', {
+        const response = await axios.post('https://habit-buddy-server.vercel.app/api/register', {
           username: this.username,
           email: this.email,
           password: this.password,
@@ -151,7 +151,7 @@ export default {
 
     async checkUsernameExists(username) {
       try {
-        const response = await axios.get('http://localhost:8000/api/users')
+        const response = await axios.get('https://habit-buddy-server.vercel.app/api/users')
         const users = response.data
         return users.some((user) => user.username === username)
       } catch (error) {
@@ -188,7 +188,7 @@ a:hover {
   color: #be9294;
 }
 .container-fluid {
-  background-image: url('../assets/backgrounds/bg_login_register.gif');
+  background-image: url('/assets/backgrounds/bg_login_register.gif');
   background-size: cover;
   background-position: center;
   min-height: 100vh;

@@ -56,7 +56,7 @@
                 :class="{ selected: mood === 'mood-excellent' }"
                 @click="mood = 'mood-excellent'"
               >
-                <img src="../assets/emotions/excellent.png" alt="Excellent" />
+                <img src="/assets/emotions/excellent.png" alt="Excellent" />
                 <span>Excellent</span>
               </div>
               <div
@@ -64,7 +64,7 @@
                 :class="{ selected: mood === 'mood-good' }"
                 @click="mood = 'mood-good'"
               >
-                <img src="../assets/emotions/good.png" alt="Good" />
+                <img src="/assets/emotions/good.png" alt="Good" />
                 <span>Good</span>
               </div>
               <div
@@ -72,7 +72,7 @@
                 :class="{ selected: mood === 'mood-neutral' }"
                 @click="mood = 'mood-neutral'"
               >
-                <img src="../assets/emotions/neutral.png" alt="Neutral" />
+                <img src="/assets/emotions/neutral.png" alt="Neutral" />
                 <span>Neutral</span>
               </div>
               <div
@@ -80,7 +80,7 @@
                 :class="{ selected: mood === 'mood-bad' }"
                 @click="mood = 'mood-bad'"
               >
-                <img src="../assets/emotions/bad.png" alt="Bad" />
+                <img src="/assets/emotions/bad.png" alt="Bad" />
                 <span>Bad</span>
               </div>
               <div
@@ -88,7 +88,7 @@
                 :class="{ selected: mood === 'mood-terrible' }"
                 @click="mood = 'mood-terrible'"
               >
-                <img src="../assets/emotions/terrible.png" alt="Terrible" />
+                <img src="/assets/emotions/terrible.png" alt="Terrible" />
                 <span>Terrible</span>
               </div>
             </div>
@@ -158,23 +158,26 @@ export default {
   },
   computed: {
     currentMonthName() {
-      return this.monthNames[this.currentMonth]
-    }
+      return this.monthNames[this.currentMonth]; 
+    },
   },
   methods: {
     getFirstDayOfMonth(month, year) {
-      const firstDay = new Date(year, month, 1).getDay()
+      const firstDay = new Date(year, month, 1).getDay() 
       return firstDay
     },
     getDaysInMonth(month, year) {
       const numDays = new Date(year, month + 1, 0).getDate()
       const firstDay = new Date(year, month, 1).getDay()
 
-      return [...Array(firstDay).fill(''), ...Array.from({ length: numDays }, (_, i) => i + 1)]
+      return [
+        ...Array(firstDay).fill(''), 
+        ...Array.from({ length: numDays }, (_, i) => i + 1)
+      ]
     },
     updateCalendar() {
       this.days = this.getDaysInMonth(this.selectedMonth - 1, this.selectedYear)
-      this.currentMonth = this.selectedMonth - 1
+      this.currentMonth = this.selectedMonth - 1;
     },
     previousMonth() {
       if (this.selectedMonth === 1) {
@@ -211,53 +214,31 @@ export default {
     saveJournalEntry() {
       if (this.selectedDay && this.entry.trim()) {
         const fullDate = new Date(`${this.selectedYear}-${this.selectedMonth}-${this.selectedDay}`)
+
         const user = localStorage.getItem('username')
 
-        // Check if an entry already exists for this day
-        const existingEntry = this.moodTracker[this.selectedDay]
-
-        if (existingEntry) {
-          // Update existing entry
-          axios
-            .put(`http://localhost:8000/api/journals/${existingEntry._id}`, {
-              entry: this.entry,
-              mood: this.mood
-            })
-            .then((response) => {
-              this.moodTracker[this.selectedDay] = response.data.journal
-              this.closeModal()
-              this.errorMessage = ''
-            })
-            .catch((error) => {
-              console.error('Error updating journal entry:', error)
-              this.errorMessage = 'An error occurred while updating your entry.'
-            })
-        } else {
-          // Create new entry
-          axios
-            .post('http://localhost:8000/api/journals', {
-              username: user,
-              date: fullDate,
-              entry: this.entry,
-              mood: this.mood
-            })
-            .then((response) => {
-              this.moodTracker[this.selectedDay] = response.data.journal
-              this.closeModal()
-              this.errorMessage = ''
-            })
-            .catch((error) => {
-              console.error('Error saving journal entry:', error)
-              this.errorMessage = 'An error occurred while saving your entry.'
-            })
-        }
+        axios
+          .post('https://habit-buddy-server.vercel.app/api/journals', {
+            username: user,
+            date: fullDate, 
+            entry: this.entry,
+            mood: this.mood
+          })
+          .then((response) => {
+            this.moodTracker[this.selectedDay] = response.data.journal
+            this.closeModal()
+            this.errorMessage = ''
+          })
+          .catch((error) => {
+            console.error('Error saving journal entry:', error)
+            this.errorMessage = 'An error occurred while saving your entry.'
+          })
       } else {
         this.errorMessage = 'Please enter a journal entry before saving.'
       }
     },
-
     deleteJournalEntry() {
-      const journalId = this.moodTracker[this.selectedDay]?._id
+      const journalId = this.moodTracker[this.selectedDay]?._id 
 
       if (!journalId) {
         console.error('No journal entry found to delete.')
@@ -265,7 +246,7 @@ export default {
       }
 
       axios
-        .delete(`http://localhost:8000/api/journals/${journalId}`)
+        .delete(`https://habit-buddy-server.vercel.app/api/journals/${journalId}`)
         .then(() => {
           delete this.moodTracker[this.selectedDay]
           this.closeModal()
@@ -281,26 +262,26 @@ export default {
     },
     fetchJournalEntries() {
       const username = localStorage.getItem('username')
-      const year = this.selectedYear
-      const month = this.selectedMonth
+      const year = this.selectedYear 
+      const month = this.selectedMonth 
 
       axios
-        .get(`http://localhost:8000/api/journals/${username}/${year}/${month}`)
+        .get(`https://habit-buddy-server.vercel.app/api/journals/${username}/${year}/${month}`)
         .then((response) => {
           this.moodTracker = response.data.reduce((acc, entry) => {
-            acc[new Date(entry.date).getDate()] = entry
+            acc[new Date(entry.date).getDate()] = entry 
             return acc
           }, {})
-          this.updateCalendar()
+          this.updateCalendar() 
         })
         .catch((error) => {
           console.error('Error fetching journal entries:', error)
-          this.errorMessage = 'Could not fetch journal entries. Please try again later.'
+          this.errorMessage = 'Could not fetch journal entries. Please try again later.' 
         })
     },
     getYears() {
       const currentYear = new Date().getFullYear()
-      return Array.from({ length: 10 }, (_, i) => currentYear - i)
+      return Array.from({ length: 10 }, (_, i) => currentYear - i) 
     }
   },
 
@@ -330,7 +311,7 @@ button {
   background: transparent;
 }
 
-button:hover {
+button:hover{
   transform: scale(1.5);
 }
 
@@ -369,7 +350,7 @@ button:hover {
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 2px; 
   width: 100%;
   margin: 0 auto;
 }
@@ -377,22 +358,22 @@ button:hover {
 .calendar-day {
   position: relative;
   width: 100%;
-  padding-bottom: 60%;
+  padding-bottom: 60%; 
   border: 1px solid #ccc;
   text-align: left;
   cursor: pointer;
   background-color: white;
   border-radius: 5px;
   transition: background-color 0.3s;
-  min-width: 30px;
+  min-width: 30px; 
 }
 
 .day-number {
   position: absolute;
-  top: 4px;
-  left: 4px;
+  top: 4px; 
+  left: 4px; 
   font-family: 'Jersey 25', sans-serif;
-  font-size: 10px;
+  font-size: 10px; 
 }
 
 .error-message {
@@ -427,8 +408,8 @@ button:hover {
 }
 
 .mood-option.selected {
-  border: 2px solid #000;
-  border-radius: 5px;
+  border: 2px solid #000; 
+  border-radius: 5px; 
 }
 
 .mood-option {
@@ -469,6 +450,7 @@ button:hover {
   font-family: 'Jersey 25', sans-serif;
 }
 
+
 @media (max-width: 768px) {
   .journal-container {
     margin: 0 auto;
@@ -479,10 +461,10 @@ button:hover {
   }
 
   h2 {
-    font-size: 20px;
+    font-size: 20px; 
   }
 
-  .controls {
+  .controls{
     font-size: 1em;
   }
 
@@ -492,11 +474,11 @@ button:hover {
   }
 
   .calendar-day {
-    padding-bottom: 50%;
+    padding-bottom: 50%; 
   }
 
   .day-number {
-    font-size: 9px;
+    font-size: 9px; 
   }
 
   .modal-content {
@@ -504,45 +486,45 @@ button:hover {
   }
 
   .mood-option img {
-    width: 40px;
-    height: 40px;
+    width: 40px; 
+    height: 40px; 
   }
 }
 
 @media (max-width: 480px) {
   .journal-container {
-    margin: 0 auto;
+    margin: 0 auto; 
     padding: 10px;
   }
 
   h1 {
-    font-size: 20px;
+    font-size: 20px; 
   }
 
   h2 {
     font-size: 18px;
   }
 
-  button {
+  button{
     font-size: 0.5em;
   }
 
   .day,
   .day-header {
-    font-size: 10px;
+    font-size: 10px; 
   }
   .calendar-day {
-    padding-bottom: 40%;
-    min-width: 25px;
+    padding-bottom: 40%; 
+    min-width: 25px; 
   }
 
   .day-number {
-    font-size: 8px;
+    font-size: 8px; 
   }
 
   .mood-option img {
     width: 30px;
-    height: 30px;
+    height: 30px; 
   }
 }
 </style>
