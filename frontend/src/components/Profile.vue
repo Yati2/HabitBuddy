@@ -5,7 +5,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-12 profile text-center">
-            <h1>{{ user.username }}'s Profile!</h1>
+            <h1>{{ user.username || 'user' }}'s Profile!</h1>
           </div>
         </div>
 
@@ -102,6 +102,8 @@ import avatar3 from '/assets/profile/profilepics/pfp3.jpeg'
 import avatar4 from '/assets/profile/profilepics/pfp4.jpeg'
 import avatar5 from '/assets/profile/profilepics/pfp5.jpg'
 import avatar6 from '/assets/profile/profilepics/pfp6.jpg'
+import placeholderBg from '/assets/profile/background.png'
+import placeholderAvatar from '/assets/profile/profile-icon.png'
 
 export default {
   name: 'Profile',
@@ -112,11 +114,12 @@ export default {
       confirmPassword: '',
       isAuthenticatedUser: false,
       showImageSelector: false,
-      bgImage: null,
-      avatarImage: null,
+      bgImage: placeholderBg,
+      avatarImage: placeholderAvatar,
       selectedType: '',
       backgroundImages: [bg1, bg2, bg3, bg4, bg5],
-      avatarImages: [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6]
+      avatarImages: [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6],
+      isLoading: true
     }
   },
   created() {
@@ -131,15 +134,19 @@ export default {
   methods: {
     getUserInfo() {
       const username = localStorage.getItem('username')
+      this.isLoading = true
       axios
         .get(`https://habit-buddy-server.vercel.app/api/users/${username}`)
         .then((response) => {
           this.user = response.data
-          this.bgImage = response.data.bgImage
-          this.avatarImage = response.data.avatarImage
+          this.bgImage = response.data.bgImage || this.placeholderBg
+          this.avatarImage = response.data.avatarImage || this.placeholderAvatar
         })
         .catch((error) => {
           console.error('Error fetching user info:', error)
+        })
+        .finally(() => {
+          this.isLoading = false
         })
     },
     logoutDev() {

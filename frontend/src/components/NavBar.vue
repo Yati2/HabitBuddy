@@ -44,7 +44,11 @@
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <a class="nav-link" href="/profile" title="Profile">
-                <img :src="avatar" alt="Profile Icon" class="profile-icon" />
+                <img
+                  :src="avatarLoaded ? avatar : placeholderAvatar"
+                  alt="Profile Icon"
+                  class="profile-icon"
+                />
               </a>
             </li>
             <li class="nav-item">
@@ -59,31 +63,43 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'NavBar',
   props: {
     avatar: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
+  },
+  data() {
+    return {
+      avatarLoaded: false, // Track whether the avatar has been loaded
+      placeholderAvatar: '/assets/profile/profile-icon.png' // Placeholder image path
+    }
+  },
+  watch: {
+    avatar(newValue) {
+      // When the avatar prop changes, set avatarLoaded to true if there's a valid URL
+      this.avatarLoaded = !!newValue
+    }
   },
   setup() {
-    const router = useRouter();
+    const router = useRouter()
 
     // Logout function
     const logoutDev = () => {
-      localStorage.setItem('isLoggedIn', ''); // Clear the login state
-      localStorage.setItem('username', ''); // Clear the username
+      localStorage.setItem('isLoggedIn', '') // Clear the login state
+      localStorage.setItem('username', '') // Clear the username
 
       // Redirect to login page
-      router.push('/login');
-    };
+      router.push('/login')
+    }
 
     return {
-      logoutDev,
-    };
+      logoutDev
+    }
   }
 }
 </script>
