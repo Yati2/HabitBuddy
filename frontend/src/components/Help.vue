@@ -4,6 +4,7 @@
       <section class="help-section">
         <h1 class="help-title">Welcome to HabitBuddy's Help Page</h1>
         <h2 class="help-intro">Here's a quick guide on how to make the most of our app!</h2>
+        <br>
 
         <div
           v-for="(section, index) in helpSections"
@@ -11,16 +12,13 @@
           class="help-content-box"
         >
           <h2 @click="toggleSection(index)" class="help-content-header">
-            <span class="toggle-icon">{{ expandedSections[index] ? '▼' : '▶' }}</span>
             {{ section.title }}
           </h2>
-          <transition name="expand">
-            <div v-if="expandedSections[index]" class="help-content-details">
-              <p v-for="(paragraph, pIndex) in section.content" :key="pIndex">
-                {{ paragraph }}
-              </p>
-            </div>
-          </transition>
+          <div v-if="expandedSections[index]" class="help-content-details">
+            <p v-for="(paragraph, pIndex) in section.content" :key="pIndex">
+              {{ paragraph }}
+            </p>
+          </div>
         </div>
       </section>
     </div>
@@ -87,7 +85,6 @@ export default {
 </script>
 
 <style scoped>
-/* General Styles */
 body {
   background-color: #fff3e7;
   height: 100%;
@@ -98,53 +95,43 @@ body {
 .help-container {
   width: 100%;
   margin: 0 auto;
-  padding: 20px 50px;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 10px;
   min-height: 100vh;
-  background-color: #f7bec1;
+  background-color: #fff3e7;
 }
 
-.help-title {
+h1.help-title {
+  text-align: center;
   font-family: 'Jersey 25', sans-serif;
-  font-size: 2.5rem;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
-  text-align: center;
-  margin-bottom: 1rem;
+  color: #eec0c2;
 }
 
-.help-intro {
-  font-size: 1.4rem;
+h2.help-intro {
   text-align: center;
-  color: #4d4d4d;
-  margin-bottom: 1.5rem;
 }
 
 .help-section {
   margin-bottom: 20px;
   font-family: 'Jersey 25', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.2em;
 }
 
 .help-content-box {
-  background-color:#f7bec1;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #f2c5c3;
+  margin-bottom: 20px;
+  padding: 10px 15px;
 }
 
 .help-content-header {
-  color:#4d4d4d;
-  font-size: 1.4rem;
+  color: #f8d1d3;
   cursor: pointer;
-  padding: 10px 0;
+  font-size: 1.1em;
   margin: 0;
-  position: relative;
-  transition: color 0.3s;
-}
-
-.help-content-header:hover {
-  color: black;
+  padding: 10px 0;
 }
 
 .help-content-details {
@@ -152,12 +139,31 @@ body {
 }
 
 p {
-  color: #4d4d4d;
-  line-height: 1.6;
-  font-size: 1.1rem;
+  color: #181818;
   padding: 10px;
   border-radius: 5px;
 }
 
-</style>
+@media (prefers-color-scheme: dark) {
+  .help-container {
+    background-color: #181818;
+  }
 
+  .help-content-box {
+    background-color: #333;
+  }
+
+  p {
+    color: #fff;
+    background-color: #444;
+  }
+
+  h1.help-title {
+    color: #eec0c2;
+  }
+
+  .help-content-header {
+    color: #f8d1d3;
+  }
+}
+</style>

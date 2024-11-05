@@ -2,6 +2,7 @@
   <body>
     <div class="container-fluid">
     <div class="forum-container row">
+      <!-- Forum Section with Nav Bar -->
       <div class="col-lg-8 col-12 mx-auto">
         <h1 class="forum-title">HabitBuddy Forum</h1>
 
@@ -21,7 +22,7 @@
         </nav>
 
         <!-- Create New Post -->
-        <div class="new-post-container shadow-box">
+        <div class="new-post-container">
           <h3>Create a New Post</h3>
           <form @submit.prevent="submitPost">
             <div class="mb-3">
@@ -38,7 +39,7 @@
         </div>
 
         <!-- List of Forum Posts by Topic -->
-        <div v-for="post in filteredPosts" :key="post._id" class="post-container shadow-box">
+        <div v-for="post in filteredPosts" :key="post._id" class="post-container">
           <div class="post-header">
             <h4>{{ post.username }}</h4>
             <p class="post-content">{{ post.content }}</p>
@@ -47,19 +48,23 @@
           <div class="post-actions">
             <button @click="likePost(post._id)" class="like-btn">👍 {{ post.likes }} Likes</button>
             <button @click="toggleComments(post._id)" class="comment-btn">💬 Comments</button>
+            <!-- Delete Button -->
             <button
               v-if="post.username === username"
               @click="deletePost(post._id)"
-              class="delete-btn btn btn-sm btn-danger"
+              class="delete-btn btn btn-sm btn-danger d-inline"
+              style="width: auto; padding: 0.2rem 0.5rem"
             >
-              🗑️
+              🗑️ Delete
             </button>
           </div>
 
           <!-- Comments Section -->
-          <div v-if="post.showComments" class="comments-section">
+          <div v-if="post.showComments">
             <div v-for="comment in post.comments" :key="comment._id" class="comment-container">
-              <p><strong>{{ comment.username }}:</strong> {{ comment.comment }}</p>
+              <p>
+                <strong>{{ comment.username }}:</strong> {{ comment.comment }}
+              </p>
             </div>
             <div class="add-comment">
               <textarea
@@ -68,7 +73,7 @@
                 rows="2"
                 placeholder="Add a comment..."
               ></textarea>
-              <button @click="submitComment(post._id)" class="btn mt-2">Post</button>
+              <button @click="submitComment(post._id)" class="btn mt-2">Submit</button>
             </div>
           </div>
         </div>
@@ -77,7 +82,6 @@
   </div>
   </body>
 </template>
-
 
 <script>
 import axios from 'axios'
@@ -211,19 +215,18 @@ body {
 }
 .forum-title {
   font-family: 'Jersey 25', sans-serif;
-  font-size: 2.5rem;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  font-size: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
-  margin-bottom: 1rem;
 }
 
 .post-container,
 .new-post-container {
-  background: linear-gradient(to right, #f8f1ea, #fde8e2);
+  background-color: var(--color-background-soft);
   padding: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   border-radius: 10px;
-  border: 1px solid #f2c5c3;
+  border: 1px solid var(--color-border);
   font-family: 'Jersey 25', sans-serif;
 }
 
@@ -235,8 +238,7 @@ body {
 
 .post-content {
   word-break: break-word;
-  line-height: 1.6;
-  font-size: 1.1rem;
+  font-family: 'Jersey 25', sans-serif;
 }
 
 .post-actions {
@@ -245,21 +247,9 @@ body {
   justify-content: space-between;
 }
 
-.shadow-box {
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
-}
-
 /* Comment Section */
-.comments-section {
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #fdf7f3;
-  border-radius: 8px;
-}
-
 .comment-container {
-  padding: 8px 0;
-  border-top: 1px solid #ece2dc;
+  padding-left: 15px;
 }
 
 .add-comment {
@@ -269,87 +259,41 @@ body {
 /* Button Styles */
 .btn {
   background-color: #f7bec1;
-  color: #4d4d4d;
+  color: var(--color-text);
   width: 100%;
-  transition: all 0.3s ease;
 }
 
 .btn:hover {
   background-color: #be9294;
-  transform: scale(1.05);
-  color: #fff;
+  color: var(--color-heading);
 }
 
-.like-btn,
-.comment-btn {
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.like-btn:hover,
-.comment-btn:hover {
-  transform: scale(1.1);
-}
-
-.delete-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.2rem; /* Reduce padding */
-  width: auto; /* Remove fixed width */
-  height: auto; /* Adjust height to content */
-  font-size: 0.9rem; /* Make font size smaller */
-}
-
-
-/* Navbar Styles */
 /* Navbar Styles */
 .navbar {
   background-color: #f7bec1;
   border-radius: 8px;
-  padding: 15px 0; /* Increase padding for more space */
+  padding: 10px 0;
   font-family: 'Jersey 25', sans-serif;
-  display: flex;
-  justify-content: center; /* Center the navbar content */
 }
 
 .nav-link {
-  color: #4d4d4d;
-  font-size: 1.4rem; /* Increase font size */
-  margin:0 20px;
-  position: relative;
-  transition: color 0.3s;
+  color: var(--color-heading);
+  margin: 0 15px;
 }
 
 .nav-link:hover {
-  color: #333;
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: #f7bec1;
-  transition: width 0.3s;
-}
-
-.nav-link:hover::after {
-  width: 100%;
+  color: var(--color-text);
 }
 
 .active-topic {
   font-weight: bold;
-  color: #333;
+  color: var(--color-heading);
 }
-
 
 /* Responsive Styles */
 @media (max-width: 576px) {
   .forum-title {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
 
   .new-post-container,
