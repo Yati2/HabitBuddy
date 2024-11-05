@@ -207,12 +207,14 @@ export default {
 
 <style scoped>
 /* General Styles */
+/* General Styles */
 body {
   background-color: #fff3e7;
   height: 100%;
   width: 100%;
   margin: 0;
 }
+
 .forum-title {
   font-family: 'Jersey 25', sans-serif;
   font-size: 2rem;
@@ -228,6 +230,14 @@ body {
   border-radius: 10px;
   border: 1px solid var(--color-border);
   font-family: 'Jersey 25', sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Add hover effect to the post and new post containers */
+.post-container:hover,
+.new-post-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .post-header {
@@ -261,11 +271,45 @@ body {
   background-color: #f7bec1;
   color: var(--color-text);
   width: 100%;
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 
 .btn:hover {
   background-color: #be9294;
   color: var(--color-heading);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover effects specifically for the like, comment, and delete buttons */
+.like-btn, .comment-btn, .delete-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Slightly enlarge the buttons and add a shadow on hover */
+.like-btn:hover, .comment-btn:hover, .delete-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Delete Button Specific Styling */
+.delete-btn {
+  background-color: #ff6b6b; /* Soft red for delete */
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #ff4b4b; /* Darker red on hover */
+}
+
+/* Like and Comment Buttons Specific Styling */
+.like-btn, .comment-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.like-btn:hover, .comment-btn:hover {
+  background-color: #e0e0e0; /* Slightly darker on hover */
 }
 
 /* Navbar Styles */
@@ -274,15 +318,23 @@ body {
   border-radius: 8px;
   padding: 10px 0;
   font-family: 'Jersey 25', sans-serif;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Navbar hover shadow effect */
+.navbar:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .nav-link {
   color: var(--color-heading);
   margin: 0 15px;
+  transition: color 0.3s ease;
 }
 
 .nav-link:hover {
   color: var(--color-text);
+  transform: translateY(-2px);
 }
 
 .active-topic {
@@ -301,4 +353,5 @@ body {
     padding: 15px;
   }
 }
+
 </style>

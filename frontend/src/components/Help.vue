@@ -12,6 +12,9 @@
           class="help-content-box"
         >
           <h2 @click="toggleSection(index)" class="help-content-header">
+            <span class="arrow" :class="{ 'arrow-down': expandedSections[index] }">
+              ▶
+            </span>
             {{ section.title }}
           </h2>
           <div v-if="expandedSections[index]" class="help-content-details">
@@ -32,6 +35,12 @@ export default {
     return {
       expandedSections: [],
       helpSections: [
+      {
+          title: "Track Long-Term Tasks, Daily To-Dos, and Habits",
+          content: [
+            "Use our app to easily manage your long-term tasks, daily to-dos, and ongoing habits. Organize your life by setting goals and track your progress every day."
+          ]
+        },
         {
           title: "Difference Between Long-Term Tasks, Daily To-Dos, and Habits",
           content: [
@@ -40,16 +49,29 @@ export default {
             "Habits: Habits are routines or behaviors that you want to establish over time. Track things you want to repeat regularly, like drinking water, exercising, or reading."
           ]
         },
+        
         {
-          title: "Track Long-Term Tasks, Daily To-Dos, and Habits",
+          title: "Earn Coins by Completing Tasks",
           content: [
-            "Use our app to easily manage your long-term tasks, daily to-dos, and ongoing habits. Organize your life by setting goals and track your progress every day."
+            "Each time you complete a task or habit, you earn coins! You can use these coins to make purchases from the shop!",
+            "For each habit completed you earn: 5 coins",
+            "For each long-term task completed you earn: 10 coins",
+            "For each daily to-do completed you earn: 10 coins"
           ]
         },
         {
-          title: "Earn Currency by Completing Tasks",
+          title: "The Shop",
           content: [
-            "Each time you complete a task or habit, you earn in-app currency! You can use this currency to take care of your digital pet. Buy food, toys, or change the background color of your pet's home. Keep your pet happy and thriving!"
+            "Here, you can use your hard earned coins to purchase food, different pets, or change the background of your pet's home!",
+          ]
+        },
+        {
+          title: "Feeding your pet",
+          content: [
+            "Feeding your pet will boost its happiness! You can only feed your pet when its happiness has fallen below 100%",
+            "Regular fish: 10% Happiness boost",
+            "Rare fish: 15% Happiness boost",
+            "Ultra fish: 20% Happiness boost"
           ]
         },
         {
@@ -95,9 +117,7 @@ body {
 .help-container {
   width: 100%;
   margin: 0 auto;
-  padding-left: 50px;
-  padding-right: 50px;
-  padding-top: 10px;
+  padding: 50px;
   min-height: 100vh;
   background-color: #fff3e7;
 }
@@ -110,6 +130,7 @@ h1.help-title {
 
 h2.help-intro {
   text-align: center;
+  color: #333;
 }
 
 .help-section {
@@ -123,25 +144,50 @@ h2.help-intro {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  padding: 10px 15px;
+  padding: 15px 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.help-content-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .help-content-header {
-  color: #f8d1d3;
+  color: #f9b8bb;
   cursor: pointer;
-  font-size: 1.1em;
+  font-size: 1.2em;
   margin: 0;
   padding: 10px 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.help-content-header:hover {
+  color: #fa8488;
+}
+
+.arrow {
+  margin-right: 8px;
+  display: inline-block;
+  transition: transform 0.3s;
+}
+
+.arrow-down {
+  transform: rotate(90deg);
 }
 
 .help-content-details {
   margin-top: 10px;
+  transition: max-height 0.3s ease;
 }
 
 p {
   color: #181818;
   padding: 10px;
   border-radius: 5px;
+  background-color: #f9f9f9;
+  line-height: 1.5;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -159,11 +205,15 @@ p {
   }
 
   h1.help-title {
-    color: #eec0c2;
+    color: #fbc6c8;
   }
 
   .help-content-header {
     color: #f8d1d3;
+  }
+
+  .help-content-header:hover {
+    color: #ff9a9e;
   }
 }
 </style>
