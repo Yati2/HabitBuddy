@@ -55,34 +55,42 @@
       </div>
     </div>
 
-    <!-- Form for changing password and logout -->
-    <div class="form-container">
-      <form @submit.prevent="changePassword">
-        <div class="form-group">
-          <label for="new-password">New Password:</label>
-          <input
-            type="password"
-            id="new-password"
-            v-model="newPassword"
-            class="form-control"
-            required
-          />
-        </div>
-        <div class="form-group">
-          <label for="confirm-password">Confirm Password:</label>
-          <input
-            type="password"
-            id="confirm-password"
-            v-model="confirmPassword"
-            class="form-control"
-            required
-          />
-        </div>
-        <button class="btn mt-2 styled-button" type="submit">Change Password</button>
-      </form>
-
-      <button class="btn mt-2 styled-button" @click="logoutDev">Logout</button>
+    <!-- Modal for changing password -->
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <h2>Change Password</h2>
+        <form @submit.prevent="changePassword">
+          <div class="form-group">
+            <label for="new-password">New Password:</label>
+            <input
+              type="password"
+              id="new-password"
+              v-model="newPassword"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="confirm-password">Confirm Password:</label>
+            <input
+              type="password"
+              id="confirm-password"
+              v-model="confirmPassword"
+              class="form-control"
+              required
+            />
+          </div>
+          <button class="btn styled-button" type="submit">Change Password</button>
+          <button class="btn styled-button close" type="button" @click="closeModal">Cancel</button>
+        </form>
+      </div>
     </div>
+
+    <div class="button-container">
+      <button class="btn styled-button" @click="showModal = true">Change Password</button>
+      <button class="btn styled-button" @click="logoutDev">Logout</button>
+    </div>
+
   </div>
 </template>
 
@@ -119,7 +127,8 @@ export default {
       selectedType: '',
       backgroundImages: [bg1, bg2, bg3, bg4, bg5],
       avatarImages: [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6],
-      isLoading: true
+      isLoading: true,
+      showModal: false
     }
   },
   created() {
@@ -167,6 +176,7 @@ export default {
           alert('Password updated successfully')
           this.newPassword = ''
           this.confirmPassword = ''
+          this.closeModal()
         })
         .catch((error) => {
           console.error('Error updating password:', error)
@@ -204,6 +214,9 @@ export default {
           console.error('Error updating images:', error)
           alert('Error updating images')
         })
+    },
+    closeModal() {
+      this.showModal = false // Close the modal
     }
   }
 }
@@ -340,6 +353,40 @@ h3,
 .change-avatar-button:hover,
 .styled-button:hover {
   background-color: #c49393;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  align-items: center; /* Center horizontally */
+  margin-top: 20px; /* Add some space above */
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff3e7;
+  font-family: 'Jersey 25', sans-serif;
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+  margin-left: 10px;
 }
 
 @media (max-width: 768px) {
