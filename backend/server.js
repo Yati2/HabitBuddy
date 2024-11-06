@@ -131,11 +131,38 @@ app.put("/api/userinventory/apply", async (req, res) => {
         console.log("Item applied:", itemname);
 
         await Inventory.updateOne({ username, itemname }, { applied: true });
-        
 
         res.status(200).json({ message: "Item applied successfully" });
     } catch (error) {
         res.status(500).json({ error: "Error applying item" });
+    }
+});
+
+app.put("/api/inventory/update", async (req, res) => {
+    const { username, itemname, itemqty } = req.body;
+
+    try {
+ 
+        const updatedItem = await Inventory.findOneAndUpdate(
+            { username: username, itemname: itemname },
+            { itemqty: itemqty },
+            { new: true } 
+        );
+
+
+        if (!updatedItem) {
+            return res
+                .status(404)
+                .json({ message: "Item not found in inventory" });
+        }
+
+        res.status(200).json({
+            message: "Item quantity updated successfully",
+            item: updatedItem,
+        });
+    } catch (error) {
+        console.error("Error updating inventory:", error);
+        res.status(500).json({ message: "Error updating inventory", error });
     }
 });
 
