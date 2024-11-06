@@ -1,168 +1,172 @@
-<template v-if="isAuthenticatedUser" class="container-fluid">
-  <div class="row">
-    <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
-      <img
-        src="/assets/pet_related/bg/christmas.gif"
-        alt="Pet Background"
-        id="game-bg"
-        class="position-absolute"
-      />
-    </div>
-
-    <div id="pet-info" class="col-lg-2 col-12">
-      <!-- Pet Name -->
-      <div class="pet-info-content d-flex justify-content-between align-items-center">
-        <h5 id="pet-name" class="text-center flex-grow-1">Name: {{ petName }}</h5>
+<template>
+  <div class="container-fluid w-100 p-0">
+    <div class="row">
+      <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
+        <img
+          src="/assets/pet_related/bg/christmas.gif"
+          alt="Pet Background"
+          id="game-bg"
+          class="position-absolute"
+        />
       </div>
 
-      <!-- Pet Happiness -->
-      <div class="pet-info-content">
-        <div class="d-flex justify-content-between align-items-center">
-          <h5 id="pet-happiness" class="text-center flex-grow-1">Happiness: {{ petHappiness }}%</h5>
-          <i
-            class="bi bi-question-circle font-sm"
-            @click="showHappinessHelpMsg = true"
-            style="cursor: pointer; font-size: 1.2rem"
-            title="Click for help"
-          ></i>
+      <div id="pet-info" class="col-lg-2 col-12">
+        <!-- Pet Name -->
+        <div class="pet-info-content d-flex justify-content-between align-items-center">
+          <h5 id="pet-name" class="text-center flex-grow-1">Name: {{ petName }}</h5>
         </div>
 
-        <div
-          class="progress progress-bar progress-bar-striped progress-bar-animated"
-          role="progressbar"
-          id="pet-happiness-bar"
-          :class="progressBarClass"
-          :aria-valuenow="petHappiness"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          :style="{ width: petHappiness + '%' }"
-        ></div>
-      </div>
+        <!-- Pet Happiness -->
+        <div class="pet-info-content">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 id="pet-happiness" class="text-center flex-grow-1">
+              Happiness: {{ petHappiness }}%
+            </h5>
+            <i
+              class="bi bi-question-circle font-sm"
+              @click="showHappinessHelpMsg = true"
+              style="cursor: pointer; font-size: 1.2rem"
+              title="Click for help"
+            ></i>
+          </div>
 
-      <div class="mt-3 pet-info-content">
-        <h5 class="text-center">Feed Your Pet</h5>
-        <div id="fishCarousel" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner">
-            <div
-              v-for="(fish, index) in allFishItems"
-              :key="fish.itemname"
-              :class="['carousel-item', { active: index === 0 }]"
-            >
-              <div class="d-flex flex-column align-items-center">
-                <img :src="fish.imgpath" class="img-fluid" style="width: 70px" alt="Fish Icon" />
-                <h5 class="pt-2">{{ fish.itemname }}</h5>
-                <small>Owned: {{ fish.itemqty || 0 }}</small>
-                <small>Happiness boost: {{ getHappinessBoost(fish) }}</small>
-                <button
-                  class="petbtn mt-3"
-                  :disabled="!fish.owned || fish.itemqty === 0 || isCatFull"
-                  @click="feedPet(fish)"
-                >
-                  Feed
-                </button>
-                <p
-                  v-if="!fish.owned && !isCatFull"
-                  class="text-danger pt-2"
-                  style="font-size: 0.8rem"
-                >
-                  Buy from Shopkeeper
-                  <router-link to="/tasks" class="text-decoration-underline text-danger"
-                    >here</router-link
-                  >!
-                </p>
-                <p v-if="isCatFull" class="text-danger pt-2" style="font-size: 0.8rem">
-                  Your cat refuses to eat more!
-                </p>
+          <div
+            class="progress progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar"
+            id="pet-happiness-bar"
+            :class="progressBarClass"
+            :aria-valuenow="petHappiness"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            :style="{ width: petHappiness + '%' }"
+          ></div>
+        </div>
+
+        <div class="mt-3 pet-info-content">
+          <h5 class="text-center">Feed Your Pet</h5>
+          <div id="fishCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <div
+                v-for="(fish, index) in allFishItems"
+                :key="fish.itemname"
+                :class="['carousel-item', { active: index === 0 }]"
+              >
+                <div class="d-flex flex-column align-items-center">
+                  <img :src="fish.imgpath" class="img-fluid" style="width: 70px" alt="Fish Icon" />
+                  <h5 class="pt-2">{{ fish.itemname }}</h5>
+                  <small>Owned: {{ fish.itemqty || 0 }}</small>
+                  <small>Happiness boost: {{ getHappinessBoost(fish) }}</small>
+                  <button
+                    class="petbtn mt-3"
+                    :disabled="!fish.owned || fish.itemqty === 0 || isCatFull"
+                    @click="feedPet(fish)"
+                  >
+                    Feed
+                  </button>
+                  <p
+                    v-if="!fish.owned && !isCatFull"
+                    class="text-danger pt-2"
+                    style="font-size: 0.8rem"
+                  >
+                    Buy from Shopkeeper
+                    <router-link to="/tasks" class="text-decoration-underline text-danger"
+                      >here</router-link
+                    >!
+                  </p>
+                  <p v-if="isCatFull" class="text-danger pt-2" style="font-size: 0.8rem">
+                    Your cat refuses to eat more!
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-          <!-- Carousel controls -->
-          <button
-            class="carousel-control-prev"
-            type="button"
-            data-bs-target="#fishCarousel"
-            data-bs-slide="prev"
-          >
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button
-            class="carousel-control-next"
-            type="button"
-            data-bs-target="#fishCarousel"
-            data-bs-slide="next"
-          >
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
-        </div>
-      </div>
-      <div class="mt-3 pet-info-content">
-        <h5 class="text-center">Customise Here</h5>
-        <div id="backgroundCarousel" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner">
-            <div
-              v-for="(item, index) in allCustomItems"
-              :key="item.name"
-              :class="['carousel-item', { active: index === 0 }]"
+            <!-- Carousel controls -->
+            <button
+              class="carousel-control-prev"
+              type="button"
+              data-bs-target="#fishCarousel"
+              data-bs-slide="prev"
             >
-              <div class="d-flex flex-column align-items-center">
-                <img
-                  :src="item.imgpath"
-                  class="img-fluid"
-                  style="width: 100px"
-                  alt="Background Icon"
-                />
-                <h5 class="pt-2">{{ item.name }}</h5>
-                <button
-                  class="petbtn mt-3"
-                  :disabled="!item.owned"
-                  @click="applyCustomization(item)"
-                >
-                  Apply
-                </button>
-                <p v-if="!item.owned" class="text-danger pt-2" style="font-size: 0.8rem">
-                  Purchase from Shopkeeper
-                  <router-link to="/tasks" class="text-decoration-underline text-danger"
-                    >here</router-link
-                  >!
-                </p>
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button
+              class="carousel-control-next"
+              type="button"
+              data-bs-target="#fishCarousel"
+              data-bs-slide="next"
+            >
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+        <div class="mt-3 pet-info-content">
+          <h5 class="text-center">Customise Here</h5>
+          <div id="backgroundCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <div
+                v-for="(item, index) in allCustomItems"
+                :key="item.name"
+                :class="['carousel-item', { active: index === 0 }]"
+              >
+                <div class="d-flex flex-column align-items-center">
+                  <img
+                    :src="item.imgpath"
+                    class="img-fluid"
+                    style="width: 100px"
+                    alt="Background Icon"
+                  />
+                  <h5 class="pt-2">{{ item.name }}</h5>
+                  <button
+                    class="petbtn mt-3"
+                    :disabled="!item.owned"
+                    @click="applyCustomization(item)"
+                  >
+                    Apply
+                  </button>
+                  <p v-if="!item.owned" class="text-danger pt-2" style="font-size: 0.8rem">
+                    Purchase from Shopkeeper
+                    <router-link to="/tasks" class="text-decoration-underline text-danger"
+                      >here</router-link
+                    >!
+                  </p>
+                </div>
               </div>
             </div>
+            <!-- Carousel controls -->
+            <button
+              class="carousel-control-prev"
+              type="button"
+              data-bs-target="#backgroundCarousel"
+              data-bs-slide="prev"
+            >
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button
+              class="carousel-control-next"
+              type="button"
+              data-bs-target="#backgroundCarousel"
+              data-bs-slide="next"
+            >
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
           </div>
-          <!-- Carousel controls -->
-          <button
-            class="carousel-control-prev"
-            type="button"
-            data-bs-target="#backgroundCarousel"
-            data-bs-slide="prev"
-          >
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button
-            class="carousel-control-next"
-            type="button"
-            data-bs-target="#backgroundCarousel"
-            data-bs-slide="next"
-          >
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
         </div>
       </div>
-    </div>
 
-    <!-- Tooltip / Help Message for Happiness -->
-    <div
-      v-if="showHappinessHelpMsg"
-      ref="tooltip"
-      class="custom-tooltip"
-      :style="{ width: tooltipWidth }"
-      @click="showHappinessHelpMsg = false"
-    >
-      Feed your cat to increase the happiness level! Your cat will refuses to eat more when it's
-      full!
+      <!-- Tooltip / Help Message for Happiness -->
+      <div
+        v-if="showHappinessHelpMsg"
+        ref="tooltip"
+        class="custom-tooltip"
+        :style="{ width: tooltipWidth }"
+        @click="showHappinessHelpMsg = false"
+      >
+        Feed your cat to increase the happiness level! Your cat will refuses to eat more when it's
+        full!
+      </div>
     </div>
   </div>
 </template>
@@ -984,8 +988,17 @@ class GameScene extends Phaser.Scene {
 </script>
 
 <style>
+.row {
+  display: flex;
+  flex-grow: 1;
+}
+template {
+  width: 100%;
+  height: 100%;
+}
 #game-container {
-  height: 90vh;
+  height: 91vh;
+  flex: 1;
   border-right: 4px solid rgba(209, 208, 208, 0.552);
   border-left: 2px solid rgba(209, 208, 208, 0.552);
   position: relative;
@@ -999,16 +1012,16 @@ class GameScene extends Phaser.Scene {
 }
 canvas {
   position: relative;
-  z-index: 2; /* Ensure the Phaser canvas is above the background */
+  z-index: 2;
 }
 
 #pet-info {
-  background-color: #f5f5f5;
   display: flex;
   justify-content: start;
   flex-direction: column;
   align-items: center;
   max-height: 90vh;
+  flex: 1;
 }
 
 .pet-info-content {
@@ -1059,7 +1072,7 @@ canvas {
 }
 
 .text-danger {
-  color: #ff4500; /* Bright red for alert text */
+  color: #ff4500;
 }
 
 @media (max-width: 992px) {
@@ -1093,58 +1106,19 @@ canvas {
   text-align: center;
   z-index: 1050;
   cursor: pointer;
-  box-sizing: border-box; /* Ensure padding and border are included in the width */
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .custom-tooltip {
-    padding: 15px; /* Adjust padding for smaller screens */
+    padding: 15px;
   }
 }
 
-/* Adjust tooltip width and font size for smaller screens */
 @media (max-width: 576px) {
   .custom-tooltip {
     width: 90%;
-    font-size: 1rem; /* Smaller font for small screens */
-  }
-}
-
-/* Modal styles */
-.custom-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1050;
-  width: 100%;
-  max-width: 500px;
-}
-
-.modal-backdrop {
-  z-index: 1040; /* Ensure the backdrop is behind the modal */
-}
-
-.modal-content {
-  border-radius: 10px;
-}
-
-.modal-header {
-  background-color: #fecfa5;
-  font-family: 'Jersey 25', sans-serif;
-  border-radius: 10px 10px 0 0;
-}
-
-.modal-body {
-  background-color: #fef7f6;
-  font-family: 'Jersey 25', sans-serif;
-}
-
-/* Adjust modal size for smaller screens */
-@media (max-width: 576px) {
-  .custom-modal {
-    max-width: 90%;
-    padding: 10px;
+    font-size: 1rem;
   }
 }
 
@@ -1159,7 +1133,7 @@ canvas {
     transform: scale(1);
   }
 }
-/* Glowing animation */
+
 @keyframes glow {
   0% {
     text-shadow:
@@ -1182,7 +1156,7 @@ canvas {
 }
 
 .feed-text:hover {
-  animation: glow 1.5s infinite ease-in-out; /* Glowing animation */
+  animation: glow 1.5s infinite ease-in-out;
 }
 @keyframes bounce {
   0%,
@@ -1193,16 +1167,16 @@ canvas {
     transform: translateY(0);
   }
   40% {
-    transform: translateY(-10px); /* Move up */
+    transform: translateY(-10px);
   }
   60% {
-    transform: translateY(-5px); /* Move down a bit */
+    transform: translateY(-5px);
   }
 }
 
 .feed-text {
   display: inline-block;
   cursor: pointer;
-  animation: bounce 2s infinite; /* Infinite bounce animation */
+  animation: bounce 2s infinite;
 }
 </style>

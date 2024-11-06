@@ -1,8 +1,7 @@
 <template>
   <div id="app">
-    <!-- Conditionally render the Navbar only if the route is not '/login' -->
     <NavBar v-if="!isLoginPage" :avatar="avatar" />
-    <!-- Render the current view -->
+
     <div class="content">
       <router-view @update-avatar="updateAvatar" />
     </div>
@@ -20,7 +19,7 @@ export default {
   },
   data() {
     return {
-      avatar: '' // Shared avatar state
+      avatar: ''
     }
   },
   computed: {
@@ -38,12 +37,12 @@ export default {
       this.avatar = newAvatar
     },
     fetchAvatar() {
-      const username = localStorage.getItem('username') // Get current username
+      const username = localStorage.getItem('username')
       if (username) {
         axios
           .get(`https://habit-buddy-server.vercel.app/api/users/${username}`)
           .then((response) => {
-            this.avatar = response.data.avatarImage // Set the avatar image from the response
+            this.avatar = response.data.avatarImage
           })
           .catch((error) => {
             console.error('Error fetching user data:', error)
@@ -52,7 +51,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchAvatar() // Fetch avatar when the component mounts
+    this.fetchAvatar()
   }
 }
 </script>
@@ -61,7 +60,6 @@ export default {
 html,
 body {
   height: 100%;
-  width: 100%;
   margin: 0;
   padding: 0;
 }
@@ -74,12 +72,10 @@ body {
 }
 
 .content {
-  flex-grow: 1; /* Make content fill the rest of the height */
-  background-color: #f5f5f5;
-}
-
-@media (max-width: 768px) {
-  .content {
-  }
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  min-height: 0;
 }
 </style>
