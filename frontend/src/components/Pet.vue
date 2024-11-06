@@ -42,7 +42,7 @@
           ></div>
         </div>
 
-        <div class="mt-3 pet-info-content">
+        <div class="mt-2 pet-info-content">
           <h5 class="text-center">Feed Your Pet</h5>
           <div id="fishCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
@@ -65,7 +65,7 @@
                   </button>
                   <p
                     v-if="!fish.owned && !isCatFull"
-                    class="text-danger pt-2"
+                    class="text-danger pt-1"
                     style="font-size: 0.8rem"
                   >
                     Buy from Shopkeeper
@@ -73,7 +73,7 @@
                       >here</router-link
                     >!
                   </p>
-                  <p v-if="isCatFull" class="text-danger pt-2" style="font-size: 0.8rem">
+                  <p v-if="isCatFull" class="text-danger pt-1" style="font-size: 0.8rem">
                     Your cat refuses to eat more!
                   </p>
                 </div>
@@ -100,23 +100,23 @@
             </button>
           </div>
         </div>
-        <div class="mt-3 pet-info-content">
+        <div class="mt-2 pet-info-content">
           <h5 class="text-center">Customise Here</h5>
           <div id="backgroundCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
               <div
-                v-for="(item, index) in allCustomItems"
-                :key="item.name"
+                v-for="(item, index) in this.allCustomItems"
+                :key="item.itemname"
                 :class="['carousel-item', { active: index === 0 }]"
               >
                 <div class="d-flex flex-column align-items-center">
                   <img
                     :src="item.imgpath"
                     class="img-fluid"
-                    style="width: 100px"
+                    style="width: 110px"
                     alt="Background Icon"
                   />
-                  <h5 class="pt-2">{{ item.name }}</h5>
+                  <h5 class="pt-2">{{ item.itemname }}</h5>
                   <button
                     class="petbtn mt-3"
                     :disabled="!item.owned"
@@ -124,7 +124,7 @@
                   >
                     Apply
                   </button>
-                  <p v-if="!item.owned" class="text-danger pt-2" style="font-size: 0.8rem">
+                  <p v-if="!item.owned" class="text-danger pt-1" style="font-size: 0.8rem">
                     Purchase from Shopkeeper
                     <router-link to="/tasks" class="text-decoration-underline text-danger"
                       >here</router-link
@@ -133,7 +133,6 @@
                 </div>
               </div>
             </div>
-            <!-- Carousel controls -->
             <button
               class="carousel-control-prev"
               type="button"
@@ -156,7 +155,6 @@
         </div>
       </div>
 
-      <!-- Tooltip / Help Message for Happiness -->
       <div
         v-if="showHappinessHelpMsg"
         ref="tooltip"
@@ -178,6 +176,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import orange from '/assets/pet_related/orange/orange.gif'
 import siamese from '/assets/pet_related/siamese/siamese.gif'
 import pinkie from '/assets/pet_related/pinkie/pinkie.gif'
+import charcoal from '/assets/pet_related/charcoal/charcoal.gif'
 
 import o_walkingright from '/assets/pet_related/orange/walkingright.png'
 import o_walkingleft from '/assets/pet_related/orange/walkingleft.png'
@@ -248,13 +247,14 @@ export default {
       ],
 
       allCustomItems: [
-        { name: 'Cozyroom', imgpath: Cozyroom, owned: true, type: 'background' },
-        { name: 'Beach', imgpath: Beach, owned: false, type: 'background' },
-        { name: 'Christmas', imgpath: Christmas, owned: false, type: 'background' },
-        { name: 'Park', imgpath: Park, owned: false, type: 'background' },
-        { name: 'Orange', imgpath: orange, owned: true, type: 'Cat' },
-        { name: 'Siamese', imgpath: siamese, owned: false, type: 'Cat' },
-        { name: 'Pinkie', imgpath: pinkie, owned: false, type: 'Cat' }
+        { itemname: 'Cozyroom', imgpath: Cozyroom, owned: true, itemtype: 'Background' },
+        { itemname: 'Beach', imgpath: Beach, owned: false, itemtype: 'Background' },
+        { itemname: 'Christmas', imgpath: Christmas, owned: false, itemtype: 'Background' },
+        { itemname: 'Park', imgpath: Park, owned: false, itemtype: 'Background' },
+        { itemname: 'Orange', imgpath: orange, owned: true, itemtype: 'Cat' },
+        { itemname: 'Siamese', imgpath: siamese, owned: false, itemtype: 'Cat' },
+        { itemname: 'Pinkie', imgpath: pinkie, owned: false, itemtype: 'Cat' },
+        { itemname: 'Charcoal', imgpath: charcoal, owned: false, itemtype: 'Cat' }
       ]
     }
   },
@@ -267,9 +267,9 @@ export default {
     const savedCustomization = localStorage.getItem('selectedCustomization')
     if (savedCustomization) {
       const savedBackgroundItem = this.allCustomItems.find(
-        (item) => item.name === savedCustomization
+        (item) => item.itemname === savedCustomization
       )
-      if (savedBackgroundItem && savedBackgroundItem.type === 'background') {
+      if (savedBackgroundItem && savedBackgroundItem.itemtype === 'background') {
         this.applyCustomization(savedBackgroundItem)
         console.log('Applied saved background:', savedBackgroundItem)
       } else {
@@ -277,10 +277,8 @@ export default {
       }
     }
 
-    // Retrieve the saved pet or use 'orange' as default
     const savedPet = localStorage.getItem('selectedPet') || 'orange'
 
-    // Configure Phaser game instance
     const config = {
       type: Phaser.AUTO,
       width: '100%',
@@ -298,13 +296,12 @@ export default {
           debug: false
         }
       },
-      scene: [new GameScene(savedPet)] // Make sure `savedPet` is used here.
+      scene: [new GameScene(savedPet)]
     }
 
     this.phaserGame = new Phaser.Game(config)
 
-    // Decrease happiness every 8 hours (8 * 60 * 60 * 1000 milliseconds)
-    setInterval(this.decreaseHappiness, 1 * 60 * 60 * 1000)
+    setInterval(this.decreaseHappiness, 60 * 60 * 1000) //decrease happiness every hour
   },
 
   computed: {
@@ -363,21 +360,39 @@ export default {
 
     applyCustomization(selectedItem) {
       console.log('Applying customization:', selectedItem)
-      if (selectedItem.owned) {
-        if (selectedItem.type === 'background') {
+
+      //fixing the tracking of applied items 
+      if (selectedItem.owned || selectedItem.applied) {
+        if (selectedItem.itemtype === 'Background') {
           const gameBg = document.getElementById('game-bg')
           if (gameBg) {
             gameBg.src = selectedItem.imgpath
           }
+          localStorage.setItem('selectedBackground', selectedItem.itemname)
+          this.applyItemOnServer(selectedItem, 'Background')
+          console.log('Applied background:', selectedItem)
+        } else if (selectedItem.itemtype === 'Cat') {
+          localStorage.setItem('selectedPet', selectedItem.itemname)
+          this.updateGameWithNewPet(selectedItem.itemname)
 
-          localStorage.setItem('selectedBackground', selectedItem.name)
-        } else if (selectedItem.type === 'Cat') {
-          localStorage.setItem('selectedPet', selectedItem.name)
-          console.log('updating game with new pet', selectedItem.name)
-          this.updateGameWithNewPet(selectedItem.name)
+          this.applyItemOnServer(selectedItem, 'Cat')
+          console.log('Applied Cat:', selectedItem)
         }
       } else {
         console.warn('This item is either not owned or not applicable as a background or pet.')
+      }
+    },
+
+    async applyItemOnServer(item, itemType) {
+      try {
+        const response = await axios.put(`http://localhost:8000/api/userinventory/apply`, {
+          username: this.username,
+          itemname: item.name,
+          itemtype: itemType
+        })
+        console.log('applied', response.data.message)
+      } catch (error) {
+        console.error('Error applying item on server:', error)
       }
     },
 
@@ -394,12 +409,13 @@ export default {
     },
     async fetchPetName() {
       try {
-        const response = await axios.get(
-          `https://habit-buddy-server.vercel.app/api/pet/${this.username}`
-        )
+        console.log('Fetching pet data')
+        const response = await axios.get(`http://localhost:8000/api/pet/${this.username}`)
         this.petName = response.data.petName
-        this.newPetName = this.petName // Set the current name in the modal input
+
         this.petHappiness = response.data.happinessLevel
+
+        console.log(this.petName, this.petHappiness)
       } catch (error) {
         console.error('Error fetching pet name:', error)
       }
@@ -411,19 +427,40 @@ export default {
         if (this.petHappiness < 0) {
           this.petHappiness = 0
         }
-        // Optionally, update the server with the new happiness level
+
         this.updateHappinessOnServer()
       }
     },
     async fetchUserInventory() {
       const { username } = this
       try {
-        const response = await axios.get(
-          `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
-        )
+        const response = await axios.get(`http://localhost:8000/api/userinventory/${username}`)
         const inventory = response.data
+        console.log('inventory:', inventory)
 
-        // Update `allFishItems` based on user-owned items
+        let appliedBackground = inventory.find(
+          (item) => item.itemtype === 'Background' && item.applied
+        )
+
+        let appliedPet = inventory.find((item) => item.itemtype === 'Cat' && item.applied)
+        console.log('appliedPet:', appliedPet)
+        console.log('appliedBackground:', appliedBackground)
+
+        if (appliedBackground) {
+          this.applyCustomization(appliedBackground)
+        } else {
+          const defaultBackground = this.allCustomItems.find((item) => item.itemname === 'Cozyroom')
+          this.applyCustomization(defaultBackground)
+        }
+
+        if (appliedPet) {
+          this.updateGameWithNewPet(appliedPet.name)
+          localStorage.setItem('selectedPet', appliedPet.name)
+        } else {
+          this.updateGameWithNewPet('Orange')
+          localStorage.setItem('selectedPet', 'Orange')
+        }
+
         this.allFishItems.forEach((fish) => {
           const userFish = inventory.find((item) => item.itemname === fish.itemname)
           if (userFish) {
@@ -434,12 +471,13 @@ export default {
           }
         })
 
-        // Update `allCustomItems` based on user-owned backgrounds and pets
         this.allCustomItems.forEach((item) => {
-          const userItem = inventory.find((inventoryItem) => inventoryItem.itemname === item.name)
+          const userItem = inventory.find(
+            (inventoryItem) => inventoryItem.itemname === item.itemname
+          )
           if (userItem) {
             item.owned = true
-            console.log('item owned:', item.name)
+            console.log('item owned:', item.itemname)
           }
         })
       } catch (error) {
@@ -450,11 +488,10 @@ export default {
     async feedPet(fish) {
       if (this.isEating || this.petHappiness >= 100 || fish.itemqty <= 0) return
 
-      // Decrease the quantity of the selected fish
       try {
         console.log('decreasing item quantity')
-        // Update the quantity in the database
-        await axios.put(`https://habit-buddy-server.vercel.app/api/inventory/decrease`, {
+
+        await axios.put(`http://localhost:8000/api/inventory/decrease`, {
           username: this.username,
           itemname: fish.itemname,
           decreaseBy: 1
@@ -482,7 +519,7 @@ export default {
     },
     async updateHappinessOnServer() {
       try {
-        await axios.put(`https://habit-buddy-server.vercel.app/api/pet/${this.username}`, {
+        await axios.put(`http://localhost:8000/api/pet/${this.username}`, {
           happinessLevel: this.petHappiness
         })
       } catch (error) {
@@ -495,17 +532,17 @@ class GameScene extends Phaser.Scene {
   constructor(petType) {
     super('scene-game')
     this.preActionForResize = null
-    this.petType = petType // Store the selected pet type
+    this.petType = petType
   }
 
   preload() {
-    this.loadAssetsForPet() // Load pet-specific assets based on petType
+    this.loadAssetsForPet()
   }
 
   loadAssetsForPet() {
     if (this.petType === 'Orange') {
       console.log('loading orange pet assets')
-      // Load all assets for the orange cat
+
       this.load.spritesheet('catWalkingRight', o_walkingright, { frameWidth: 64, frameHeight: 64 })
       this.load.spritesheet('catWalkingLeft', o_walkingleft, { frameWidth: 64, frameHeight: 64 })
       this.load.spritesheet('catLicking', o_licking, { frameWidth: 64, frameHeight: 64 })
@@ -1039,7 +1076,6 @@ canvas {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 5px;
 }
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
