@@ -73,7 +73,7 @@ export default {
 
       // axios req to see if pw and username matches w db
       try {
-        const response = await axios.post('http://localhost:8000/api/login', {
+        const response = await axios.post('https://habit-buddy-server.vercel.app/api/login', {
           username: this.username,
           password: this.password
         })

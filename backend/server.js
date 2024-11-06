@@ -105,7 +105,6 @@ const inventorySchema = new mongoose.Schema({
     itemdesc: { type: String, required: true },
     itemqty: { type: Number, required: true },
     imgpath: { type: String, required: true },
-    applied: { type: Boolean, default: false },
 });
 
 const Inventory = mongoose.model("Inventory", inventorySchema, "userinventory");
@@ -122,61 +121,36 @@ app.get("/api/userinventory/:username", async (req, res) => {
     }
 });
 
-app.put("/api/userinventory/apply", async (req, res) => {
-    const { username, itemname, itemtype } = req.body;
-
-    try {
-        await Inventory.updateMany({ username, itemtype }, { applied: false });
-        console.log("Item applied:", itemname);
-
-        await Inventory.updateOne({ username, itemname }, { applied: true });
-
-        res.status(200).json({ message: "Item applied successfully" });
-    } catch (error) {
-        res.status(500).json({ error: "Error applying item" });
-    }
-});
-
+//add or update an item in the player's inventory
 app.post("/api/inventory/add", async (req, res) => {
-    const {
-        username,
-        itemname,
-        itemtype,
-        itemdesc,
-        itemqty,
-        imgpath,
-        applied,
-    } = req.body;
+    const { username, itemname, itemtype, itemdesc, itemqty, imgpath } =
+        req.body;
 
     try {
+        // Check if the item already exists in the inventory
         const existingItem = await Inventory.findOne({
             username: username,
             itemname: itemname,
         });
 
         if (existingItem) {
+            // if item exists, update the quantity
             existingItem.itemqty += itemqty;
             await existingItem.save();
             res.status(200).json({
                 message: "Item quantity updated successfully",
             });
         } else {
-            const newItemData = {
+            // if item does not exist, create a new document
+            const newItem = new Inventory({
                 username: username,
                 itemname: itemname,
                 itemtype: itemtype,
                 itemdesc: itemdesc,
                 itemqty: itemqty,
                 imgpath: imgpath,
-            };
-
-            if (itemtype !== "fish") {
-                newItemData.applied = applied || false;
-            }
-
-            const newItem = new Inventory(newItemData);
+            });
             await newItem.save();
-
             res.status(201).json({ message: "New item added to inventory" });
         }
     } catch (error) {
@@ -301,10 +275,10 @@ app.post("/api/register", async (req, res) => {
             longtermcompleted,
         });
         await newUser.save();
-
+        // Automatically create a pet for the user with default values
         const newPet = new Pet({
             username,
-            petName: "orange",
+            petName: "Bluey",
             happinessLevel: 100,
         });
         await newPet.save();
