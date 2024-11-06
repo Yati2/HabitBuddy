@@ -988,17 +988,13 @@ class GameScene extends Phaser.Scene {
 </script>
 
 <style>
-.row {
-  display: flex;
-  flex-grow: 1;
-}
 template {
   width: 100%;
   height: 100%;
 }
 #game-container {
   height: 91vh;
-  flex: 1;
+
   border-right: 4px solid rgba(209, 208, 208, 0.552);
   border-left: 2px solid rgba(209, 208, 208, 0.552);
   position: relative;
@@ -1021,7 +1017,6 @@ canvas {
   flex-direction: column;
   align-items: center;
   max-height: 90vh;
-  flex: 1;
 }
 
 .pet-info-content {
