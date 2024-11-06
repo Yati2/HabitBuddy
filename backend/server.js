@@ -126,10 +126,12 @@ app.put("/api/userinventory/apply", async (req, res) => {
     const { username, itemname, itemtype } = req.body;
 
     try {
+        console.log(req.body);
         await Inventory.updateMany({ username, itemtype }, { applied: false });
         console.log("Item applied:", itemname);
 
         await Inventory.updateOne({ username, itemname }, { applied: true });
+        
 
         res.status(200).json({ message: "Item applied successfully" });
     } catch (error) {

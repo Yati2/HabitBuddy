@@ -179,7 +179,7 @@ export default {
 
       // API call to fetch user inventory
       axios
-        .get(`http://localhost:8000/api/userinventory/${username}`)
+        .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
         .then((response) => {
           const inventory = response.data
           console.log(inventory)
@@ -203,7 +203,7 @@ export default {
       const totalCost = this.selectedItem.itemcost * this.itemqty
 
       axios
-        .put(`http://localhost:8000/api/users/${username}/deduct-points`, {
+        .put(`https://habit-buddy-server.vercel.app/api/users/${username}/deduct-points`, {
           pointsToDeduct: totalCost
         })
         .then((response) => {
@@ -231,20 +231,22 @@ export default {
 
     async updateInventory(username) {
       try {
-        const response = await axios.get(`http://localhost:8000/api/userinventory/${username}`)
+        const response = await axios.get(
+          `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
+        )
         const inventory = response.data
 
         const existingItem = inventory.find((item) => item.itemname === this.selectedItem.itemname)
 
         if (existingItem) {
-          await axios.put(`http://localhost:8000/api/inventory/update`, {
+          await axios.put(`https://habit-buddy-server.vercel.app/api/inventory/update`, {
             username: username,
             itemname: this.selectedItem.itemname,
             itemqty: existingItem.itemqty + this.itemqty
           })
           console.log('Item quantity updated successfully')
         } else {
-          await axios.post('http://localhost:8000/api/inventory/add', {
+          await axios.post('https://habit-buddy-server.vercel.app/api/inventory/add', {
             username: username,
             itemname: this.selectedItem.itemname,
             itemtype: this.selectedItem.itemtype,
@@ -278,7 +280,7 @@ export default {
 
       // Fetch user inventory and check if they already own the selected background or cat
       axios
-        .get(`http://localhost:8000/api/userinventory/${username}`)
+        .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
         .then((response) => {
           const inventory = response.data
 
@@ -316,7 +318,7 @@ export default {
     const username = localStorage.getItem('username') || 'anonymous'
 
     axios
-      .get(`http://localhost:8000/api/userinventory/${username}`)
+      .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
       .then((response) => {
         const inventory = response.data
 

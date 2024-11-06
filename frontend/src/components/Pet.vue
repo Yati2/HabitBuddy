@@ -360,8 +360,6 @@ export default {
 
     applyCustomization(selectedItem) {
       console.log('Applying customization:', selectedItem)
-
-      //fixing the tracking of applied items 
       if (selectedItem.owned || selectedItem.applied) {
         if (selectedItem.itemtype === 'Background') {
           const gameBg = document.getElementById('game-bg')
@@ -372,6 +370,9 @@ export default {
           this.applyItemOnServer(selectedItem, 'Background')
           console.log('Applied background:', selectedItem)
         } else if (selectedItem.itemtype === 'Cat') {
+          console.log('selectedItem:', selectedItem)
+
+          console.log('petType:', this.petType)
           localStorage.setItem('selectedPet', selectedItem.itemname)
           this.updateGameWithNewPet(selectedItem.itemname)
 
@@ -385,11 +386,14 @@ export default {
 
     async applyItemOnServer(item, itemType) {
       try {
-        const response = await axios.put(`http://localhost:8000/api/userinventory/apply`, {
-          username: this.username,
-          itemname: item.name,
-          itemtype: itemType
-        })
+        const response = await axios.put(
+          `https://habit-buddy-server.vercel.app/api/userinventory/apply`,
+          {
+            username: this.username,
+            itemname: item.itemname,
+            itemtype: itemType
+          }
+        )
         console.log('applied', response.data.message)
       } catch (error) {
         console.error('Error applying item on server:', error)
@@ -410,7 +414,9 @@ export default {
     async fetchPetName() {
       try {
         console.log('Fetching pet data')
-        const response = await axios.get(`http://localhost:8000/api/pet/${this.username}`)
+        const response = await axios.get(
+          `https://habit-buddy-server.vercel.app/api/pet/${this.username}`
+        )
         this.petName = response.data.petName
 
         this.petHappiness = response.data.happinessLevel
@@ -432,9 +438,12 @@ export default {
       }
     },
     async fetchUserInventory() {
+      console.log('fetching inventory')
       const { username } = this
       try {
-        const response = await axios.get(`http://localhost:8000/api/userinventory/${username}`)
+        const response = await axios.get(
+          `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
+        )
         const inventory = response.data
         console.log('inventory:', inventory)
 
@@ -454,8 +463,9 @@ export default {
         }
 
         if (appliedPet) {
-          this.updateGameWithNewPet(appliedPet.name)
-          localStorage.setItem('selectedPet', appliedPet.name)
+          console.log('applying pet:', appliedPet)
+          this.updateGameWithNewPet(appliedPet.itemname)
+          localStorage.setItem('selectedPet', appliedPet.itemname)
         } else {
           this.updateGameWithNewPet('Orange')
           localStorage.setItem('selectedPet', 'Orange')
@@ -491,7 +501,7 @@ export default {
       try {
         console.log('decreasing item quantity')
 
-        await axios.put(`http://localhost:8000/api/inventory/decrease`, {
+        await axios.put(`https://habit-buddy-server.vercel.app/api/inventory/decrease`, {
           username: this.username,
           itemname: fish.itemname,
           decreaseBy: 1
@@ -519,7 +529,7 @@ export default {
     },
     async updateHappinessOnServer() {
       try {
-        await axios.put(`http://localhost:8000/api/pet/${this.username}`, {
+        await axios.put(`https://habit-buddy-server.vercel.app/api/pet/${this.username}`, {
           happinessLevel: this.petHappiness
         })
       } catch (error) {
@@ -606,8 +616,6 @@ class GameScene extends Phaser.Scene {
       .sprite(0, this.cameras.main.height - 50, initialTexture)
       .setScale(2.5)
       .setInteractive()
-
-    console.log('pettype', this.petType)
 
     if (this.petType === 'Orange') {
       this.defineOrangeCatAnimations()

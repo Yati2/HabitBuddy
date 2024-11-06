@@ -330,7 +330,7 @@ export default {
 
       // Fetch the user's current points from the backend
       axios
-        .get(`http://localhost:8000/api/users/${username}/points`)
+        .get(`https://habit-buddy-server.vercel.app/api/users/${username}/points`)
         .then((response) => {
           this.userPoints = response.data.points
         })
@@ -347,7 +347,7 @@ export default {
       const totalCost = this.selectedItem.itemcost * this.itemqty
 
       axios
-        .put(`http://localhost:8000/api/users/${username}/deduct-points`, {
+        .put(`https://habit-buddy-server.vercel.app/api/users/${username}/deduct-points`, {
           pointsToDeduct: totalCost
         })
         .then((response) => {
@@ -380,7 +380,7 @@ export default {
 
     updateInventory(username) {
       axios
-        .post('http://localhost:8000/api/inventory/add', {
+        .post('https://habit-buddy-server.vercel.app/api/inventory/add', {
           username: username,
           itemname: this.selectedItem.itemname,
           itemdesc: this.selectedItem.itemdesc,
@@ -421,7 +421,7 @@ export default {
 
       // Send Axios request to update the habit count in the backend
       axios
-        .put('http://localhost:8000/api/habits/' + h._id, {
+        .put('https://habit-buddy-server.vercel.app/api/habits/' + h._id, {
           count: h.count
         })
         .then((response) => {
@@ -431,7 +431,7 @@ export default {
 
           // Send Axios request to add 5 points to the user's account
           axios
-            .put('http://localhost:8000/api/users/' + username + '/points', {
+            .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/points', {
               pointsToAdd: 5 // Add 5 points
             })
             .then((res) => {
@@ -440,9 +440,12 @@ export default {
 
               // Now send another Axios request to increment habitCompleted in the user schema
               axios
-                .put('http://localhost:8000/api/users/' + username + '/habitCompleted', {
-                  incrementBy: 1 // Increment the habitCompleted by 1
-                })
+                .put(
+                  'https://habit-buddy-server.vercel.app/api/users/' + username + '/habitCompleted',
+                  {
+                    incrementBy: 1 // Increment the habitCompleted by 1
+                  }
+                )
                 .then((res) => {
                   console.log('Habit completed count incremented:', res.data)
                 })
@@ -465,7 +468,7 @@ export default {
 
         // Send Axios request to update the count in the backend
         axios
-          .put('http://localhost:8000/api/habits/' + h._id, {
+          .put('https://habit-buddy-server.vercel.app/api/habits/' + h._id, {
             count: h.count
           })
           .then((response) => {
@@ -485,7 +488,7 @@ export default {
 
       // Axios request to fetch todos for the current user
       axios
-        .get(`http://localhost:8000/api/user_habits`, {
+        .get(`https://habit-buddy-server.vercel.app/api/user_habits`, {
           params: {
             username: username
           }
@@ -511,7 +514,7 @@ export default {
       this.habits.push({ ...this.LTForm })
 
       axios
-        .post('http://localhost:8000/api/habits', {
+        .post('https://habit-buddy-server.vercel.app/api/habits', {
           title: this.HabitForm.title,
           description: this.HabitForm.description,
           tags: this.HabitForm.tags,
@@ -544,7 +547,7 @@ export default {
 
       // Send a DELETE request to the server to remove the todo from the database
       axios
-        .delete('http://localhost:8000/api/user_habits', {
+        .delete('https://habit-buddy-server.vercel.app/api/user_habits', {
           params: {
             username: username,
             title: h.title,
@@ -568,7 +571,7 @@ export default {
 
       // Axios request to fetch todos for the current user
       axios
-        .get(`http://localhost:8000/api/user_lts`, {
+        .get(`https://habit-buddy-server.vercel.app/api/user_lts`, {
           params: {
             username: username
           }
@@ -594,7 +597,7 @@ export default {
       this.longTermTasks.push({ ...this.LTForm })
 
       axios
-        .post('http://localhost:8000/api/lts', {
+        .post('https://habit-buddy-server.vercel.app/api/lts', {
           title: this.LTForm.title,
           description: this.LTForm.description,
           tags: this.LTForm.tags,
@@ -629,7 +632,7 @@ export default {
         autoClose: 1000
       })
       axios
-        .put('http://localhost:8000/api/users/' + username + '/points', {
+        .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/points', {
           pointsToAdd: 10 // Add 5 points
         })
         .then((res) => {
@@ -642,7 +645,7 @@ export default {
 
       // Now send another Axios request to increment longtermcompleted
       axios
-        .put('http://localhost:8000/api/users/' + username + '/longtermcompleted', {
+        .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/longtermcompleted', {
           incrementBy: 1 // Increment the longtermcompleted by 1
         })
         .then((res) => {
@@ -654,7 +657,7 @@ export default {
 
       // Send a DELETE request to the server to remove the todo from the database
       axios
-        .delete('http://localhost:8000/api/user_lts', {
+        .delete('https://habit-buddy-server.vercel.app/api/user_lts', {
           params: {
             username: username,
             title: lt.title,
@@ -680,7 +683,7 @@ export default {
 
       // Axios request to fetch todos for the current user
       axios
-        .get(`http://localhost:8000/api/user_todos`, {
+        .get(`https://habit-buddy-server.vercel.app/api/user_todos`, {
           params: {
             username: username
           }
@@ -707,7 +710,7 @@ export default {
 
       // Optionally, you can send the data to your API via Axios here
       axios
-        .post('http://localhost:8000/api/todos', {
+        .post('https://habit-buddy-server.vercel.app/api/todos', {
           title: this.todoForm.title,
           description: this.todoForm.description,
           tags: this.todoForm.tags,
@@ -742,7 +745,7 @@ export default {
       })
       // Now send another Axios request to increment todocompleted
       axios
-        .put('http://localhost:8000/api/users/' + username + '/todocompleted', {
+        .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/todocompleted', {
           incrementBy: 1 // Increment the longtermcompleted by 1
         })
         .then((res) => {
@@ -752,7 +755,7 @@ export default {
           console.error('Error incrementing todocompleted:', err)
         })
       axios
-        .put('http://localhost:8000/api/users/' + username + '/points', {
+        .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/points', {
           pointsToAdd: 10 // Add 5 points
         })
         .then((res) => {
@@ -765,7 +768,7 @@ export default {
 
       // Send a DELETE request to the server to remove the todo from the database
       axios
-        .delete('http://localhost:8000/api/user_todos', {
+        .delete('https://habit-buddy-server.vercel.app/api/user_todos', {
           params: {
             username: username,
             title: todo.title,
@@ -787,7 +790,7 @@ export default {
 
     // Fetch the user's inventory when the component is mounted
     axios
-      .get(`http://localhost:8000/api/userinventory/${username}`)
+      .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
       .then((response) => {
         const inventory = response.data
 
