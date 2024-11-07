@@ -114,23 +114,13 @@
 
                   <!-- jh: component for dashboard to get data/to call methods -->
                   <!--<DashboardData  ref="dDComp" :habitLog="habitLog" :longTermLog="longTermLog" :toDoLog="toDoLog"/>-->
-                  <Dashboard
-                    class="hide-dashboard"
-                    ref="dDComp"
-                    :habitLog="habitLog"
-                    :longTermLog="longTermLog"
-                    :toDoLog="toDoLog"
-                  />
+                  <Dashboard class="hide-dashboard" ref="dDComp" :habitLog="habitLog" :longTermLog="longTermLog" :toDoLog="toDoLog"/>
                   <!-- Plus Button (positioned on the right side) -->
                   <button
                     class="btn btn-outline-success btn-circle"
-                    @click="
-                      increaseCount(h)
-                      increaseHabitLog()
-                    "
+                    @click="increaseCount(h); increaseHabitLog()" 
                     style="min-width: 40px; max-width: 50px; flex-shrink: 0"
-                  >
-                    <!--jh -i think i might hv to use $refs here instead of just increaseHabitLog?-->
+                  >  <!--jh -i think i might hv to use $refs here instead of just increaseHabitLog?-->
                     <i class="fas fa-plus"></i>
                   </button>
                 </div>
@@ -209,13 +199,7 @@
                   </small>
                 </div>
                 <div>
-                  <button
-                    class="btn btn-success btn-sm"
-                    @click="
-                      markAsDonelt(lt)
-                      increaseLongTermLog()
-                    "
-                  >
+                  <button class="btn btn-success btn-sm" @click="markAsDonelt(lt); increaseLongTermLog() ">
                     Mark as Done
                   </button>
                 </div>
@@ -281,13 +265,7 @@
                   ><strong class="cardtext">Tag:</strong> {{ todo.tags }}</small
                 >
                 <div>
-                  <button
-                    class="btn btn-success btn-sm"
-                    @click="
-                      markAsDone(todo)
-                      increaseToDoLog()
-                    "
-                  >
+                  <button class="btn btn-success btn-sm" @click="markAsDone(todo); increaseToDoLog()">
                     Mark as Done
                   </button>
                 </div>
@@ -313,7 +291,7 @@ import { toast } from 'vue3-toastify'
 //import 'vue-toast-notification/dist/theme-default.css';
 import 'vue3-toastify/dist/index.css'
 import Shop from './Shop.vue'
-import Dashboard from './Dashboard.vue'
+import Dashboard from './Dashboard.vue';
 import DashboardData from './DashboardData.vue'
 
 export default {
@@ -350,9 +328,15 @@ export default {
         description: '',
         tags: 'Work'
       },
-      habitLog: {},
-      longTermLog: {},
-      toDoLog: {}
+      habitLog: {
+
+      },
+      longTermLog: {
+
+      },
+      toDoLog: {
+
+      },
     }
   },
 
@@ -361,13 +345,13 @@ export default {
       this.$router.push('/pet')
     },
     increaseHabitLog() {
-      this.$refs.dDComp.increaseHabitLog()
+      this.$refs.dDComp.increaseHabitLog();
     },
     increaseLongTermLog() {
-      this.$refs.dDComp.increaseLongTermLog()
+      this.$refs.dDComp.increaseLongTermLog();
     },
     increaseToDoLog() {
-      this.$refs.dDComp.increaseToDoLog()
+      this.$refs.dDComp.increaseToDoLog();
     },
     fetchUserPoints() {
       const username = localStorage.getItem('username') || 'anonymous'
@@ -506,7 +490,9 @@ export default {
           h.count-- // Revert the count if the request fails
         })
     },
-    increaseHabitLog() {},
+    increaseHabitLog() {
+      
+    },
     decreaseCount(h) {
       if (h.count > 0) {
         h.count-- // Decrease count locally
@@ -1038,10 +1024,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.btn {
-  border-radius: 10px;
 }
 
 .habit-content {
