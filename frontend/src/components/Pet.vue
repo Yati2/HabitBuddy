@@ -54,6 +54,7 @@
                   <h5 class="pt-2">{{ fish.itemname }}</h5>
                   <small>Owned: {{ fish.itemqty || 0 }}</small>
                   <small>Happiness boost: {{ getHappinessBoost(fish) }}</small>
+
                   <button
                     class="petbtn mt-3"
                     :disabled="!fish.owned || fish.itemqty === 0 || isCatFull"
@@ -61,23 +62,25 @@
                   >
                     Feed
                   </button>
-                  <p
-                    v-if="!fish.owned && !isCatFull"
-                    class="text-danger pt-1"
-                    style="font-size: 0.8rem"
-                  >
-                    Buy from Shopkeeper
+
+                  <p v-if="fish.itemqty === 0" class="text-danger pt-1" style="font-size: 0.8rem">
+                    Purchase from Shopkeeper
                     <router-link to="/tasks" class="text-decoration-underline text-danger"
                       >here</router-link
                     >!
                   </p>
-                  <p v-if="isCatFull" class="text-danger pt-1" style="font-size: 0.8rem">
+
+                  <p
+                    v-if="isCatFull && fish.itemqty > 0"
+                    class="text-danger pt-1"
+                    style="font-size: 0.8rem"
+                  >
                     Your cat refuses to eat more!
                   </p>
                 </div>
               </div>
             </div>
-            <!-- Carousel controls -->
+
             <button
               class="carousel-control-prev"
               type="button"
