@@ -269,6 +269,110 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema, "users");
 
+//for dashboard
+app.get("/api/users/:username", async (req, res) => {
+    const username = req.params.username;
+    const user = await User.findOne({ username });
+    if (!user) {
+        return res.status(404).send("User not found");
+    }
+    res.json(user);
+});
+
+app.put("/api/users/:username", async (req, res) => {
+    const { username } = req.params;
+    const { habitLog, longtermLog, todoLog } = req.body;
+
+    try {
+        const updatedUser = await User.findOneAndUpdate(
+            { username },
+            { habitLog, longtermLog, todoLog },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.error("Error updating user data:", error);
+        res.status(500).json({ message: "Error updating user data" });
+    }
+});
+
+app.put("/api/users/:username/:logField", async (req, res) => {
+    const { username, logField } = req.params;
+    const logData = req.body;
+
+    try {
+        const updatedUser = await User.findOneAndUpdate(
+            { username },
+            { [logField]: logData },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.error("Error updating user log:", error);
+        res.status(500).json({ message: "Error updating user log" });
+    }
+});
+
+// Get Habit Log for a User
+app.get("/api/users/:username/habitLog", async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await User.findOne({ username }, 'habitLog');
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json({ habitLog: user.habitLog });
+    } catch (error) {
+        console.error("Error fetching habit log:", error);
+        res.status(500).json({ message: "Error fetching habit log" });
+    }
+});
+
+// Get Long-term Log for a User
+app.get("/api/users/:username/longtermLog", async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await User.findOne({ username }, 'longtermLog');
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json({ longtermLog: user.longtermLog });
+    } catch (error) {
+        console.error("Error fetching long-term log:", error);
+        res.status(500).json({ message: "Error fetching long-term log" });
+    }
+});
+
+// Get To-do Log for a User
+app.get("/api/users/:username/todoLog", async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await User.findOne({ username }, 'todoLog');
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json({ todoLog: user.todoLog });
+    } catch (error) {
+        console.error("Error fetching to-do log:", error);
+        res.status(500).json({ message: "Error fetching to-do log" });
+    }
+});
+
+//end of dashboard apis
+
 app.put("/api/users/:username/points", async (req, res) => {
     const { username } = req.params; // Get the username from the URL
     const { pointsToAdd } = req.body; // Get the points to add from the request body
