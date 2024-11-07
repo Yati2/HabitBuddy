@@ -2,7 +2,7 @@
   <div>
     <nav class="navbar navbar-custom navbar-expand-lg">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">
+        <a class="navbar-brand" href="/dashboard">
           <img
             src="/assets/cat-icon.png"
             alt="Cat Icon"
