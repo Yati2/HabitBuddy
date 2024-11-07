@@ -114,13 +114,23 @@
 
                   <!-- jh: component for dashboard to get data/to call methods -->
                   <!--<DashboardData  ref="dDComp" :habitLog="habitLog" :longTermLog="longTermLog" :toDoLog="toDoLog"/>-->
-                  <Dashboard class="hide-dashboard" ref="dDComp" :habitLog="habitLog" :longTermLog="longTermLog" :toDoLog="toDoLog"/>
+                  <Dashboard
+                    class="hide-dashboard"
+                    ref="dDComp"
+                    :habitLog="habitLog"
+                    :longTermLog="longTermLog"
+                    :toDoLog="toDoLog"
+                  />
                   <!-- Plus Button (positioned on the right side) -->
                   <button
                     class="btn btn-outline-success btn-circle"
-                    @click="increaseCount(h); increaseHabitLog()" 
+                    @click="
+                      increaseCount(h)
+                      increaseHabitLog()
+                    "
                     style="min-width: 40px; max-width: 50px; flex-shrink: 0"
-                  >  <!--jh -i think i might hv to use $refs here instead of just increaseHabitLog?-->
+                  >
+                    <!--jh -i think i might hv to use $refs here instead of just increaseHabitLog?-->
                     <i class="fas fa-plus"></i>
                   </button>
                 </div>
@@ -199,7 +209,13 @@
                   </small>
                 </div>
                 <div>
-                  <button class="btn btn-success btn-sm" @click="markAsDonelt(lt); increaseLongTermLog() ">
+                  <button
+                    class="btn btn-success btn-sm"
+                    @click="
+                      markAsDonelt(lt)
+                      increaseLongTermLog()
+                    "
+                  >
                     Mark as Done
                   </button>
                 </div>
@@ -265,7 +281,13 @@
                   ><strong class="cardtext">Tag:</strong> {{ todo.tags }}</small
                 >
                 <div>
-                  <button class="btn btn-success btn-sm" @click="markAsDone(todo); increaseToDoLog()">
+                  <button
+                    class="btn btn-success btn-sm"
+                    @click="
+                      markAsDone(todo)
+                      increaseToDoLog()
+                    "
+                  >
                     Mark as Done
                   </button>
                 </div>
@@ -291,7 +313,7 @@ import { toast } from 'vue3-toastify'
 //import 'vue-toast-notification/dist/theme-default.css';
 import 'vue3-toastify/dist/index.css'
 import Shop from './Shop.vue'
-import Dashboard from './Dashboard.vue';
+import Dashboard from './Dashboard.vue'
 import DashboardData from './DashboardData.vue'
 
 export default {
@@ -328,15 +350,9 @@ export default {
         description: '',
         tags: 'Work'
       },
-      habitLog: {
-
-      },
-      longTermLog: {
-
-      },
-      toDoLog: {
-
-      },
+      habitLog: {},
+      longTermLog: {},
+      toDoLog: {}
     }
   },
 
@@ -345,13 +361,13 @@ export default {
       this.$router.push('/pet')
     },
     increaseHabitLog() {
-      this.$refs.dDComp.increaseHabitLog();
+      this.$refs.dDComp.increaseHabitLog()
     },
     increaseLongTermLog() {
-      this.$refs.dDComp.increaseLongTermLog();
+      this.$refs.dDComp.increaseLongTermLog()
     },
     increaseToDoLog() {
-      this.$refs.dDComp.increaseToDoLog();
+      this.$refs.dDComp.increaseToDoLog()
     },
     fetchUserPoints() {
       const username = localStorage.getItem('username') || 'anonymous'
@@ -490,9 +506,7 @@ export default {
           h.count-- // Revert the count if the request fails
         })
     },
-    increaseHabitLog() {
-      
-    },
+    increaseHabitLog() {},
     decreaseCount(h) {
       if (h.count > 0) {
         h.count-- // Decrease count locally
@@ -600,7 +614,6 @@ export default {
     fetchLTs() {
       const username = localStorage.getItem('username') || 'anonymous' // Get the current user's username from localStorage
 
-      // Axios request to fetch todos for the current user
       axios
         .get(`https://habit-buddy-server.vercel.app/api/user_lts`, {
           params: {
@@ -608,7 +621,7 @@ export default {
           }
         })
         .then((response) => {
-          this.longTermTasks = response.data // Assign the response data (todos) to this.todos
+          this.longTermTasks = response.data
         })
         .catch((error) => {
           console.error('Error fetching long terms:', error)
@@ -616,7 +629,7 @@ export default {
     },
     cancelLTForm() {
       this.showLTForm = false
-      this.LTForm = { title: '', description: '', tags: 'Work' } // Reset form
+      this.LTForm = { title: '', description: '', tags: 'Work' }
     },
     submitLT() {
       if (!this.LTForm.title || !this.LTForm.description) {
@@ -624,7 +637,6 @@ export default {
         return
       }
 
-      // Add the new task to the list
       this.longTermTasks.push({ ...this.LTForm })
 
       axios
@@ -639,21 +651,13 @@ export default {
           console.log('Long Term saved to database:', response.data)
           console.log(this.longTermTasks)
           window.location.reload()
-          // Add the new to-do to the list
-          // this.todos.push({
-          //   title: this.todoForm.title,
-          //   description: this.todoForm.description,
-          //   tags: this.todoForm.tags
-          // });
 
-          // Reset and hide the form after successful submission
           this.cancelLTForm()
         })
         .catch((error) => {
           console.error('Error saving Long Term:', error)
         })
 
-      // Hide the form and reset
       this.cancelLTForm()
     },
     markAsDonelt(lt) {
@@ -664,7 +668,7 @@ export default {
       })
       axios
         .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/points', {
-          pointsToAdd: 10 // Add 5 points
+          pointsToAdd: 10
         })
         .then((res) => {
           console.log('Points added:', res.data)
@@ -704,10 +708,6 @@ export default {
           console.error('Error deleting LongTerm:', error)
         })
     },
-
-    //fetch points from user
-
-    //todos methods
 
     fetchTodos() {
       const username = localStorage.getItem('username') || 'anonymous' // Get the current user's username from localStorage
