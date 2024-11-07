@@ -152,7 +152,7 @@ body {
 
 .btn {
   font-size: 1rem;
-  margin-top: 7px;
+  margin-top: 9px;
 }
 
 /* Responsive adjustments */
