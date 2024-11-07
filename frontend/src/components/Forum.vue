@@ -337,6 +337,11 @@ body {
   transform: translateY(-2px);
 }
 
+.nav-item{
+  font-size: 20px;
+  margin:0 50px;
+}
+
 .active-topic {
   font-weight: bold;
   color: var(--color-heading);
@@ -352,6 +357,14 @@ body {
   .post-container {
     padding: 15px;
   }
+
+  .nav-link {
+    font-size: 17px; /* Adjust font size for mobile */
+    padding: 5px 10px; /* Add padding around the text */
+    text-align: center;
+  }
 }
+
+
 
 </style>
