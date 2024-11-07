@@ -15,12 +15,14 @@
         <div class="row header">
           <div class="col-2">
             <div class="d-flex align-items-center">
-              <img
-                v-bind:src="selectedCat"
-                alt="cat"
-                class="cat-img"
-                style="height: 150px; width: auto; position:absolute;"
-              />
+              <router-link to="/pet">
+                <img
+                  v-bind:src="selectedCat"
+                  alt="cat"
+                  class="cat-img"
+                  style="height: 150px; width: auto; position: absolute; cursor: pointer"
+                />
+              </router-link>
             </div>
           </div>
           <div class="col-3 ms-auto d-flex justify-content-end">
@@ -296,7 +298,7 @@ export default {
   },
   data() {
     return {
-      selectedCat: "assets/pet_related/orange/orange.gif",
+      selectedCat: 'assets/pet_related/orange/orange.gif',
       userPoints: 0,
       habits: [],
       longTermTasks: [],
@@ -809,13 +811,14 @@ export default {
         console.error('Error fetching user inventory:', error)
       })
 
-      axios.get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}/selected-cat`)
-    .then((response) => {
-      this.selectedCat = response.data.imgpath || "assets/pet_related/orange/orange.gif";
-    })
-    .catch((error) => {
-      console.error('Error fetching selected cat image:', error);
-    });
+    axios
+      .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}/selected-cat`)
+      .then((response) => {
+        this.selectedCat = response.data.imgpath || 'assets/pet_related/orange/orange.gif'
+      })
+      .catch((error) => {
+        console.error('Error fetching selected cat image:', error)
+      })
     this.fetchTodos() // Fetch todos when the component is mounted
     this.fetchLTs()
     this.fetchHabits()
@@ -855,7 +858,7 @@ export default {
   font-family: 'Jersey 25', sans-serif;
 }
 .header {
-  background-image: url("https://i.pinimg.com/originals/80/ec/77/80ec77932091113c4970a88f69b9bb4f.gif");
+  background-image: url('https://i.pinimg.com/originals/80/ec/77/80ec77932091113c4970a88f69b9bb4f.gif');
   background-size: cover; /* Makes the image cover the entire element */
   background-position: bottom; /* Centers the image within the element */
   background-repeat: repeat; /* Prevents the image from repeating */
