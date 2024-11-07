@@ -387,7 +387,7 @@ export default {
     async applyItemOnServer(item, itemType) {
       try {
         const response = await axios.put(
-          `https://habit-buddy-server.vercel.app/api/userinventory/apply`,
+          `https://habit-buddy-server.vercel.app/userinventory/apply`,
           {
             username: this.username,
             itemname: item.itemname,
@@ -415,7 +415,7 @@ export default {
       try {
         console.log('Fetching pet data')
         const response = await axios.get(
-          `https://habit-buddy-server.vercel.app/api/pet/${this.username}`
+          `https://habit-buddy-server.vercel.app/pet/${this.username}`
         )
         this.petName = response.data.petName
 
@@ -442,7 +442,7 @@ export default {
       const { username } = this
       try {
         const response = await axios.get(
-          `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
+          `https://habit-buddy-server.vercel.app/userinventory/${username}`
         )
         const inventory = response.data
         console.log('inventory:', inventory)
@@ -501,7 +501,7 @@ export default {
       try {
         console.log('decreasing item quantity')
 
-        await axios.put(`https://habit-buddy-server.vercel.app/api/inventory/decrease`, {
+        await axios.put(`https://habit-buddy-server.vercel.app/inventory/decrease`, {
           username: this.username,
           itemname: fish.itemname,
           decreaseBy: 1
@@ -529,7 +529,7 @@ export default {
     },
     async updateHappinessOnServer() {
       try {
-        await axios.put(`https://habit-buddy-server.vercel.app/api/pet/${this.username}`, {
+        await axios.put(`https://habit-buddy-server.vercel.app/pet/${this.username}`, {
           happinessLevel: this.petHappiness
         })
       } catch (error) {
@@ -597,16 +597,15 @@ class GameScene extends Phaser.Scene {
       this.load.image('catDown3', p_down3)
     }
 
-    // Load common assets, like fish
-    this.load.image('regularFish1', reg_1)
-    this.load.image('regularFish2', reg_2)
-    this.load.image('regularFish3', reg_3)
-    this.load.image('rareFish1', rare_1)
-    this.load.image('rareFish2', rare_2)
-    this.load.image('rareFish3', rare_3)
-    this.load.image('ultimateFish1', ulti_1)
-    this.load.image('ultimateFish2', ulti_2)
-    this.load.image('ultimateFish3', ulti_3)
+    this.load.image('reg_1', reg_1)
+    this.load.image('reg_2', reg_2)
+    this.load.image('reg_3', reg_3)
+    this.load.image('rare_1', rare_1)
+    this.load.image('rare_2', rare_2)
+    this.load.image('rare_3', rare_3)
+    this.load.image('ulti_1', ulti_1)
+    this.load.image('ulti_2', ulti_2)
+    this.load.image('ulti_3', ulti_3)
   }
 
   create() {
