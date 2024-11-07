@@ -52,7 +52,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <button class="btn btn-outline-dark" @click="logoutDev">LogoutDev</button>
+              <button class="btn btn-outline-dark" @click="logoutDev">Logout</button>
             </li>
           </ul>
         </div>
