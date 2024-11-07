@@ -19,6 +19,7 @@
                 v-bind:src="selectedCat"
                 alt="cat"
                 class="cat-img"
+                @click="goToPetPage"
                 style="height: 150px; width: auto; position: absolute"
               />
             </div>
@@ -325,6 +326,9 @@ export default {
   },
 
   methods: {
+    goToPetPage() {
+      this.$router.push('/pet')
+    },
     fetchUserPoints() {
       const username = localStorage.getItem('username') || 'anonymous'
 
