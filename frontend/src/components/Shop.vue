@@ -177,13 +177,12 @@ export default {
     fetchUserInventory() {
       const username = localStorage.getItem('username')
 
-      // API call to fetch user inventory
       axios
         .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
         .then((response) => {
           const inventory = response.data
           console.log(inventory)
-          // Find quantities of each type of fish
+
           inventory.forEach((item) => {
             if (item.itemname === 'Regular Fish') {
               this.regularFishQty = item.itemqty

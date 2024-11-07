@@ -9,18 +9,17 @@
       rel="stylesheet"
       type="text/css"
     />
-
     <div class="tasks-container">
       <div class="container-fluid">
         <div class="row header">
           <div class="col-2">
-            <h2 class="m-0 text-white">bluey</h2>
             <div class="d-flex align-items-center">
               <img
-                src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/74b4662c-5fd8-4737-8ff7-ce90016eb473/dbjugzj-5b7a2bc5-f38d-484d-b99c-0bd2e1f57201.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzc0YjQ2NjJjLTVmZDgtNDczNy04ZmY3LWNlOTAwMTZlYjQ3M1wvZGJqdWd6ai01YjdhMmJjNS1mMzhkLTQ4NGQtYjk5Yy0wYmQyZTFmNTcyMDEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.sjyJkNZoHjHR34uyNDLh-e_AFeGQfoRxzFPUfPSViH0"
+                v-bind:src="selectedCat"
                 alt="cat"
                 class="cat-img"
-                style="height: 50px; width: auto"
+                @click="goToPetPage"
+                style="height: 150px; width: auto; position: absolute"
               />
             </div>
           </div>
@@ -297,6 +296,7 @@ export default {
   },
   data() {
     return {
+      selectedCat: 'assets/pet_related/orange/orange.gif',
       userPoints: 0,
       habits: [],
       longTermTasks: [],
@@ -325,6 +325,9 @@ export default {
   },
 
   methods: {
+    goToPetPage() {
+      this.$router.push('/pet')
+    },
     fetchUserPoints() {
       const username = localStorage.getItem('username') || 'anonymous'
 
@@ -808,6 +811,15 @@ export default {
       .catch((error) => {
         console.error('Error fetching user inventory:', error)
       })
+
+    axios
+      .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}/selected-cat`)
+      .then((response) => {
+        this.selectedCat = response.data.imgpath || 'assets/pet_related/orange/orange.gif'
+      })
+      .catch((error) => {
+        console.error('Error fetching selected cat image:', error)
+      })
     this.fetchTodos() // Fetch todos when the component is mounted
     this.fetchLTs()
     this.fetchHabits()
@@ -847,13 +859,16 @@ export default {
   font-family: 'Jersey 25', sans-serif;
 }
 .header {
-  background-image: url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExaHRnampnZGl0eDNybjJmNmU4MWUyY3BnMGhkMzFsaW5oMndsZ3czeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1zgzISaYrnMAYRJJEr/giphy.gif');
-  padding: 20px;
+  background-image: url('https://i.pinimg.com/originals/80/ec/77/80ec77932091113c4970a88f69b9bb4f.gif');
+  background-size: cover auto 100%;
+  background-position: center bottom;
+  background-repeat: repeat;
+  padding: 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
 }
-
 .cat-img {
   width: 100px;
   height: auto;
