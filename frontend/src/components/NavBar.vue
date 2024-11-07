@@ -52,7 +52,6 @@
               </a>
             </li>
             <li class="nav-item">
-              <!-- Logout button -->
               <button class="btn btn-outline-dark" @click="logoutDev">LogoutDev</button>
             </li>
           </ul>
@@ -75,25 +74,22 @@ export default {
   },
   data() {
     return {
-      avatarLoaded: false, // Track whether the avatar has been loaded
-      placeholderAvatar: '/assets/profile/profile-icon.png' // Placeholder image path
+      avatarLoaded: false,
+      placeholderAvatar: '/assets/profile/profile-icon.png'
     }
   },
   watch: {
     avatar(newValue) {
-      // When the avatar prop changes, set avatarLoaded to true if there's a valid URL
       this.avatarLoaded = !!newValue
     }
   },
   setup() {
     const router = useRouter()
 
-    // Logout function
     const logoutDev = () => {
-      localStorage.setItem('isLoggedIn', '') // Clear the login state
-      localStorage.setItem('username', '') // Clear the username
+      localStorage.setItem('isLoggedIn', '')
+      localStorage.setItem('username', '')
 
-      // Redirect to login page
       router.push('/login')
     }
 
@@ -156,6 +152,7 @@ body {
 
 .btn {
   font-size: 1rem;
+  margin-top: 5px;
 }
 
 /* Responsive adjustments */
