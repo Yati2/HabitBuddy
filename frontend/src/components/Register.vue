@@ -121,10 +121,7 @@ export default {
           points: 0,
           habitcompleted:0,
           longtermcompleted:0,
-          todocompleted:0,
-          habitLog: {},
-          longtermLog: {},
-          todoLog: {},
+          todocompleted:0
         })
 
         // Show success message and redirect to tasks page

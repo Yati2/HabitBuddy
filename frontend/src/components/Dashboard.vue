@@ -64,52 +64,7 @@ export default {
       steps: ['Start', '', '', '', 'End'],
       currentStep: -1,
       // streakPercent: this.streakPercent(),
-      streakGoal: 7,
-      chartDays: 7, 
     }
-  },
-  props: {
-    habitLog: {
-      type: Object
-
-    },
-    longTermLog: {
-      type: Object
-
-    },
-    toDoLog: {
-      type: Object
-
-    }, //need to turn it into a list(array in js []) (need of len==chartDays?)so that chart can accept that
-  }, 
-  methods: {
-    //check
-    
-    fetchLogs() {
-      const username = localStorage.getItem('HabitLog') || 'anonymous'
-      axios
-        .get(`https://habit-buddy-server.vercel.app/api/users/${username}/points`)
-        
-    },
-    increaseHabitLog() {
-
-    },
-    increaseLongTermLog(){
-      
-    },
-    increaseToDoLog() {
-
-    },
-    nextStep() {
-      if (this.streakPercent <= 100) {
-        this.currentStep += 1;
-      }
-    },
-    prevStep() {
-      if (this.streakPercent > 0) {
-        this.currentStep -= 1;
-      }
-    },
   },
   created() {
     // Check if the user is authenticated on creation
@@ -141,7 +96,7 @@ export default {
       datasets: [
         {
           label: 'Habits',
-          data: [5, 4, 4, 5, 5, 5,3], //shld be a list from DashboardData
+          data: [5, 4, 4, 5, 5, 5,3],
           borderColor: '#2563eb',
           tension: 0.1,
           hidden: false
@@ -215,7 +170,19 @@ export default {
     }
   }, /*this is for chart*/
 
-  //methods used to be here
+  methods: {
+
+    nextStep() {
+      if (this.streakPercent <= 100) {
+        this.currentStep += 1;
+      }
+    },
+    prevStep() {
+      if (this.streakPercent > 0) {
+        this.currentStep -= 1;
+      }
+    },
+  },
   components: {
     StepProgress, StepProgressSettings
   },
