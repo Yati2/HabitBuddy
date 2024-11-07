@@ -281,7 +281,6 @@ export default {
       const username = localStorage.getItem('username')
       const year = this.selectedYear
       const month = this.selectedMonth
-
       axios
         .get(`https://habit-buddy-server.vercel.app/api/journals/${username}/${year}/${month}`)
         .then((response) => {
