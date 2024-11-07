@@ -12,18 +12,15 @@
 
     <div class="tasks-container">
       <div class="container-fluid">
-        <div class="row header">
+        <div class="row header m-0">
           <div class="col-2">
-            <div class="d-flex align-items-center">
-              <router-link to="/pet">
-                <img
-                  v-bind:src="selectedCat"
-                  alt="cat"
-                  class="cat-img"
-                  style="height: 150px; width: auto; position: absolute; cursor: pointer"
-                />
-              </router-link>
-            </div>
+            <router-link
+              to="/pet"
+              class="d-flex align-items-center"
+              style="width: auto; position: absolute; cursor: pointer"
+            >
+              <img v-bind:src="selectedCat" alt="cat" class="cat-img" />
+            </router-link>
           </div>
           <div class="col-3 ms-auto d-flex justify-content-end">
             <div class="d-flex align-items-center">
