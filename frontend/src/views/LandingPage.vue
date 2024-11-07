@@ -229,8 +229,8 @@ p {
   font-family: 'Pixelify Sans';
   font-size: 1.5rem;
 }
-btn:hover {
-  background-color: #f9cfa5;
+.btn:hover {
+  background-color: #cfb58a;
 }
 /* features */
 .feature-container {
