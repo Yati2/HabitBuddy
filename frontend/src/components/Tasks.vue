@@ -861,13 +861,14 @@ export default {
 }
 .header {
   background-image: url('https://i.pinimg.com/originals/80/ec/77/80ec77932091113c4970a88f69b9bb4f.gif');
-  background-size: cover; /* Makes the image cover the entire element */
-  background-position: bottom; /* Centers the image within the element */
-  background-repeat: repeat; /* Prevents the image from repeating */
+  background-size: cover auto 100%; 
+  background-position: center bottom; 
+  background-repeat: repeat;
   padding: 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden; 
 }
 .cat-img {
   width: 100px;
