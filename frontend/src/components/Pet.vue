@@ -387,7 +387,7 @@ export default {
     async applyItemOnServer(item, itemType) {
       try {
         const response = await axios.put(
-          `https://habit-buddy-server.vercel.app/userinventory/apply`,
+          `https://habit-buddy-server.vercel.app/api/userinventory/apply`,
           {
             username: this.username,
             itemname: item.itemname,
@@ -415,7 +415,7 @@ export default {
       try {
         console.log('Fetching pet data')
         const response = await axios.get(
-          `https://habit-buddy-server.vercel.app/pet/${this.username}`
+          `https://habit-buddy-server.vercel.app/api/pet/${this.username}`
         )
         this.petName = response.data.petName
 
@@ -442,7 +442,7 @@ export default {
       const { username } = this
       try {
         const response = await axios.get(
-          `https://habit-buddy-server.vercel.app/userinventory/${username}`
+          `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
         )
         const inventory = response.data
         console.log('inventory:', inventory)
@@ -501,7 +501,7 @@ export default {
       try {
         console.log('decreasing item quantity')
 
-        await axios.put(`https://habit-buddy-server.vercel.app/inventory/decrease`, {
+        await axios.put(`https://habit-buddy-server.vercel.app/api/inventory/decrease`, {
           username: this.username,
           itemname: fish.itemname,
           decreaseBy: 1
@@ -529,7 +529,7 @@ export default {
     },
     async updateHappinessOnServer() {
       try {
-        await axios.put(`https://habit-buddy-server.vercel.app/pet/${this.username}`, {
+        await axios.put(`https://habit-buddy-server.vercel.app/api/pet/${this.username}`, {
           happinessLevel: this.petHappiness
         })
       } catch (error) {
