@@ -190,30 +190,4 @@ p {
   line-height: 1.5;
 }
 
-@media (prefers-color-scheme: dark) {
-  .help-container {
-    background-color: #181818;
-  }
-
-  .help-content-box {
-    background-color: #333;
-  }
-
-  p {
-    color: #fff;
-    background-color: #444;
-  }
-
-  h1.help-title {
-    color: #fbc6c8;
-  }
-
-  .help-content-header {
-    color: #f8d1d3;
-  }
-
-  .help-content-header:hover {
-    color: #ff9a9e;
-  }
-}
 </style>

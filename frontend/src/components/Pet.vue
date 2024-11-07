@@ -3,7 +3,7 @@
     <div class="row">
       <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
         <img
-          src="/assets/pet_related/bg/christmas.gif"
+          src="/assets/pet_related/bg/cozyroom.gif"
           alt="Pet Background"
           id="game-bg"
           class="position-absolute"
@@ -11,12 +11,10 @@
       </div>
 
       <div id="pet-info" class="col-lg-2 col-12">
-        <!-- Pet Name -->
         <div class="pet-info-content d-flex justify-content-between align-items-center">
           <h5 id="pet-name" class="text-center flex-grow-1">Name: {{ petName }}</h5>
         </div>
 
-        <!-- Pet Happiness -->
         <div class="pet-info-content">
           <div class="d-flex justify-content-between align-items-center">
             <h5 id="pet-happiness" class="text-center flex-grow-1">
@@ -166,6 +164,15 @@
         full!
       </div>
     </div>
+    <div v-if="showHappinessModal" class="alert-box">
+      <div class="modal-content">
+        <h2 class="modal-title">Attention!</h2>
+        <p class="modal-message">
+          Your cat is not happy and walking lazily. Feed it now to improve its mood!
+        </p>
+        <button class="modal-button" @click="closeModal">Okay</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -215,6 +222,18 @@ import p_down1 from '/assets/pet_related/pinkie/down1.png'
 import p_down2 from '/assets/pet_related/pinkie/down2.png'
 import p_down3 from '/assets/pet_related/pinkie/down3.png'
 
+import c_walkingright from '/assets/pet_related/charcoal/walkingright.png'
+import c_walkingleft from '/assets/pet_related/charcoal/walkingleft.png'
+import c_licking from '/assets/pet_related/charcoal/licking.png'
+import c_stretchingright from '/assets/pet_related/charcoal/stretchingright.png'
+import c_stretchingleft from '/assets/pet_related/charcoal/stretchingleft.png'
+import c_up1 from '/assets/pet_related/charcoal/up1.png'
+import c_up2 from '/assets/pet_related/charcoal/up2.png'
+import c_up3 from '/assets/pet_related/charcoal/up3.png'
+import c_down1 from '/assets/pet_related/charcoal/down1.png'
+import c_down2 from '/assets/pet_related/charcoal/down2.png'
+import c_down3 from '/assets/pet_related/charcoal/down3.png'
+
 import reg_1 from '/assets/pet_related/fish/reg_1.png'
 import reg_2 from '/assets/pet_related/fish/reg_2.png'
 import reg_3 from '/assets/pet_related/fish/reg_3.png'
@@ -237,6 +256,7 @@ export default {
       username: '',
       petHappiness: '',
       showHappinessHelpMsg: false,
+      showHappinessModal: false,
       isEating: false,
       tooltipWidth: 'auto',
 
@@ -258,11 +278,15 @@ export default {
       ]
     }
   },
-  mounted() {
+  async mounted() {
     this.getCurrentUsername()
-    this.fetchPetName()
+    await this.fetchPetName()
     this.setTooltipWidth()
     this.fetchUserInventory()
+
+    if (this.petHappiness < 20) {
+      this.showHappinessModal = true
+    }
 
     const savedCustomization = localStorage.getItem('selectedCustomization')
     if (savedCustomization) {
@@ -296,7 +320,7 @@ export default {
           debug: false
         }
       },
-      scene: [new GameScene(savedPet)]
+      scene: [new GameScene(savedPet, this.petHappiness)]
     }
 
     this.phaserGame = new Phaser.Game(config)
@@ -319,6 +343,9 @@ export default {
     }
   },
   methods: {
+    closeModal() {
+      this.showHappinessModal = false
+    },
     getCurrentUsername() {
       this.username = localStorage.getItem('username')
       console.log(this.username)
@@ -352,7 +379,7 @@ export default {
             debug: false
           }
         },
-        scene: [new GameScene(newPetType)]
+        scene: [new GameScene(newPetType, this.petHappiness)]
       }
 
       this.phaserGame = new Phaser.Game(config)
@@ -438,22 +465,18 @@ export default {
       }
     },
     async fetchUserInventory() {
-      console.log('fetching inventory')
       const { username } = this
       try {
         const response = await axios.get(
           `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
         )
         const inventory = response.data
-        console.log('inventory:', inventory)
 
         let appliedBackground = inventory.find(
           (item) => item.itemtype === 'Background' && item.applied
         )
 
         let appliedPet = inventory.find((item) => item.itemtype === 'Cat' && item.applied)
-        console.log('appliedPet:', appliedPet)
-        console.log('appliedBackground:', appliedBackground)
 
         if (appliedBackground) {
           this.applyCustomization(appliedBackground)
@@ -487,7 +510,6 @@ export default {
           )
           if (userItem) {
             item.owned = true
-            console.log('item owned:', item.itemname)
           }
         })
       } catch (error) {
@@ -499,8 +521,6 @@ export default {
       if (this.isEating || this.petHappiness >= 100 || fish.itemqty <= 0) return
 
       try {
-        console.log('decreasing item quantity')
-
         await axios.put(`https://habit-buddy-server.vercel.app/api/inventory/decrease`, {
           username: this.username,
           itemname: fish.itemname,
@@ -539,10 +559,11 @@ export default {
   }
 }
 class GameScene extends Phaser.Scene {
-  constructor(petType) {
+  constructor(petType, petHappiness) {
     super('scene-game')
     this.preActionForResize = null
     this.petType = petType
+    this.petHappiness = petHappiness
   }
 
   preload() {
@@ -595,18 +616,33 @@ class GameScene extends Phaser.Scene {
       this.load.image('catDown1', p_down1)
       this.load.image('catDown2', p_down2)
       this.load.image('catDown3', p_down3)
+    } else if (this.petType === 'Charcoal') {
+      console.log('loading Charcoal pet assets')
+
+      this.load.spritesheet('catWalkingRight', c_walkingright, { frameWidth: 64, frameHeight: 54 })
+      this.load.spritesheet('catWalkingLeft', c_walkingleft, { frameWidth: 64, frameHeight: 54 })
+      this.load.spritesheet('catLicking', c_licking, { frameWidth: 64, frameHeight: 64 })
+      this.load.spritesheet('stretchRight', c_stretchingright, { frameWidth: 64, frameHeight: 54 })
+      this.load.spritesheet('stretchLeft', c_stretchingleft, { frameWidth: 64, frameHeight: 54 })
+
+      this.load.image('catUp1', c_up1)
+      this.load.image('catUp2', c_up2)
+      this.load.image('catUp3', c_up3)
+      this.load.image('catDown1', c_down1)
+      this.load.image('catDown2', c_down2)
+      this.load.image('catDown3', c_down3)
+      console.log('loaded Charcoal pet assets')
     }
 
-    // Load common assets, like fish
-    this.load.image('regularFish1', reg_1)
-    this.load.image('regularFish2', reg_2)
-    this.load.image('regularFish3', reg_3)
-    this.load.image('rareFish1', rare_1)
-    this.load.image('rareFish2', rare_2)
-    this.load.image('rareFish3', rare_3)
-    this.load.image('ultimateFish1', ulti_1)
-    this.load.image('ultimateFish2', ulti_2)
-    this.load.image('ultimateFish3', ulti_3)
+    this.load.image('reg_1', reg_1)
+    this.load.image('reg_2', reg_2)
+    this.load.image('reg_3', reg_3)
+    this.load.image('rare_1', rare_1)
+    this.load.image('rare_2', rare_2)
+    this.load.image('rare_3', rare_3)
+    this.load.image('ulti_1', ulti_1)
+    this.load.image('ulti_2', ulti_2)
+    this.load.image('ulti_3', ulti_3)
   }
 
   create() {
@@ -623,6 +659,8 @@ class GameScene extends Phaser.Scene {
       this.defineSiameseCatAnimations()
     } else if (this.petType === 'Pinkie') {
       this.definePinkieCatAnimations()
+    } else if (this.petType === 'Charcoal') {
+      this.defineCharcoalCatAnimations()
     }
     this.anims.create({
       key: 'goUp',
@@ -692,7 +730,6 @@ class GameScene extends Phaser.Scene {
   }
 
   defineSiameseCatAnimations() {
-    // Define all animations for the siamese cat
     this.anims.create({
       key: 'walkRight',
       frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 2 }),
@@ -724,6 +761,42 @@ class GameScene extends Phaser.Scene {
     this.anims.create({
       key: 'stretchLeft',
       frames: this.anims.generateFrameNumbers('stretchLeft', { start: 0, end: 5 }),
+      frameRate: 5,
+      repeat: 0
+    })
+  }
+  defineCharcoalCatAnimations() {
+    this.anims.create({
+      key: 'walkRight',
+      frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 7 }),
+      frameRate: 10,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'walkLeft',
+      frames: this.anims.generateFrameNumbers('catWalkingLeft', { start: 0, end: 7 }),
+      frameRate: 10,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'lick',
+      frames: this.anims.generateFrameNumbers('catLicking', { start: 0, end: 14 }),
+      frameRate: 5,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'stretchRight',
+      frames: this.anims.generateFrameNumbers('stretchRight', { start: 0, end: 4 }),
+      frameRate: 5,
+      repeat: 0
+    })
+
+    this.anims.create({
+      key: 'stretchLeft',
+      frames: this.anims.generateFrameNumbers('stretchLeft', { start: 0, end: 4 }),
       frameRate: 5,
       repeat: 0
     })
@@ -768,7 +841,6 @@ class GameScene extends Phaser.Scene {
   }
 
   startFishEatingAnimation(fishType, onComplete) {
-    // Set the fish images based on the type
     const fishImages = {
       reg: ['reg_1', 'reg_2', 'reg_3'],
       rare: ['rare_1', 'rare_2', 'rare_3'],
@@ -788,9 +860,8 @@ class GameScene extends Phaser.Scene {
 
     this.eatenFish.setPosition(fishX, fishY).setVisible(true)
 
-    // Apply consistent scaling for all fish types
     console.log('fish type:', fishType)
-    // Check if the fish type is valid
+
     if (!fishImages[fishType]) {
       console.error(`Invalid fish type '${fishType}'`)
       return
@@ -798,7 +869,6 @@ class GameScene extends Phaser.Scene {
     var scale = fishType === 'reg' || fishType === 'ulti' ? 0.5 : 0.25
     this.eatenFish.setScale(scale).setTexture(fishImages[fishType][0]).setVisible(true)
 
-    // Animate through the fish images
     this.time.delayedCall(1000, () => {
       this.eatenFish.setTexture(fishImages[fishType][1])
     })
@@ -807,10 +877,9 @@ class GameScene extends Phaser.Scene {
       this.eatenFish.setTexture(fishImages[fishType][2])
     })
 
-    // Hide the fish after the animation and call the completion callback
     this.time.delayedCall(3000, () => {
       this.eatenFish.setVisible(false)
-      onComplete() // Call the callback to update happiness
+      onComplete()
     })
   }
 
@@ -819,27 +888,25 @@ class GameScene extends Phaser.Scene {
     const height = gameSize.height
 
     this.cameras.resize(width, height)
-    console.log('Resized to:', width, 'x', height)
 
     const lgBreakpoint = 1200
 
     let newScale
     if (this.currentAction !== 'goUp') {
       if (width >= lgBreakpoint) {
-        newScale = 2.5 // Large screens
+        newScale = 2.5
       } else {
-        newScale = 2 // Medium screens
+        newScale = 2
       }
     } else {
       if (width >= lgBreakpoint) {
-        newScale = 1.5 // Large screens
+        newScale = 1.5
       } else {
-        newScale = 1 // Medium screens
+        newScale = 1
       }
     }
-    console.log('previous cat scale:', this.cat.scale)
+
     this.cat.setScale(newScale)
-    console.log('new cat scale:', newScale)
 
     this.sofapositionRight = width * 0.8
     this.sofapositionLeft = width * 0.2
@@ -852,15 +919,10 @@ class GameScene extends Phaser.Scene {
     } else if (this.currentAction === 'lick' && this.preActionForResize === 'walkRight') {
       this.cat.y = height - 50
       this.cat.x = this.sofapositionRight
-      console.log('adjusting second last condtion')
     } else if (this.currentAction === 'lick' && this.preActionForResize === 'walkLeft') {
       this.cat.y = this.floorUp
       this.cat.x = this.sofapositionLeft
-      console.log('adjusting last condtion')
     }
-
-    console.log(this.preActionForResize)
-    console.log(this.cat.x, this.cat.y)
 
     if (this.cat.x > width) {
       this.cat.x = width - 100
@@ -932,35 +994,34 @@ class GameScene extends Phaser.Scene {
     )
       return
 
+    console.log('petHappiness in update ' + this.petHappiness)
+    let movementSpeed = this.petHappiness < 20 ? 0.9 : 2
+
     if (this.currentAction === 'walkRight') {
-      this.cat.x += 2
+      this.cat.x += movementSpeed
       if (this.cat.x >= this.sofapositionRight) {
         this.startGoingUp()
       }
     }
 
-    // Move the cat up
     if (this.currentAction === 'goUp') {
-      this.cat.y -= 2
+      this.cat.y -= movementSpeed
       if (this.cat.y <= this.floorUp) {
         this.startWalkingLeft()
       }
     }
 
-    // Move the cat left
     if (this.currentAction === 'walkLeft') {
-      this.cat.x -= 2
+      this.cat.x -= movementSpeed
       if (this.cat.x <= this.sofapositionLeft) {
         this.startGoingDown()
       }
     }
 
-    // Move the cat down
     if (this.currentAction === 'goDown') {
-      console.log('going down')
-      this.cat.y += 2
+      this.cat.y += movementSpeed
       if (this.cat.y >= this.cameras.main.height - 50) {
-        this.startWalkingRight() // Restart the loop
+        this.startWalkingRight()
       }
     }
   }
@@ -1217,5 +1278,53 @@ canvas {
   display: inline-block;
   cursor: pointer;
   animation: bounce 2s infinite;
+}
+
+.alert-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fef7f6;
+  border: 2px solid #000000;
+  border-radius: 20px;
+  max-width: 300px;
+  z-index: 1000;
+  text-align: center;
+}
+
+.modal-content {
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 20px;
+  text-align: center;
+  font-family: 'Jersey 25', sans-serif;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  color: #ffb84d;
+  margin-bottom: 10px;
+}
+
+.modal-message {
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.modal-button {
+  background-color: #fecfa5;
+  border: 2px solid #000000;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  color: black;
+}
+
+.modal-button:hover {
+  background-color: #e4805b;
+  color: white;
 }
 </style>
