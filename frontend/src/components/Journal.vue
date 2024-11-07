@@ -220,7 +220,7 @@ export default {
         if (existingEntry) {
           // Update existing entry
           axios
-            .put(`http://localhost:8000/api/journals/${existingEntry._id}`, {
+            .put(`https://habit-buddy-server.vercel.app/api/journals/${existingEntry._id}`, {
               entry: this.entry,
               mood: this.mood
             })
@@ -236,7 +236,7 @@ export default {
         } else {
           // Create new entry
           axios
-            .post('http://localhost:8000/api/journals', {
+            .post('https://habit-buddy-server.vercel.app/api/journals', {
               username: user,
               date: fullDate,
               entry: this.entry,
