@@ -224,7 +224,7 @@ body {
 
 .post-container,
 .new-post-container {
-  background-color: var(--color-background-soft);
+  background-color: white;
   padding: 20px;
   margin-bottom: 15px;
   border-radius: 10px;
