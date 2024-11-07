@@ -262,6 +262,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "/src/assets/profile/profilepics/pfp1.jpeg",
     },
+    habitLog: {type: Object, required: false},
+    longtermLog: {type: Object, required: false},
+    todoLog: {type: Object, required: false},
 });
 
 const User = mongoose.model("User", userSchema, "users");
@@ -309,6 +312,9 @@ app.post("/api/register", async (req, res) => {
         habitcompleted,
         todocompleted,
         longtermcompleted,
+        habitLog,
+        longtermLog,
+        todoLog,
     } = req.body;
     try {
         // Check if the username already exists
@@ -328,6 +334,9 @@ app.post("/api/register", async (req, res) => {
             habitcompleted,
             todocompleted,
             longtermcompleted,
+            habitLog,
+            longtermLog,
+            todoLog,
         });
         await newUser.save();
 
