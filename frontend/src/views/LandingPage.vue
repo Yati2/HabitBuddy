@@ -225,9 +225,12 @@ p {
   background-color: #fff3e7;
   color: black;
   text-decoration: none;
-  border-radius: 5px;
+  border-radius: 7px;
   font-family: 'Pixelify Sans';
   font-size: 1.5rem;
+}
+btn:hover {
+  background-color: #f9cfa5;
 }
 /* features */
 .feature-container {
