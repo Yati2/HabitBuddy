@@ -2,12 +2,7 @@
   <div class="container-fluid w-100 p-0">
     <div class="row">
       <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
-        <img
-          src="/assets/pet_related/bg/cozyroom.gif"
-          alt="Pet Background"
-          id="game-bg"
-          class="position-absolute"
-        />
+        <img alt="Pet Background" id="game-bg" class="position-absolute" />
       </div>
 
       <div id="pet-info" class="col-lg-2 col-12">
@@ -289,19 +284,6 @@ export default {
 
     if (this.petHappiness < 20) {
       this.showHappinessModal = true
-    }
-
-    const savedCustomization = localStorage.getItem('selectedCustomization')
-    if (savedCustomization) {
-      const savedBackgroundItem = this.allCustomItems.find(
-        (item) => item.itemname === savedCustomization
-      )
-      if (savedBackgroundItem && savedBackgroundItem.itemtype === 'background') {
-        this.applyCustomization(savedBackgroundItem)
-        console.log('Applied saved background:', savedBackgroundItem)
-      } else {
-        console.warn('The saved item is not a background, and thus cannot be applied as one.')
-      }
     }
 
     const savedPet = localStorage.getItem('selectedPet') || 'orange'
