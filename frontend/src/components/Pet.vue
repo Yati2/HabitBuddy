@@ -1,5 +1,11 @@
 <template>
-  <div class="container-fluid w-100 p-0">
+  <div class="container-fluid w-100 p-0 pet-container">
+    <!-- Loading overlay -->
+    <div v-if="isLoading" class="loading-overlay">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     <div class="row">
       <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
         <img id="game-bg" class="position-absolute" />
@@ -248,8 +254,10 @@ import Park from '/assets/pet_related/bg/park.gif'
 import Cozyroom from '/assets/pet_related/bg/cozyroom.gif'
 
 export default {
+  name: 'PetComponent',
   data() {
     return {
+      isLoading: true,
       petName: '',
       username: '',
       petHappiness: '',
@@ -277,40 +285,49 @@ export default {
     }
   },
   async mounted() {
-    this.getCurrentUsername()
-    await this.fetchPetName()
-    this.setTooltipWidth()
-    this.fetchUserInventory()
+    console.log('loading.....')
+    this.isLoading = true
+    try {
+      this.getCurrentUsername()
+      await this.fetchPet()
+      this.setTooltipWidth()
+      this.fetchUserInventory()
 
-    if (this.petHappiness < 20) {
-      this.showHappinessModal = true
+      if (this.petHappiness < 20) {
+        this.showHappinessModal = true
+      }
+
+      const savedPet = localStorage.getItem('selectedPet') || 'orange'
+
+      const config = {
+        type: Phaser.AUTO,
+        width: '100%',
+        height: '100%',
+        parent: 'game-container',
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.RESIZE,
+          autoCenter: Phaser.Scale.CENTER_BOTH
+        },
+        physics: {
+          default: 'arcade',
+          arcade: {
+            gravity: { y: 0 },
+            debug: false
+          }
+        },
+        scene: [new GameScene(savedPet, this.petHappiness)]
+      }
+
+      this.phaserGame = new Phaser.Game(config)
+
+      setInterval(this.decreaseHappiness, 30 * 60 * 1000)
+    } catch (error) {
+      console.error('Error fetching pet data:', error)
+    } finally {
+      this.isLoading = false
+      console.log('loaded')
     }
-
-    const savedPet = localStorage.getItem('selectedPet') || 'orange'
-
-    const config = {
-      type: Phaser.AUTO,
-      width: '100%',
-      height: '100%',
-      parent: 'game-container',
-      transparent: true,
-      scale: {
-        mode: Phaser.Scale.RESIZE,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-      },
-      physics: {
-        default: 'arcade',
-        arcade: {
-          gravity: { y: 0 },
-          debug: false
-        }
-      },
-      scene: [new GameScene(savedPet, this.petHappiness)]
-    }
-
-    this.phaserGame = new Phaser.Game(config)
-
-    setInterval(this.decreaseHappiness, 30 * 60 * 1000) //decrease happiness every hour
   },
 
   computed: {
@@ -423,7 +440,7 @@ export default {
         return 0
       }
     },
-    async fetchPetName() {
+    async fetchPet() {
       try {
         console.log('Fetching pet data')
         const response = await axios.get(
@@ -980,7 +997,7 @@ class GameScene extends Phaser.Scene {
       return
 
     console.log('petHappiness in update ' + this.petHappiness)
-    let movementSpeed = this.petHappiness < 20 ? 0.9 : 2
+    let movementSpeed = this.petHappiness < 20 ? 0.8 : 2
 
     if (this.currentAction === 'walkRight') {
       this.cat.x += movementSpeed
@@ -1025,6 +1042,7 @@ class GameScene extends Phaser.Scene {
       delay: 50,
       callback: () => {
         this.cat.y -= this.petHappiness < 20 ? 0.9 : 3
+
         if (this.cat.y <= this.floorUp) {
           this.cat.anims.stop()
           this.upEvent.remove()
@@ -1042,13 +1060,13 @@ class GameScene extends Phaser.Scene {
 
     this.time.delayedCall(3000, () => {
       this.isLicking = false
-      // Check the previous action to decide the next step
+
       if (this.preActionForResize === 'walkRight') {
         this.isWalkingRight = false
-        this.startGoingUp() // Next action is going up
+        this.startGoingUp()
       } else if (this.preActionForResize === 'walkLeft') {
         this.isWalkingLeft = false
-        this.startGoingDown() // Next action is going down
+        this.startGoingDown()
       }
     })
   }
@@ -1078,10 +1096,6 @@ class GameScene extends Phaser.Scene {
 </script>
 
 <style>
-template {
-  width: 100%;
-  height: 100%;
-}
 #game-container {
   height: 91vh;
 
@@ -1310,5 +1324,24 @@ canvas {
 .modal-button:hover {
   background-color: #e4805b;
   color: white;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 1000;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  color: #fecfa5;
 }
 </style>
