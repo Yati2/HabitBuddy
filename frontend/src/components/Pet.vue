@@ -1,10 +1,10 @@
 <template>
   <div class="container-fluid w-100 p-0 pet-container">
-    <div class="row">
-      <div v-if="isLoading" class="loading-overlay">
-        <img src="/assets/loadingcat.gif" alt="Loading" class="loading-gif" />
-        <h3 class="loading-text">Loading...</h3>
-      </div>
+    <div v-if="isLoading" class="loading-overlay">
+      <img src="/assets/loadingcat.gif" alt="Loading" class="loading-gif" />
+      <h3 class="loading-text">Loading...</h3>
+    </div>
+    <div v-else class="row">
       <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
         <img id="game-bg" class="position-absolute" />
       </div>
