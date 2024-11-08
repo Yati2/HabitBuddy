@@ -2,7 +2,7 @@
   <div class="container-fluid w-100 p-0">
     <div class="row">
       <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
-        <img alt="Pet Background" id="game-bg" class="position-absolute" />
+        <img id="game-bg" class="position-absolute" />
       </div>
 
       <div id="pet-info" class="col-lg-2 col-12">
