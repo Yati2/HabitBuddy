@@ -7,6 +7,7 @@
       <div class="row" style="justify-content: center; align-items: center; text-align: center">
         <div v-for="item in shopitems" :key="item.itemname" class="col-4">
           <img
+            class="itemimage"
             v-bind:src="item.imgpath"
             width="80px"
             style="cursor: pointer"
@@ -219,7 +220,7 @@ export default {
 
           this.closeModal()
           toast(`${this.itemqty} x ${this.selectedItem.itemname} was added to your Inventory!`, {
-            icon: '🚀',
+            icon: '💸',
             autoClose: 1000
           })
         })
@@ -342,9 +343,9 @@ export default {
 <style scoped>
 .shop-container {
   height: fit-content;
-  background-color: #d2691e;
+  background-color: #eec0c2;
   border-radius: 10px;
-  border: solid 0.5px brown;
+  border: solid 1px #C49EA0;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -373,6 +374,15 @@ export default {
   max-width: 600px;
   font-family: 'Jersey 25', sans-serif;
   position: relative;
+}
+
+.itemimage {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.itemimage:hover {
+  transform: translateY(-5px);
+  filter: drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.4));
 }
 
 .quantity-selector {

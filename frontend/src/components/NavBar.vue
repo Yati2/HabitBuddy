@@ -2,9 +2,9 @@
   <div>
     <nav class="navbar navbar-custom navbar-expand-lg">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/dashboard">
+        <a class="navbar-brand" href="/tasks">
           <img
-            src="/assets/cat-icon.png"
+            src="/assets/habitbuddylogo.png"
             alt="Cat Icon"
             class="cat-icon d-inline-block align-text-top"
           />
@@ -112,7 +112,7 @@ body {
 }
 
 .cat-icon {
-  height: 40px;
+  height: 60px;
   width: auto;
 }
 
@@ -172,7 +172,7 @@ body {
   }
 
   .cat-icon {
-    height: 35px;
+    height: 60px;
   }
 
   .profile-icon {

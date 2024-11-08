@@ -35,7 +35,7 @@
           <div class="col-12 col-lg-3 card-section">
             <h4>Habits <i class="fas fa-plus plus-icon" @click="showHabitForm = true"></i></h4>
 
-            <div v-if="showHabitForm" class="form-container card2">
+            <div v-if="showHabitForm" class="form-container cardform">
               <form @submit.prevent="submitHabit">
                 <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1">Title</span>
@@ -75,12 +75,12 @@
 
                 <div>&nbsp;</div>
 
-                <div class="form-buttons">
-                  <button type="submit" class="btn btn-primary">Confirm</button>
-                  <button type="button" class="btn btn-danger" @click="cancelHabitForm">
-                    Cancel
-                  </button>
-                </div>
+                <div class="form-buttons d-flex justify-content-between">
+                <button type="submit" class="btn btn-warning">Confirm</button>
+                <button type="button" class="btn btn-danger" @click="cancelHabitForm">
+                  Cancel
+                </button>
+              </div>
               </form>
             </div>
 
@@ -111,6 +111,7 @@
                       <strong class="cardtext">Count:</strong> {{ h.count }}
                     </div>
                   </div>
+                   <!-- Plus Button -->
                   <button
                     class="btn btn-outline-success btn-circle"
                     @click="increaseCount(h)"
@@ -133,7 +134,7 @@
               Long Term Tasks <i class="fas fa-plus plus-icon" @click="showLTForm = true"></i>
             </h4>
 
-            <div v-if="showLTForm" class="form-container card2">
+            <div v-if="showLTForm" class="form-container cardform">
               <form @submit.prevent="submitLT">
                 <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1">Title</span>
@@ -208,7 +209,7 @@
               <i class="fas fa-plus plus-icon" @click="showToDoForm = true"></i>
             </h4>
 
-            <div v-if="showToDoForm" class="form-container card2">
+            <div v-if="showToDoForm" class="form-container cardform">
               <form @submit.prevent="submitToDo">
                 <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1">Title</span>
@@ -278,23 +279,19 @@
 </template>
 
 <script>
-import { isAuthenticated } from '../auth' // Adjust the path as needed
-import { useRouter } from 'vue-router' // Import the useRouter function from Vue Router
+import { isAuthenticated } from '../auth' 
+import { useRouter } from 'vue-router' 
 import axios from 'axios'
 import { toast } from 'vue3-toastify'
 // Import one of the available themes
 //import 'vue-toast-notification/dist/theme-default.css';
 import 'vue3-toastify/dist/index.css'
 import Shop from './Shop.vue'
-import Dashboard from './Dashboard.vue';
-import DashboardData from './DashboardData.vue'
 
 export default {
   name: 'Tasks',
   components: {
-    Shop,
-    Dashboard,
-    DashboardData
+    Shop
   },
   data() {
     return {
@@ -303,7 +300,7 @@ export default {
       habits: [],
       longTermTasks: [],
       todos: [],
-      showToDoForm: false, // Track form visibility
+      showToDoForm: false, 
       showLTForm: false,
       showHabitForm: false,
       HabitForm: {
@@ -424,7 +421,7 @@ export default {
 
       h.count++ // Increase count locally
 
-      // Send Axios request to update the habit count in the backend
+      // axios to update habit count
       axios
         .put('https://habit-buddy-server.vercel.app/api/habits/' + h._id, {
           count: h.count
@@ -432,18 +429,17 @@ export default {
         .then((response) => {
           console.log('Count increased:', response.data)
 
-          const username = localStorage.getItem('username') || 'anonymous' // Get current user's username
+          const username = localStorage.getItem('username') || 'anonymous'
 
-          // Send Axios request to add 5 points to the user's account
           axios
             .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/points', {
-              pointsToAdd: 5 // Add 5 points
+              pointsToAdd: 5 
             })
             .then((res) => {
               console.log('Points added:', res.data)
               this.userPoints += 5
 
-              // Now send another Axios request to increment habitCompleted in the user schema
+              // axios to increment habitCompleted in the user schema
               axios
                 .put(
                   'https://habit-buddy-server.vercel.app/api/users/' + username + '/habitCompleted',
@@ -471,7 +467,7 @@ export default {
       if (h.count > 0) {
         h.count-- // Decrease count locally
 
-        // Send Axios request to update the count in the backend
+        // Send Axios request to update the count
         axios
           .put('https://habit-buddy-server.vercel.app/api/habits/' + h._id, {
             count: h.count
@@ -489,7 +485,7 @@ export default {
     //methods for habits
 
     fetchHabits() {
-      const username = localStorage.getItem('username') || 'anonymous' // Get the current user's username from localStorage
+      const username = localStorage.getItem('username') || 'anonymous' 
 
       // Axios request to fetch todos for the current user
       axios
@@ -499,7 +495,7 @@ export default {
           }
         })
         .then((response) => {
-          this.habits = response.data // Assign the response data (todos) to this.todos
+          this.habits = response.data 
         })
         .catch((error) => {
           console.error('Error fetching habits:', error)
@@ -507,7 +503,7 @@ export default {
     },
     cancelHabitForm() {
       this.showHabitForm = false
-      this.HabitForm = { title: '', description: '', tags: 'Work', count: 0 } // Reset form
+      this.HabitForm = { title: '', description: '', tags: 'Work', count: 0 } 
     },
     submitHabit() {
       if (!this.HabitForm.title || !this.HabitForm.description) {
@@ -515,7 +511,7 @@ export default {
         return
       }
 
-      // Add the new task to the list
+      // Add the new task to the local list
       this.habits.push({ ...this.LTForm })
 
       axios
@@ -530,33 +526,23 @@ export default {
           console.log('habit saved to database:', response.data)
           console.log(this.habits)
           window.location.reload()
-          // Add the new to-do to the list
-          // this.todos.push({
-          //   title: this.todoForm.title,
-          //   description: this.todoForm.description,
-          //   tags: this.todoForm.tags
-          // });
-
-          // Reset and hide the form after successful submission
           this.cancelHabitForm()
         })
         .catch((error) => {
           console.error('Error saving Habit:', error)
         })
-
-      // Hide the form and reset
       this.cancelHabitForm()
     },
     markAsDoneh(h) {
       const username = localStorage.getItem('username') || 'anonymous'
 
-      // Send a DELETE request to the server to remove the todo from the database
+      // Delete the todo from the database
       axios
         .delete('https://habit-buddy-server.vercel.app/api/user_habits', {
           params: {
             username: username,
             title: h.title,
-            id: h._id // Pass the unique id for the todo
+            id: h._id 
           }
         })
         .then((response) => {
@@ -572,7 +558,7 @@ export default {
     //methods for longterm tasks
 
     fetchLTs() {
-      const username = localStorage.getItem('username') || 'anonymous' // Get the current user's username from localStorage
+      const username = localStorage.getItem('username') || 'anonymous'
 
       // Axios request to fetch todos for the current user
       axios
@@ -582,7 +568,7 @@ export default {
           }
         })
         .then((response) => {
-          this.longTermTasks = response.data // Assign the response data (todos) to this.todos
+          this.longTermTasks = response.data 
         })
         .catch((error) => {
           console.error('Error fetching long terms:', error)
@@ -590,7 +576,7 @@ export default {
     },
     cancelLTForm() {
       this.showLTForm = false
-      this.LTForm = { title: '', description: '', tags: 'Work' } // Reset form
+      this.LTForm = { title: '', description: '', tags: 'Work' } 
     },
     submitLT() {
       if (!this.LTForm.title || !this.LTForm.description) {
@@ -598,7 +584,7 @@ export default {
         return
       }
 
-      // Add the new task to the list
+      // Add the new task to the local list
       this.longTermTasks.push({ ...this.LTForm })
 
       axios
@@ -613,21 +599,11 @@ export default {
           console.log('Long Term saved to database:', response.data)
           console.log(this.longTermTasks)
           window.location.reload()
-          // Add the new to-do to the list
-          // this.todos.push({
-          //   title: this.todoForm.title,
-          //   description: this.todoForm.description,
-          //   tags: this.todoForm.tags
-          // });
-
-          // Reset and hide the form after successful submission
           this.cancelLTForm()
         })
         .catch((error) => {
           console.error('Error saving Long Term:', error)
         })
-
-      // Hide the form and reset
       this.cancelLTForm()
     },
     markAsDonelt(lt) {
@@ -638,7 +614,7 @@ export default {
       })
       axios
         .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/points', {
-          pointsToAdd: 10 // Add 5 points
+          pointsToAdd: 10 
         })
         .then((res) => {
           console.log('Points added:', res.data)
@@ -648,10 +624,10 @@ export default {
           console.error('Error adding points:', err)
         })
 
-      // Now send another Axios request to increment longtermcompleted
+      //Axios request to increment longtermcompleted
       axios
         .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/longtermcompleted', {
-          incrementBy: 1 // Increment the longtermcompleted by 1
+          incrementBy: 1 
         })
         .then((res) => {
           console.log('Habit completed count incremented:', res.data)
@@ -660,13 +636,13 @@ export default {
           console.error('Error incrementing habitCompleted:', err)
         })
 
-      // Send a DELETE request to the server to remove the todo from the database
+      // delete the todo from the database
       axios
         .delete('https://habit-buddy-server.vercel.app/api/user_lts', {
           params: {
             username: username,
             title: lt.title,
-            id: lt._id // Pass the unique id for the todo
+            id: lt._id 
           }
         })
         .then((response) => {
@@ -684,7 +660,7 @@ export default {
     //todos methods
 
     fetchTodos() {
-      const username = localStorage.getItem('username') || 'anonymous' // Get the current user's username from localStorage
+      const username = localStorage.getItem('username') || 'anonymous' 
 
       // Axios request to fetch todos for the current user
       axios
@@ -694,7 +670,7 @@ export default {
           }
         })
         .then((response) => {
-          this.todos = response.data // Assign the response data (todos) to this.todos
+          this.todos = response.data
         })
         .catch((error) => {
           console.error('Error fetching todos:', error)
@@ -713,7 +689,7 @@ export default {
       // Add the new task to the list
       this.todos.push({ ...this.todoForm })
 
-      // Optionally, you can send the data to your API via Axios here
+      // post request axios for todo
       axios
         .post('https://habit-buddy-server.vercel.app/api/todos', {
           title: this.todoForm.title,
@@ -725,21 +701,12 @@ export default {
           console.log('To-Do saved to database:', response.data)
           console.log(this.todos)
           window.location.reload()
-          // Add the new to-do to the list
-          // this.todos.push({
-          //   title: this.todoForm.title,
-          //   description: this.todoForm.description,
-          //   tags: this.todoForm.tags
-          // });
-
-          // Reset and hide the form after successful submission
           this.cancelForm()
         })
         .catch((error) => {
           console.error('Error saving To-Do:', error)
         })
 
-      // Hide the form and reset
       this.cancelForm()
     },
     markAsDone(todo) {
@@ -748,7 +715,7 @@ export default {
         icon: '🚀',
         autoClose: 1000
       })
-      // Now send another Axios request to increment todocompleted
+      //Axios request to increment todocompleted
       axios
         .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/todocompleted', {
           incrementBy: 1 // Increment the longtermcompleted by 1
@@ -761,7 +728,7 @@ export default {
         })
       axios
         .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/points', {
-          pointsToAdd: 10 // Add 5 points
+          pointsToAdd: 10 
         })
         .then((res) => {
           console.log('Points added:', res.data)
@@ -771,18 +738,18 @@ export default {
           console.error('Error adding points:', err)
         })
 
-      // Send a DELETE request to the server to remove the todo from the database
+      // delete todo
       axios
         .delete('https://habit-buddy-server.vercel.app/api/user_todos', {
           params: {
             username: username,
             title: todo.title,
-            id: todo._id // Pass the unique id for the todo
+            id: todo._id 
           }
         })
         .then((response) => {
           console.log('To-Do deleted from database:', response.data)
-          // Remove the todo from the local array
+          // remove the todo from the local array
           this.todos = this.todos.filter((t) => t !== todo)
         })
         .catch((error) => {
@@ -792,27 +759,6 @@ export default {
   },
   mounted() {
     const username = localStorage.getItem('username') || 'anonymous'
-
-    // Fetch the user's inventory when the component is mounted
-    axios
-      .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
-      .then((response) => {
-        const inventory = response.data
-
-        // Check if the user has any of the room items in their inventory
-        const roomItems = ['TempRoom1', 'TempRoom2', 'TempRoom3']
-        inventory.forEach((item) => {
-          if (roomItems.includes(item.itemname)) {
-            // Remove the room items from the shopitems list
-            this.shopitems = this.shopitems.filter(
-              (shopItem) => shopItem.itemname !== item.itemname
-            )
-          }
-        })
-      })
-      .catch((error) => {
-        console.error('Error fetching user inventory:', error)
-      })
 
     axios
       .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}/selected-cat`)
@@ -841,24 +787,9 @@ export default {
 <style scoped>
 /* Add your scoped styles here */
 
-.coins-container {
-  background-color: white;
-  border-radius: 10px;
-  padding: 5px 15px;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.coins-container p {
-  margin: 0;
-  color: #333;
-  font-weight: bold;
-  margin-left: 8px;
-}
-
 .tasks-container {
   font-family: 'Jersey 25', sans-serif;
+    background-color: #fff3e7;
 }
 .header {
   background-image: url('https://i.pinimg.com/originals/80/ec/77/80ec77932091113c4970a88f69b9bb4f.gif');
@@ -877,40 +808,6 @@ export default {
   margin-right: 10px;
 }
 
-.dashboard-container {
-  background-color: #fff3e7;
-  height: 200px;
-  border-radius: 25px;
-}
-
-.dashboard-title h3 {
-  font-weight: bold;
-  margin: 20px;
-}
-
-.progress {
-  width: 200px;
-  height: 10px;
-  background-color: #d3d3d3;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  background-color: #6a0dad;
-}
-
-.progress-labels {
-  display: flex;
-  justify-content: space-between;
-  width: 200px;
-  margin-top: 5px;
-}
-
-.streak-info strong {
-  font-size: 24px;
-}
-
 .main-content {
   display: flex;
   justify-content: space-between;
@@ -919,7 +816,16 @@ export default {
 
 .card {
   width: 100%;
-  background-color: #d2691e;
+  background-color: #eec0c2;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.cardform{
+  width: 100%;
+  background-color: white;
   border-radius: 10px;
   padding: 15px;
   margin-bottom: 10px;
@@ -933,6 +839,12 @@ export default {
   padding: 15px;
   margin-bottom: 10px;
   color: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card2:hover {
+  transform: translateY(-5px); 
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); 
 }
 
 .cardtext {
@@ -957,33 +869,6 @@ export default {
   color: grey;
 }
 
-.calendar {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.week-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.week-row span {
-  font-size: 18px;
-}
-
-.circle {
-  width: 30px;
-  height: 30px;
-  background-color: white;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.bg-purple {
-  background-color: #6a0dad !important;
-}
 
 .habit-controls {
   display: flex;
