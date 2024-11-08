@@ -111,15 +111,11 @@
                       <strong class="cardtext">Count:</strong> {{ h.count }}
                     </div>
                   </div>
-
-                  <!-- jh: component for dashboard to get data/to call methods -->
-                  <DashboardData  ref="dDComp" :habitLog="habitLog" :longTermLog="longTermLog" :toDoLog="toDoLog"/>
-                  <!-- Plus Button (positioned on the right side) -->
                   <button
                     class="btn btn-outline-success btn-circle"
-                    @click="increaseCount(h); increaseHabitLog()" 
+                    @click="increaseCount(h)"
                     style="min-width: 40px; max-width: 50px; flex-shrink: 0"
-                  >  <!--jh -i think i might hv to use $refs here instead of just increaseHabitLog?-->
+                  >
                     <i class="fas fa-plus"></i>
                   </button>
                 </div>
@@ -198,7 +194,7 @@
                   </small>
                 </div>
                 <div>
-                  <button class="btn btn-success btn-sm" @click="markAsDonelt(lt); increaseLongTermLog() ">
+                  <button class="btn btn-success btn-sm" @click="markAsDonelt(lt)">
                     Mark as Done
                   </button>
                 </div>
@@ -264,7 +260,7 @@
                   ><strong class="cardtext">Tag:</strong> {{ todo.tags }}</small
                 >
                 <div>
-                  <button class="btn btn-success btn-sm" @click="markAsDone(todo); increaseToDoLog()">
+                  <button class="btn btn-success btn-sm" @click="markAsDone(todo)">
                     Mark as Done
                   </button>
                 </div>
@@ -327,30 +323,12 @@ export default {
         description: '',
         tags: 'Work'
       },
-      habitLog: {
-
-      },
-      longTermLog: {
-
-      },
-      toDoLog: {
-
-      },
     }
   },
 
   methods: {
     goToPetPage() {
       this.$router.push('/pet')
-    },
-    increaseHabitLog() {
-      this.$refs.dDComp.increaseHabitLog();
-    },
-    increaseLongTermLog() {
-      this.$refs.dDComp.increaseLongTermLog();
-    },
-    increaseToDoLog() {
-      this.$refs.dDComp.increaseToDoLog();
     },
     fetchUserPoints() {
       const username = localStorage.getItem('username') || 'anonymous'
@@ -488,9 +466,6 @@ export default {
           console.error('Error increasing count:', error)
           h.count-- // Revert the count if the request fails
         })
-    },
-    increaseHabitLog() {
-      
     },
     decreaseCount(h) {
       if (h.count > 0) {
