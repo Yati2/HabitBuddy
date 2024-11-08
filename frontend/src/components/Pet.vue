@@ -454,7 +454,7 @@ export default {
         return 10
       } else if (fish.itemname.includes('Rare')) {
         return 15
-      } else if (fish.itemname.includes('Ultimate')) {
+      } else if (fish.itemname.includes('Ultra')) {
         return 20
       } else {
         return 0
@@ -564,7 +564,7 @@ export default {
         const gameScene = this.phaserGame.scene.keys['scene-game']
         if (gameScene) {
           gameScene.startFishEatingAnimation(fishType, () => {
-            this.petHappiness = Math.min(this.petHappiness + 10, 100)
+            this.petHappiness = Math.min(this.petHappiness + this.getHappinessBoost(fish), 100)
             this.updateHappinessOnServer()
             const newSpeed = this.movementSpeed
             gameScene.updateMovementSpeed(newSpeed)
