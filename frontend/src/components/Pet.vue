@@ -328,7 +328,7 @@ export default {
 
     this.phaserGame = new Phaser.Game(config)
 
-    setInterval(this.decreaseHappiness, 60 * 60 * 1000) //decrease happiness every hour
+    setInterval(this.decreaseHappiness, 30 * 60 * 1000) //decrease happiness every hour
   },
 
   computed: {
@@ -1042,8 +1042,7 @@ class GameScene extends Phaser.Scene {
     this.upEvent = this.time.addEvent({
       delay: 50,
       callback: () => {
-        this.cat.y -= 5
-
+        this.cat.y -= this.petHappiness < 20 ? 0.9 : 3
         if (this.cat.y <= this.floorUp) {
           this.cat.anims.stop()
           this.upEvent.remove()
@@ -1083,7 +1082,7 @@ class GameScene extends Phaser.Scene {
     this.leftEvent = this.time.addEvent({
       delay: 50,
       callback: () => {
-        this.cat.x -= 5
+        this.cat.x -= this.petHappiness < 20 ? 0.9 : 3
         if (this.cat.x <= this.sofapositionLeft) {
           this.cat.anims.stop()
           this.startLicking()

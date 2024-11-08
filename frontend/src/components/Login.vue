@@ -77,15 +77,40 @@ export default {
           username: this.username,
           password: this.password
         })
-        this.message = response.data.message // Show success message
-
-        // Store the login state (this can be handled globally)
+        this.message = response.data.message
+        await this.fetchPet()
         localStorage.setItem('isLoggedIn', true)
         localStorage.setItem('username', this.username)
+
         this.$router.push('/tasks')
       } catch (error) {
         console.error('Error logging in:', error)
         this.message = 'Invalid username or password.'
+      }
+    },
+    async fetchPet() {
+      try {
+        const response = await axios.get(
+          `https://habit-buddy-server.vercel.app/api/pet/${this.username}`
+        )
+        this.petHappiness = response.data.happinessLevel
+        console.log('fetching Pet:', this.petHappiness)
+        this.updateHappinessOnServer()
+      } catch (error) {
+        console.error('Error fetching pet:', error)
+      }
+    },
+    async updateHappinessOnServer() {
+      try {
+        if (this.petHappiness > 0 && this.petHappiness <= 100) {
+          this.petHappiness = Math.abs(this.petHappiness / 2)
+        }
+        await axios.put(`https://habit-buddy-server.vercel.app/api/pet/${this.username}`, {
+          happinessLevel: this.petHappiness
+        })
+        console.log('decreasing Pet Happiness:', this.petHappiness)
+      } catch (error) {
+        console.error('Error updating happiness level:', error)
       }
     }
   }
