@@ -1,16 +1,11 @@
 <template>
-    <div class="dashboard-data-main" 
-      :habitLog="increaseHabitLog()" :longTermLog="increaseLongTermLog()" :toDoLog="increaseToDoLog()">
-    </div>
+    <div class="dashboard-data-main"></div>
 </template>
 
 <script>
 import axios from 'axios'
-import Dashboard from './Dashboard.vue';
-
 export default {
   name: 'DashboardData',
-  components: {Dashboard},
   props: {
     habitLog: {
       type: Object

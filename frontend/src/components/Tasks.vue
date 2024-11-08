@@ -113,8 +113,7 @@
                   </div>
 
                   <!-- jh: component for dashboard to get data/to call methods -->
-                  <!--<DashboardData  ref="dDComp" :habitLog="habitLog" :longTermLog="longTermLog" :toDoLog="toDoLog"/>-->
-                  <Dashboard class="hide-dashboard" ref="dDComp" :habitLog="habitLog" :longTermLog="longTermLog" :toDoLog="toDoLog"/>
+                  <DashboardData  ref="dDComp" :habitLog="habitLog" :longTermLog="longTermLog" :toDoLog="toDoLog"/>
                   <!-- Plus Button (positioned on the right side) -->
                   <button
                     class="btn btn-outline-success btn-circle"
@@ -1087,9 +1086,6 @@ input[type='number'] {
   -moz-appearance: textfield;
 }
 
-.hide-dashboard {
-  display: none;
-}
 /* Responsive styling */
 @media (max-width: 576px) {
   .main-content {
