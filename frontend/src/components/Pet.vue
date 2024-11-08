@@ -321,7 +321,13 @@ export default {
 
       this.phaserGame = new Phaser.Game(config)
 
-      setInterval(this.decreaseHappiness, 30 * 60 * 1000)
+      setInterval(this.decreaseHappiness, 60 * 60 * 1000)
+
+      const gameBg = document.getElementById('game-bg')
+      gameBg.src = localStorage.getItem('selectedBackground')
+      gameBg.onload = () => {
+        this.isLoading = false
+      }
     } catch (error) {
       console.error('Error fetching pet data:', error)
     } finally {
