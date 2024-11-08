@@ -1,10 +1,8 @@
 <template>
   <div class="container-fluid w-100 p-0 pet-container">
     <div v-if="isLoading" class="loading-overlay">
-      <div class="loading-animation">
-        <div class="loading-circle"></div>
-        <h3>Loading...</h3>
-      </div>
+      <img src="/assets/loadingcat.gif" alt="Loading" class="loading-gif" />
+      <h3 class="loading-text">Loading...</h3>
     </div>
     <div v-else class="row">
       <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
@@ -168,7 +166,7 @@
         full!
       </div>
     </div>
-    <div v-if="showHappinessModal" class="alert-box">
+    <div v-if="!isLoading && showHappinessModal" class="alert-box">
       <div class="modal-content">
         <h2 class="modal-title">Attention!</h2>
         <p class="modal-message">
@@ -295,6 +293,8 @@ export default {
 
       if (this.petHappiness < 20) {
         this.showHappinessModal = true
+        this.movementSpeed = 0.8
+        console.log('petHappiness: for movement', this.movementSpeed)
       }
 
       const savedPet = localStorage.getItem('selectedPet') || 'orange'
@@ -331,6 +331,10 @@ export default {
   },
 
   computed: {
+    movementSpeed() {
+      console.log('petHappiness: in computed', this.petHappiness)
+      return this.petHappiness < 20 ? 0.8 : 3
+    },
     progressBarClass() {
       if (this.petHappiness > 50) {
         return 'bg-success'
@@ -342,6 +346,15 @@ export default {
     },
     isCatFull() {
       return this.petHappiness === 100
+    }
+  },
+  watch: {
+    movementSpeed(newSpeed) {
+      const gameScene = this.phaserGame.scene.keys['scene-game']
+      if (gameScene) {
+        console.log('newSpeed: in watch', newSpeed)
+        gameScene.updateMovementSpeed(newSpeed)
+      }
     }
   },
   methods: {
@@ -553,6 +566,8 @@ export default {
           gameScene.startFishEatingAnimation(fishType, () => {
             this.petHappiness = Math.min(this.petHappiness + 10, 100)
             this.updateHappinessOnServer()
+            const newSpeed = this.movementSpeed
+            gameScene.updateMovementSpeed(newSpeed)
           })
         }
       } catch (error) {
@@ -561,6 +576,7 @@ export default {
     },
     async updateHappinessOnServer() {
       try {
+        console.log('updating happiness level:', this.petHappiness)
         await axios.put(`https://habit-buddy-server.vercel.app/api/pet/${this.username}`, {
           happinessLevel: this.petHappiness
         })
@@ -576,10 +592,23 @@ class GameScene extends Phaser.Scene {
     this.preActionForResize = null
     this.petType = petType
     this.petHappiness = petHappiness
+    this.movementSpeed = this.petHappiness < 20 ? 0.8 : 3
+  }
+
+  updateMovementSpeed(newSpeed) {
+    console.log('newSpeed in gamescene:', newSpeed)
+    this.movementSpeed = newSpeed
   }
 
   preload() {
-    this.loadAssetsForPet()
+    this.isLoading = true
+    try {
+      this.loadAssetsForPet()
+    } catch (error) {
+      console.error('Error loading assets:', error)
+    } finally {
+      this.isLoading = false
+    }
   }
 
   loadAssetsForPet() {
@@ -881,15 +910,15 @@ class GameScene extends Phaser.Scene {
     var scale = fishType === 'reg' || fishType === 'ulti' ? 0.5 : 0.25
     this.eatenFish.setScale(scale).setTexture(fishImages[fishType][0]).setVisible(true)
 
-    this.time.delayedCall(1000, () => {
+    this.time.delayedCall(900, () => {
       this.eatenFish.setTexture(fishImages[fishType][1])
     })
 
-    this.time.delayedCall(2000, () => {
+    this.time.delayedCall(1100, () => {
       this.eatenFish.setTexture(fishImages[fishType][2])
     })
 
-    this.time.delayedCall(3000, () => {
+    this.time.delayedCall(1400, () => {
       this.eatenFish.setVisible(false)
       onComplete()
     })
@@ -1006,32 +1035,29 @@ class GameScene extends Phaser.Scene {
     )
       return
 
-    console.log('petHappiness in update ' + this.petHappiness)
-    let movementSpeed = this.petHappiness < 20 ? 0.8 : 2
-
     if (this.currentAction === 'walkRight') {
-      this.cat.x += movementSpeed
+      this.cat.x += this.movementSpeed
       if (this.cat.x >= this.sofapositionRight) {
         this.startGoingUp()
       }
     }
 
     if (this.currentAction === 'goUp') {
-      this.cat.y -= movementSpeed
+      this.cat.y -= this.movementSpeed
       if (this.cat.y <= this.floorUp) {
         this.startWalkingLeft()
       }
     }
 
     if (this.currentAction === 'walkLeft') {
-      this.cat.x -= movementSpeed
+      this.cat.x -= this.movementSpeed
       if (this.cat.x <= this.sofapositionLeft) {
         this.startGoingDown()
       }
     }
 
     if (this.currentAction === 'goDown') {
-      this.cat.y += movementSpeed
+      this.cat.y += this.movementSpeed
       if (this.cat.y >= this.cameras.main.height - 50) {
         this.startWalkingRight()
       }
@@ -1051,7 +1077,7 @@ class GameScene extends Phaser.Scene {
     this.upEvent = this.time.addEvent({
       delay: 50,
       callback: () => {
-        this.cat.y -= this.petHappiness < 20 ? 0.9 : 3
+        this.cat.y -= this.movementSpeed
 
         if (this.cat.y <= this.floorUp) {
           this.cat.anims.stop()
@@ -1092,7 +1118,7 @@ class GameScene extends Phaser.Scene {
     this.leftEvent = this.time.addEvent({
       delay: 50,
       callback: () => {
-        this.cat.x -= this.petHappiness < 20 ? 0.9 : 3
+        this.cat.x -= this.movementSpeed
         if (this.cat.x <= this.sofapositionLeft) {
           this.cat.anims.stop()
           this.startLicking()
@@ -1364,7 +1390,7 @@ canvas {
 }
 
 .loading-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -1372,33 +1398,19 @@ canvas {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.9); /* Adjust opacity as needed */
+  background-color: #e7dfdc;
   z-index: 1000;
 }
 
-.loading-animation {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  animation: fadeIn 1.5s ease-in-out infinite;
+.loading-gif {
+  width: 200px;
+  height: 150px;
 }
-
-.loading-animation h3 {
-  margin-top: 1rem;
-  color: #ff9e80; /* Customize to match your theme */
+.loading-text {
+  color: #ff9e80; /* Customize color to match theme */
   font-family: 'Jersey 25', sans-serif;
   font-size: 1.5rem;
   animation: pulseText 1.5s infinite;
-}
-
-.loading-circle {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background-color: #ff9e80; /* Main color for the loading circle */
-  animation: pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes pulse {
