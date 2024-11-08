@@ -103,8 +103,10 @@ export default {
     async updateHappinessOnServer() {
       try {
         if (this.petHappiness > 0 && this.petHappiness <= 100) {
-          this.petHappiness = Math.abs(this.petHappiness / 2)
+          this.petHappiness = Math.floor(this.petHappiness / 2)
+          console.log('Decreasing Pet Happiness:', this.petHappiness)
         }
+
         await axios.put(`https://habit-buddy-server.vercel.app/api/pet/${this.username}`, {
           happinessLevel: this.petHappiness
         })

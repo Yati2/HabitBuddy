@@ -76,11 +76,11 @@
                 <div>&nbsp;</div>
 
                 <div class="form-buttons d-flex justify-content-between">
-                <button type="submit" class="btn btn-warning">Confirm</button>
-                <button type="button" class="btn btn-danger" @click="cancelHabitForm">
-                  Cancel
-                </button>
-              </div>
+                  <button type="submit" class="btn btn-warning">Confirm</button>
+                  <button type="button" class="btn btn-danger" @click="cancelHabitForm">
+                    Cancel
+                  </button>
+                </div>
               </form>
             </div>
 
@@ -111,7 +111,7 @@
                       <strong class="cardtext">Count:</strong> {{ h.count }}
                     </div>
                   </div>
-                   <!-- Plus Button -->
+                  <!-- Plus Button -->
                   <button
                     class="btn btn-outline-success btn-circle"
                     @click="increaseCount(h)"
@@ -279,8 +279,8 @@
 </template>
 
 <script>
-import { isAuthenticated } from '../auth' 
-import { useRouter } from 'vue-router' 
+import { isAuthenticated } from '../auth'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { toast } from 'vue3-toastify'
 // Import one of the available themes
@@ -300,7 +300,7 @@ export default {
       habits: [],
       longTermTasks: [],
       todos: [],
-      showToDoForm: false, 
+      showToDoForm: false,
       showLTForm: false,
       showHabitForm: false,
       HabitForm: {
@@ -319,7 +319,7 @@ export default {
         title: '',
         description: '',
         tags: 'Work'
-      },
+      }
     }
   },
 
@@ -433,7 +433,7 @@ export default {
 
           axios
             .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/points', {
-              pointsToAdd: 5 
+              pointsToAdd: 5
             })
             .then((res) => {
               console.log('Points added:', res.data)
@@ -485,7 +485,7 @@ export default {
     //methods for habits
 
     fetchHabits() {
-      const username = localStorage.getItem('username') || 'anonymous' 
+      const username = localStorage.getItem('username') || 'anonymous'
 
       // Axios request to fetch todos for the current user
       axios
@@ -495,7 +495,7 @@ export default {
           }
         })
         .then((response) => {
-          this.habits = response.data 
+          this.habits = response.data
         })
         .catch((error) => {
           console.error('Error fetching habits:', error)
@@ -503,7 +503,7 @@ export default {
     },
     cancelHabitForm() {
       this.showHabitForm = false
-      this.HabitForm = { title: '', description: '', tags: 'Work', count: 0 } 
+      this.HabitForm = { title: '', description: '', tags: 'Work', count: 0 }
     },
     submitHabit() {
       if (!this.HabitForm.title || !this.HabitForm.description) {
@@ -542,7 +542,7 @@ export default {
           params: {
             username: username,
             title: h.title,
-            id: h._id 
+            id: h._id
           }
         })
         .then((response) => {
@@ -568,7 +568,7 @@ export default {
           }
         })
         .then((response) => {
-          this.longTermTasks = response.data 
+          this.longTermTasks = response.data
         })
         .catch((error) => {
           console.error('Error fetching long terms:', error)
@@ -576,7 +576,7 @@ export default {
     },
     cancelLTForm() {
       this.showLTForm = false
-      this.LTForm = { title: '', description: '', tags: 'Work' } 
+      this.LTForm = { title: '', description: '', tags: 'Work' }
     },
     submitLT() {
       if (!this.LTForm.title || !this.LTForm.description) {
@@ -614,7 +614,7 @@ export default {
       })
       axios
         .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/points', {
-          pointsToAdd: 10 
+          pointsToAdd: 10
         })
         .then((res) => {
           console.log('Points added:', res.data)
@@ -627,7 +627,7 @@ export default {
       //Axios request to increment longtermcompleted
       axios
         .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/longtermcompleted', {
-          incrementBy: 1 
+          incrementBy: 1
         })
         .then((res) => {
           console.log('Habit completed count incremented:', res.data)
@@ -642,7 +642,7 @@ export default {
           params: {
             username: username,
             title: lt.title,
-            id: lt._id 
+            id: lt._id
           }
         })
         .then((response) => {
@@ -660,7 +660,7 @@ export default {
     //todos methods
 
     fetchTodos() {
-      const username = localStorage.getItem('username') || 'anonymous' 
+      const username = localStorage.getItem('username') || 'anonymous'
 
       // Axios request to fetch todos for the current user
       axios
@@ -728,7 +728,7 @@ export default {
         })
       axios
         .put('https://habit-buddy-server.vercel.app/api/users/' + username + '/points', {
-          pointsToAdd: 10 
+          pointsToAdd: 10
         })
         .then((res) => {
           console.log('Points added:', res.data)
@@ -744,7 +744,7 @@ export default {
           params: {
             username: username,
             title: todo.title,
-            id: todo._id 
+            id: todo._id
           }
         })
         .then((response) => {
@@ -789,7 +789,8 @@ export default {
 
 .tasks-container {
   font-family: 'Jersey 25', sans-serif;
-    background-color: #fff3e7;
+  background-color: #fff3e7;
+  height: 100vh;
 }
 .header {
   background-image: url('https://i.pinimg.com/originals/80/ec/77/80ec77932091113c4970a88f69b9bb4f.gif');
@@ -823,7 +824,7 @@ export default {
   color: white;
 }
 
-.cardform{
+.cardform {
   width: 100%;
   background-color: white;
   border-radius: 10px;
@@ -839,12 +840,14 @@ export default {
   padding: 15px;
   margin-bottom: 10px;
   color: white;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .card2:hover {
-  transform: translateY(-5px); 
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); 
+  transform: translateY(-5px);
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .cardtext {
@@ -868,7 +871,6 @@ export default {
 .plus-icon:hover {
   color: grey;
 }
-
 
 .habit-controls {
   display: flex;

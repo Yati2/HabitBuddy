@@ -28,17 +28,17 @@
               title="Click for help"
             ></i>
           </div>
-
-          <div
-            class="progress progress-bar progress-bar-striped progress-bar-animated"
-            role="progressbar"
-            id="pet-happiness-bar"
-            :class="progressBarClass"
-            :aria-valuenow="petHappiness"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            :style="{ width: petHappiness + '%' }"
-          ></div>
+          <div class="progress-bar-container">
+            <div
+              class="progress-bar-filled"
+              :style="{ width: petHappiness + '%' }"
+              :class="progressBarClass"
+              role="progressbar"
+              aria-valuenow="petHappiness"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
+          </div>
         </div>
 
         <div class="mt-2 pet-info-content">
@@ -285,8 +285,8 @@ export default {
     }
   },
   async mounted() {
-    console.log('loading.....')
     this.isLoading = true
+    console.log('loading.....', this.isLoading)
     try {
       this.getCurrentUsername()
       await this.fetchPet()
@@ -389,27 +389,34 @@ export default {
 
     applyCustomization(selectedItem) {
       console.log('Applying customization:', selectedItem)
-      if (selectedItem.owned || selectedItem.applied) {
-        if (selectedItem.itemtype === 'Background') {
-          const gameBg = document.getElementById('game-bg')
-          if (gameBg) {
-            gameBg.src = selectedItem.imgpath
+      this.isLoading = true
+      try {
+        if (selectedItem.owned || selectedItem.applied) {
+          if (selectedItem.itemtype === 'Background') {
+            const gameBg = document.getElementById('game-bg')
+            if (gameBg) {
+              gameBg.src = selectedItem.imgpath
+            }
+            localStorage.setItem('selectedBackground', selectedItem.itemname)
+            this.applyItemOnServer(selectedItem, 'Background')
+            console.log('Applied background:', selectedItem)
+          } else if (selectedItem.itemtype === 'Cat') {
+            console.log('selectedItem:', selectedItem)
+
+            console.log('petType:', this.petType)
+            localStorage.setItem('selectedPet', selectedItem.itemname)
+            this.updateGameWithNewPet(selectedItem.itemname)
+
+            this.applyItemOnServer(selectedItem, 'Cat')
+            console.log('Applied Cat:', selectedItem)
           }
-          localStorage.setItem('selectedBackground', selectedItem.itemname)
-          this.applyItemOnServer(selectedItem, 'Background')
-          console.log('Applied background:', selectedItem)
-        } else if (selectedItem.itemtype === 'Cat') {
-          console.log('selectedItem:', selectedItem)
-
-          console.log('petType:', this.petType)
-          localStorage.setItem('selectedPet', selectedItem.itemname)
-          this.updateGameWithNewPet(selectedItem.itemname)
-
-          this.applyItemOnServer(selectedItem, 'Cat')
-          console.log('Applied Cat:', selectedItem)
+        } else {
+          console.warn('This item is either not owned or not applicable as a background or pet.')
         }
-      } else {
-        console.warn('This item is either not owned or not applicable as a background or pet.')
+      } catch (error) {
+        console.error('Error applying customization:', error)
+      } finally {
+        this.isLoading = false
       }
     },
 
@@ -468,6 +475,7 @@ export default {
     },
     async fetchUserInventory() {
       const { username } = this
+      this.loading = true
       try {
         const response = await axios.get(
           `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
@@ -516,6 +524,8 @@ export default {
         })
       } catch (error) {
         console.error('Error fetching inventory:', error)
+      } finally {
+        this.isLoading = false
       }
     },
 
@@ -1270,6 +1280,33 @@ canvas {
   60% {
     transform: translateY(-5px);
   }
+}
+.progress-bar-container {
+  width: 100%;
+  height: 20px;
+  background-color: #f3e0b5;
+  border-radius: 10px;
+  border: 2px solid #fecfa5;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-filled {
+  height: 100%;
+  background-color: #ff9e80;
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.3) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.3) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 20px 20px;
+  border-radius: 10px 0 0 10px;
+  transition: width 0.5s ease;
 }
 
 .feed-text {
