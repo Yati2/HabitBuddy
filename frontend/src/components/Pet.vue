@@ -1,12 +1,12 @@
 <template>
   <div class="container-fluid w-100 p-0 pet-container">
-    <!-- Loading overlay -->
     <div v-if="isLoading" class="loading-overlay">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
+      <div class="loading-animation">
+        <div class="loading-circle"></div>
+        <h3>Loading...</h3>
       </div>
     </div>
-    <div class="row">
+    <div v-else class="row">
       <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
         <img id="game-bg" class="position-absolute" />
       </div>
@@ -1327,7 +1327,7 @@ canvas {
 }
 
 .loading-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -1335,13 +1335,66 @@ canvas {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.9); /* Adjust opacity as needed */
   z-index: 1000;
 }
 
-.spinner-border {
-  width: 3rem;
-  height: 3rem;
-  color: #fecfa5;
+.loading-animation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  animation: fadeIn 1.5s ease-in-out infinite;
+}
+
+.loading-animation h3 {
+  margin-top: 1rem;
+  color: #ff9e80; /* Customize to match your theme */
+  font-family: 'Jersey 25', sans-serif;
+  font-size: 1.5rem;
+  animation: pulseText 1.5s infinite;
+}
+
+.loading-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #ff9e80; /* Main color for the loading circle */
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulseText {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 </style>
