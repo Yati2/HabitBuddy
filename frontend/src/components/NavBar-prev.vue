@@ -1,7 +1,6 @@
 <template>
   <div>
-    <!-- Original Navbar for Web View -->
-    <nav v-if="!isMobileView" class="navbar navbar-custom navbar-expand-lg">
+    <nav class="navbar navbar-custom navbar-expand-lg">
       <div class="container-fluid">
         <a class="navbar-brand" href="/tasks">
           <img
@@ -13,8 +12,11 @@
         <button
           class="navbar-toggler"
           type="button"
-          @click="toggleSidebar"
-          aria-label="Toggle sidebar"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
         >
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -23,6 +25,9 @@
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="/tasks">Tasks</a>
             </li>
+            <!-- <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/dashboard">Dashboard</a>
+            </li> -->
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="/journal">Journal</a>
             </li>
@@ -53,40 +58,14 @@
         </div>
       </div>
     </nav>
-
-    <!-- Sidebar for Mobile View -->
-    <div>
-      <nav v-if="isMobileView && avatarLoaded" class="navbar navbar-custom">
-        <div class="container-fluid">
-          <a href="/tasks">
-            <img
-              src="/assets/habitbuddylogo.png"
-              alt="Cat Icon"
-              class="cat-icon logo d-inline-block align-text-top"
-            />
-          </a>
-          <button class="btn-sidebar-toggle" @click="toggleSidebar" aria-label="Toggle sidebar">
-            &#9776;
-          </button>
-        </div>
-      </nav>
-      <Sidebar
-        :showSidebar="showSidebar"
-        :avatar="avatar"
-        @closeSidebar="toggleSidebar"
-        v-if="isMobileView"
-      />
-    </div>
   </div>
 </template>
 
 <script>
 import { useRouter } from 'vue-router'
-import Sidebar from './Sidebar.vue'
 
 export default {
   name: 'NavBar',
-  components: { Sidebar },
   props: {
     avatar: {
       type: String,
@@ -96,23 +75,13 @@ export default {
   data() {
     return {
       avatarLoaded: false,
-      placeholderAvatar: '/assets/profile/profile-icon.png',
-      showSidebar: false,
-      isMobileView: window.innerWidth <= 991
+      placeholderAvatar: '/assets/profile/profile-icon.png'
     }
   },
   watch: {
     avatar(newValue) {
       this.avatarLoaded = !!newValue
-      console.log('Avatar loaded:', this.avatarLoaded)
     }
-  },
-  updated() {
-    this.isMobileView = window.innerWidth <= 991
-    if (this.isMobileView) {
-      this.handleResize()
-    }
-    console.log('changing to mobile view', this.isMobileView)
   },
   setup() {
     const router = useRouter()
@@ -127,35 +96,13 @@ export default {
     return {
       logoutDev
     }
-  },
-  methods: {
-    toggleSidebar() {
-      this.showSidebar = !this.showSidebar
-    },
-    handleResize() {
-      this.isMobileView = window.innerWidth <= 991
-      console.log('changing to mobile view')
-
-      if (!this.isMobileView) {
-        this.showSidebar = false
-      }
-    }
-  },
-  mounted() {
-    if (this.avatar) {
-      this.avatarLoaded = true
-    } else {
-      this.avatarLoaded = false
-    }
-    window.addEventListener('resize', this.handleResize)
-  },
-  unmounted() {
-    window.removeEventListener('resize', this.handleResize)
   }
 }
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 body {
   font-family: 'Roboto', sans-serif;
 }
@@ -189,13 +136,6 @@ body {
   height: 80px;
   width: 100%;
 }
-.btn-sidebar-toggle {
-  font-size: 1.5rem;
-  border: none;
-  background: transparent;
-  color: #333;
-  margin-right: 10px;
-}
 
 .nav-item {
   padding: 10px;
@@ -221,9 +161,27 @@ body {
     padding: 5px;
     height: auto;
   }
-  .logo {
-    width: 50px;
-    height: auto;
+
+  .nav-link {
+    font-size: 1rem;
+    padding: 5px 0;
+  }
+
+  .nav-item {
+    padding: 5px;
+  }
+
+  .cat-icon {
+    height: 60px;
+  }
+
+  .profile-icon {
+    width: 35px;
+    height: 35px;
+  }
+
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28150, 150, 150, 0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
   }
 }
 </style>

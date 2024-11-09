@@ -1,8 +1,9 @@
 <template>
   <div id="app">
-    <NavBar v-if="!isLoginPage" :avatar="avatar" />
+    <LoadingOverlay v-if="isLoading" />
+    <NavBar v-if="!isLoginPage && !isLoading" :avatar="avatar" />
 
-    <div class="content">
+    <div v-if="!isLoading" class="content">
       <router-view @update-avatar="updateAvatar" />
     </div>
   </div>
@@ -10,16 +11,19 @@
 
 <script>
 import NavBar from './components/NavBar.vue'
+import LoadingOverlay from './components/LoadingOverlay.vue'
 import axios from 'axios'
 
 export default {
   name: 'App',
   components: {
-    NavBar
+    NavBar,
+    LoadingOverlay
   },
   data() {
     return {
-      avatar: ''
+      avatar: '',
+      isLoading: true
     }
   },
   computed: {
@@ -37,21 +41,32 @@ export default {
       this.avatar = newAvatar
     },
     fetchAvatar() {
-      const username = localStorage.getItem('username')
-      if (username) {
-        axios
-          .get(`https://habit-buddy-server.vercel.app/api/users/${username}`)
-          .then((response) => {
-            this.avatar = response.data.avatarImage
-          })
-          .catch((error) => {
-            console.error('Error fetching user data:', error)
-          })
+      try {
+        const username = localStorage.getItem('username')
+        if (username) {
+          axios
+            .get(`https://habit-buddy-server.vercel.app/api/users/${username}`)
+            .then((response) => {
+              this.avatar = response.data.avatarImage
+            })
+            .catch((error) => {
+              console.error('Error fetching user data:', error)
+            })
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error)
       }
     }
   },
   mounted() {
-    this.fetchAvatar()
+    this.isLoading = false
+    try {
+      this.fetchAvatar()
+    } catch (error) {
+      console.error('Error fetching avatar:', error)
+    } finally {
+      this.isLoading = false
+    }
   }
 }
 </script>
