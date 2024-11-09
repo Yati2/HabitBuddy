@@ -1,156 +1,160 @@
 <template>
   <div v-if="isAuthenticatedUser" class="profile-container">
     <LoadingOverlay :isLoading="isLoading" />
-    <div class="jumbotron">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-12 profile text-center">
-            <h1>{{ user.username }}'s Profile!</h1>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12 text-center position-relative">
-            <img :src="bgImage" alt="Background Img" class="bg-img" />
-            <button @click="showImageOptions('bg')" class="btn btn-primary change-bg-button">
-              Change Picture
-            </button>
-            <img :src="avatarImage" class="avatar mx-auto" />
-            <button
-              @click="showImageOptions('avatar')"
-              class="btn btn-primary change-avatar-button"
-            >
-              Change Avatar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Image Selector -->
-    <div v-if="showImageSelector" class="image-selector">
-      <div v-if="selectedType === 'bg'" class="image-options">
-        <h3>Select a Background Image</h3>
-        <div class="images">
-          <img
-            v-for="(image, index) in backgroundImages"
-            :key="index"
-            :src="image"
-            @click="changeBackground(image)"
-            class="image-option"
-          />
-        </div>
-      </div>
-      <div v-else-if="selectedType === 'avatar'" class="image-options">
-        <h3>Select an Avatar Image</h3>
-        <div class="images">
-          <img
-            v-for="(image, index) in avatarImages"
-            :key="index"
-            :src="image"
-            @click="changeAvatar(image)"
-            class="image-option"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal for changing password -->
-    <div v-if="showModal" class="modal">
-      <div class="modal-content">
-        <h2>Change Password</h2>
-        <form @submit.prevent="changePassword">
-          <div class="form-group">
-            <label for="new-password">New Password:</label>
-            <input
-              type="password"
-              id="new-password"
-              v-model="newPassword"
-              class="form-control"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="confirm-password">Confirm Password:</label>
-            <input
-              type="password"
-              id="confirm-password"
-              v-model="confirmPassword"
-              class="form-control"
-              required
-            />
-          </div>
-          <button class="btn styled-button" type="submit">Change Password</button>
-          <button class="btn styled-button close" type="button" @click="closeModal">Cancel</button>
-        </form>
-      </div>
-    </div>
-
-    <div class="button-container">
-      <button class="btn styled-button" @click="showModal = true">Change Password</button>
-      <button class="btn styled-button" @click="logoutDev">Logout</button>
-    </div>
-
-    <div class="dashboard-container">
-      <div class="task-summary">
-        <h3>Here is a summary of your tasks and progress.</h3>
-        <div class="task-list">
-          <div class="task-category">
-            <h5>
-              Completed
-              <p>Habits</p>
-            </h5>
-            <div class="count-container">
-              <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
-              <p class="count">{{ habitCompletedCount }}</p>
-            </div>
-          </div>
-          <div class="task-category">
-            <h5>
-              Completed
-              <p>Long Term Tasks</p>
-            </h5>
-            <div class="count-container">
-              <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
-              <p class="count">{{ longTermCompletedCount }}</p>
-            </div>
-          </div>
-          <div class="task-category">
-            <h5>
-              Completed
-              <p>Daily To-dos</p>
-            </h5>
-            <div class="count-container">
-              <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
-              <p class="count">{{ todoCompletedCount }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Inventory Section -->
-      <div class="inventory-section">
-        <h3>Inventory</h3>
-        <div v-for="(items, itemType) in groupedInventoryItems" :key="itemType">
-          <h5>{{ itemType }}</h5>
+    <div v-if="!isLoading">
+      <div class="jumbotron">
+        <div class="container-fluid">
           <div class="row">
-            <div class="col-lg-3 col-md-6 col-xs-12" v-for="item in items" :key="item._id">
-              <div class="inventory-item text-center">
-                <div v-if="item.itemname.toLowerCase().includes('fish')">
-                  <img
-                    :src="item.imgpath"
-                    alt="Item Image"
-                    class="item-image"
-                    :style="{ width: '100px' }"
-                  />
+            <div class="col-12 profile text-center">
+              <h1>{{ user.username }}'s Profile!</h1>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 text-center position-relative">
+              <img :src="bgImage" alt="Background Img" class="bg-img" />
+              <button @click="showImageOptions('bg')" class="btn btn-primary change-bg-button">
+                Change Picture
+              </button>
+              <img :src="avatarImage" class="avatar mx-auto" />
+              <button
+                @click="showImageOptions('avatar')"
+                class="btn btn-primary change-avatar-button"
+              >
+                Change Avatar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Selector -->
+      <div v-if="showImageSelector" class="image-selector">
+        <div v-if="selectedType === 'bg'" class="image-options">
+          <h3>Select a Background Image</h3>
+          <div class="images">
+            <img
+              v-for="(image, index) in backgroundImages"
+              :key="index"
+              :src="image"
+              @click="changeBackground(image)"
+              class="image-option"
+            />
+          </div>
+        </div>
+        <div v-else-if="selectedType === 'avatar'" class="image-options">
+          <h3>Select an Avatar Image</h3>
+          <div class="images">
+            <img
+              v-for="(image, index) in avatarImages"
+              :key="index"
+              :src="image"
+              @click="changeAvatar(image)"
+              class="image-option"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal for changing password -->
+      <div v-if="showModal" class="modal">
+        <div class="modal-content">
+          <h2>Change Password</h2>
+          <form @submit.prevent="changePassword">
+            <div class="form-group">
+              <label for="new-password">New Password:</label>
+              <input
+                type="password"
+                id="new-password"
+                v-model="newPassword"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="confirm-password">Confirm Password:</label>
+              <input
+                type="password"
+                id="confirm-password"
+                v-model="confirmPassword"
+                class="form-control"
+                required
+              />
+            </div>
+            <button class="btn styled-button" type="submit">Change Password</button>
+            <button class="btn styled-button close" type="button" @click="closeModal">
+              Cancel
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="button-container">
+        <button class="btn styled-button" @click="showModal = true">Change Password</button>
+        <button class="btn styled-button" @click="logoutDev">Logout</button>
+      </div>
+
+      <div class="dashboard-container">
+        <div class="task-summary">
+          <h3>Here is a summary of your tasks and progress.</h3>
+          <div class="task-list">
+            <div class="task-category">
+              <h5>
+                Completed
+                <p>Habits</p>
+              </h5>
+              <div class="count-container">
+                <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
+                <p class="count">{{ habitCompletedCount }}</p>
+              </div>
+            </div>
+            <div class="task-category">
+              <h5>
+                Completed
+                <p>Long Term Tasks</p>
+              </h5>
+              <div class="count-container">
+                <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
+                <p class="count">{{ longTermCompletedCount }}</p>
+              </div>
+            </div>
+            <div class="task-category">
+              <h5>
+                Completed
+                <p>Daily To-dos</p>
+              </h5>
+              <div class="count-container">
+                <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
+                <p class="count">{{ todoCompletedCount }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Section -->
+        <div class="inventory-section">
+          <h3>Inventory</h3>
+          <div v-for="(items, itemType) in groupedInventoryItems" :key="itemType">
+            <h5>{{ itemType }}</h5>
+            <div class="row">
+              <div class="col-lg-3 col-md-6 col-xs-12" v-for="item in items" :key="item._id">
+                <div class="inventory-item text-center">
+                  <div v-if="item.itemname.toLowerCase().includes('fish')">
+                    <img
+                      :src="item.imgpath"
+                      alt="Item Image"
+                      class="item-image"
+                      :style="{ width: '100px' }"
+                    />
+                  </div>
+                  <div v-else>
+                    <img :src="item.imgpath" alt="Item Image" class="item-image" />
+                  </div>
+                  <p>{{ item.itemname }}</p>
+                  <span class="item-count" v-if="item.itemname.toLowerCase().includes('fish')">
+                    Qty: {{ item.itemqty }}</span
+                  >
                 </div>
-                <div v-else>
-                  <img :src="item.imgpath" alt="Item Image" class="item-image" />
-                </div>
-                <p>{{ item.itemname }}</p>
-                <span class="item-count" v-if="item.itemname.toLowerCase().includes('fish')">
-                  Qty: {{ item.itemqty }}</span
-                >
               </div>
             </div>
           </div>
@@ -205,7 +209,7 @@ export default {
   },
   mounted() {
     this.isLoading = true
-    const minimumLoadingTime = new Promise((resolve) => setTimeout(resolve, 1000))
+    const minimumLoadingTime = new Promise((resolve) => setTimeout(resolve, 1100))
 
     Promise.all([minimumLoadingTime, this.checkAuthentication()])
       .then(() => {
