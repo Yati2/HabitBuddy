@@ -76,8 +76,8 @@
                 <div>&nbsp;</div>
 
                 <div class="form-buttons d-flex justify-content-between">
-                  <button type="submit" class="btn btn-warning">Confirm</button>
-                  <button type="button" class="btn btn-danger" @click="cancelHabitForm">
+                  <button type="submit" class="btn btn-custom ">Confirm</button>
+                  <button type="button" class="btn btn-custom " @click="cancelHabitForm">
                     Cancel
                   </button>
                 </div>
@@ -122,7 +122,7 @@
                 </div>
 
                 <!-- Delete Habit Button -->
-                <button class="btn btn-danger btn-sm mt-3 w-100" @click="markAsDoneh(h)">
+                <button class="btn btn-custom  btn-sm mt-3 w-100" @click="markAsDoneh(h)">
                   Delete Habit
                 </button>
               </div>
@@ -177,8 +177,8 @@
                 <div>&nbsp;</div>
 
                 <div class="form-buttons">
-                  <button type="submit" class="btn btn-primary">Confirm</button>
-                  <button type="button" class="btn btn-danger" @click="cancelLTForm">Cancel</button>
+                  <button type="submit" class="btn btn-custom ">Confirm</button>
+                  <button type="button" class="btn btn-custom " @click="cancelLTForm">Cancel</button>
                 </div>
               </form>
             </div>
@@ -195,7 +195,7 @@
                   </small>
                 </div>
                 <div>
-                  <button class="btn btn-success btn-sm" @click="markAsDonelt(lt)">
+                  <button class="btn btn-custom  btn-sm" @click="markAsDonelt(lt)">
                     Mark as Done
                   </button>
                 </div>
@@ -248,8 +248,8 @@
                 </div>
 
                 <div class="form-buttons">
-                  <button type="submit" class="btn btn-primary">Confirm</button>
-                  <button type="button" class="btn btn-danger" @click="cancelForm">Cancel</button>
+                  <button type="submit" class="btn btn-custom ">Confirm</button>
+                  <button type="button" class="btn btn-custom" @click="cancelForm">Cancel</button>
                 </div>
               </form>
             </div>
@@ -261,7 +261,7 @@
                   ><strong class="cardtext">Tag:</strong> {{ todo.tags }}</small
                 >
                 <div>
-                  <button class="btn btn-success btn-sm" @click="markAsDone(todo)">
+                  <button class="btn btn-custom btn-sm" @click="markAsDone(todo)">
                     Mark as Done
                   </button>
                 </div>
@@ -885,6 +885,14 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.btn-custom {
+  background-color: #EEC0C2; /* Initial button color */
+}
+
+.btn-custom:hover {
+  background-color: #e07e83; /* Hover button color */
 }
 
 .habit-content {
