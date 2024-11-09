@@ -60,9 +60,8 @@
                   </button>
 
                   <p v-if="fish.itemqty === 0" class="text-danger pt-1" style="font-size: 0.8rem">
-                    Purchase from Shopkeeper
-                    <router-link to="/tasks" class="text-decoration-underline text-danger"
-                      >here</router-link
+                    <router-link to="/tasks" class="text-decoration-underline text-danger">
+                      Purchase from Shopkeeper here</router-link
                     >!
                   </p>
 
@@ -903,12 +902,22 @@ class GameScene extends Phaser.Scene {
     let fishY = this.cat.y
     let fishX
 
-    if (this.currentAction === 'walkRight' && this.cat.x < this.sofapositionRight) {
-      fishX = this.cat.x + 50
-      fishY = this.cat.y - 50
+    if (this.currentAction === 'walkRight') {
+      if (this.cat.x < this.sofapositionRight) {
+        fishX = this.cat.x + 10
+      } else {
+        fishX = this.cat.x + 5
+      }
+
+      fishY = this.cat.y - 10
     } else if (this.currentAction === 'walkLeft') {
-      fishX = this.cat.x - 50
-      fishY = this.cat.y - 50
+      if (this.cat.x > this.sofapositionLeft) {
+        fishX = this.cat.x - 10
+      } else {
+        fishX = this.cat.x - 5
+      }
+
+      fishY = this.cat.y - 10
     }
 
     this.eatenFish.setPosition(fishX, fishY).setVisible(true)
@@ -922,7 +931,7 @@ class GameScene extends Phaser.Scene {
     var scale = fishType === 'reg' || fishType === 'ulti' ? 0.5 : 0.25
     this.eatenFish.setScale(scale).setTexture(fishImages[fishType][0]).setVisible(true)
 
-    this.time.delayedCall(900, () => {
+    this.time.delayedCall(100, () => {
       this.eatenFish.setTexture(fishImages[fishType][1])
     })
 
@@ -1437,39 +1446,5 @@ canvas {
 .modal-button:hover {
   background-color: #e4805b;
   color: white;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(0.9);
-    opacity: 0.7;
-  }
-}
-
-@keyframes pulseText {
-  0%,
-  100% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 </style>
