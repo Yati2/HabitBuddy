@@ -159,7 +159,7 @@
         :style="{ width: tooltipWidth }"
         @click="showHappinessHelpMsg = false"
       >
-        Feed your cat to increase the happiness level! Your cat will refuses to eat more when it's
+        Feed your cat to increase the happiness level! Your cat will refuse to eat more when it's
         full!
       </div>
     </div>
@@ -291,6 +291,7 @@ export default {
       this.getCurrentUsername()
       await this.fetchPet()
       setTimeout(() => this.setTooltipWidth(), 150)
+      window.addEventListener('resize', this.setTooltipWidth)
       this.fetchUserInventory()
 
       if (this.petHappiness < 20) {
@@ -330,6 +331,9 @@ export default {
       this.isLoading = false
       console.log('loaded')
     }
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.setTooltipWidth)
   },
 
   computed: {
@@ -372,7 +376,7 @@ export default {
       const gameContainer = this.$refs.gameContainer
 
       if (gameContainer) {
-        this.tooltipWidth = `${gameContainer.clientWidth + 10}px`
+        this.tooltipWidth = `${gameContainer.clientWidth}px`
         console.log('container width' + this.$refs.gameContainer)
         console.log('tooltip width' + this.tooltipWidth)
       } else {
@@ -1142,7 +1146,6 @@ class GameScene extends Phaser.Scene {
 <style>
 #game-container {
   height: 91vh;
-
   border-right: 4px solid rgba(209, 208, 208, 0.552);
   border-left: 2px solid rgba(209, 208, 208, 0.552);
   position: relative;
@@ -1239,7 +1242,8 @@ canvas {
 .custom-tooltip {
   position: absolute;
   top: 30%;
-  transform: translateY(-50%);
+  left: 0;
+
   background-color: #fecfa5;
   border: 2px solid #fef7f6;
   padding: 20px;
@@ -1248,18 +1252,26 @@ canvas {
   z-index: 1050;
   cursor: pointer;
   box-sizing: border-box;
+  max-width: 80%;
+  word-wrap: break-word;
 }
 
 @media (max-width: 768px) {
   .custom-tooltip {
     padding: 15px;
+    font-size: 0.9rem;
+    max-width: 90%;
   }
 }
 
 @media (max-width: 576px) {
   .custom-tooltip {
-    width: 90%;
-    font-size: 1rem;
+    padding: 10px;
+    font-size: 0.8rem;
+    width: 100%;
+    left: 0;
+    transform: none;
+    text-align: center;
   }
 }
 
@@ -1349,16 +1361,47 @@ canvas {
 }
 
 .alert-box {
-  position: fixed;
-  top: 50%;
+  position: absolute;
+  top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #fef7f6;
   border: 2px solid #000000;
   border-radius: 20px;
-  max-width: 300px;
-  z-index: 1000;
+  max-width: fit-content;
+  max-height: fit-content;
+  width: 70%;
+  padding: 5px;
+  z-index: 1050;
   text-align: center;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .alert-box {
+    max-width: 300px;
+    padding: 10px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .alert-box {
+    max-width: 350px;
+    width: fit-content;
+    padding: 10px;
+    top: 50%;
+    left: 45%;
+  }
+}
+
+@media (max-width: 480px) {
+  .alert-box {
+    top: 35%;
+    width: 300px;
+    height: fit-content;
+    font-size: 0.5rem;
+    padding: 5px;
+  }
 }
 
 .modal-content {
