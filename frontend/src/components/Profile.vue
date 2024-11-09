@@ -587,7 +587,14 @@
   
   .item-image {
     width: 180px;
+    transition: transform 0.2s ease, filter 0.2s ease;
   }
+
+  .item-image:hover {
+  transform: translateY(-5px);
+  filter: drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.4));
+}
+
   
   h5,
   span {
