@@ -29,7 +29,7 @@ export default {
   align-items: center;
   justify-content: center;
   background-color: #e7dfdc;
-  z-index: 1000;
+  z-index: 3000;
 }
 
 .loading-gif {

@@ -5,7 +5,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-12 profile text-center">
-            <h1>{{ user.username || 'user' }}'s Profile!</h1>
+            <h1>{{ user.username }}'s Profile!</h1>
           </div>
         </div>
 
@@ -205,13 +205,16 @@ export default {
   },
   mounted() {
     this.isLoading = true
-    try {
-      this.checkAuthentication()
-    } catch (e) {
-      console.log(e)
-    } finally {
-      this.isLoading = false
-    }
+    const minimumLoadingTime = new Promise((resolve) => setTimeout(resolve, 1000))
+
+    Promise.all([minimumLoadingTime, this.checkAuthentication()])
+      .then(() => {
+        this.isLoading = false
+      })
+      .catch((error) => {
+        console.error('Error during loading:', error)
+        this.isLoading = false
+      })
   },
   computed: {
     groupedInventoryItems() {
@@ -227,17 +230,22 @@ export default {
   },
   methods: {
     checkAuthentication() {
-      if (isAuthenticated()) {
-        this.isAuthenticatedUser = true
-        this.username = localStorage.getItem('username')
-        this.fetchHabitCompletedCount()
-        this.fetchLongTermCompletedCount()
-        this.fetchTodoCompletedCount()
-        this.fetchInventoryItems()
-        this.getUserInfo()
-      } else {
-        this.isAuthenticatedUser = false
-        this.$router.push('/login')
+      this.isLoading = true
+      try {
+        if (isAuthenticated()) {
+          this.isAuthenticatedUser = true
+          this.username = localStorage.getItem('username')
+          this.fetchHabitCompletedCount()
+          this.fetchLongTermCompletedCount()
+          this.fetchTodoCompletedCount()
+          this.fetchInventoryItems()
+          this.getUserInfo()
+        } else {
+          this.isAuthenticatedUser = false
+          this.$router.push('/login')
+        }
+      } catch (e) {
+        console.log(e)
       }
     },
     fetchHabitCompletedCount() {
@@ -288,14 +296,11 @@ export default {
         .get(`https://habit-buddy-server.vercel.app/api/users/${username}`)
         .then((response) => {
           this.user = response.data
-          this.bgImage = response.data.bgImage || this.placeholderBg
-          this.avatarImage = response.data.avatarImage || this.placeholderAvatar
+          this.bgImage = response.data.bgImage
+          this.avatarImage = response.data.avatarImage
         })
         .catch((error) => {
           console.error('Error fetching user info:', error)
-        })
-        .finally(() => {
-          this.isLoading = false
         })
     },
     logoutDev() {
@@ -328,10 +333,18 @@ export default {
       this.showImageSelector = true
     },
     changeBackground(image) {
-      this.bgImage = image
-      this.user.bgImage = image // Update user object
-      this.updateUserImages() // Save to backend
-      this.showImageSelector = false
+      this.isLoading = true
+      try {
+        this.bgImage = image
+        this.user.bgImage = image
+        this.updateUserImages()
+        this.showImageSelector = false
+      } catch (error) {
+        console.error('Error updating background:', error)
+        alert('Error updating background')
+      } finally {
+        this.isLoading = false
+      }
     },
     changeAvatar(image) {
       this.avatarImage = image
