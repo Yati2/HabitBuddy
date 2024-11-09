@@ -230,7 +230,7 @@ p {
   font-size: 1.5rem;
 }
 .btn:hover {
-  background-color: #cfb58a;
+  background-color: #f8dbbf;
 }
 /* features */
 .feature-container {
