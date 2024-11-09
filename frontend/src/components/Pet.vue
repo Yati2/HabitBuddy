@@ -1,10 +1,7 @@
 <template>
   <div class="container-fluid w-100 p-0 pet-container">
-    <div v-if="isLoading" class="loading-overlay">
-      <img src="/assets/loadingcat.gif" alt="Loading" class="loading-gif" />
-      <h3 class="loading-text">Loading...</h3>
-    </div>
-    <div v-else class="row">
+    <LoadingOverlay :isLoading="isLoading" />
+    <div class="row">
       <div id="game-container" ref="gameContainer" class="col-lg-10 col-12 position-relative">
         <img id="game-bg" class="position-absolute" />
       </div>
@@ -182,6 +179,8 @@
 import Phaser from 'phaser'
 import axios from 'axios'
 import 'bootstrap-icons/font/bootstrap-icons.css'
+
+import LoadingOverlay from './LoadingOverlay.vue'
 import orange from '/assets/pet_related/orange/orange.gif'
 import siamese from '/assets/pet_related/siamese/siamese.gif'
 import pinkie from '/assets/pet_related/pinkie/pinkie.gif'
@@ -252,6 +251,9 @@ import Park from '/assets/pet_related/bg/park.gif'
 import Cozyroom from '/assets/pet_related/bg/cozyroom.gif'
 
 export default {
+  components: {
+    LoadingOverlay
+  },
   name: 'PetComponent',
   data() {
     return {
@@ -1387,30 +1389,6 @@ canvas {
 .modal-button:hover {
   background-color: #e4805b;
   color: white;
-}
-
-.loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #e7dfdc;
-  z-index: 1000;
-}
-
-.loading-gif {
-  width: 200px;
-  height: 150px;
-}
-.loading-text {
-  color: #ff9e80; /* Customize color to match theme */
-  font-family: 'Jersey 25', sans-serif;
-  font-size: 1.5rem;
-  animation: pulseText 1.5s infinite;
 }
 
 @keyframes pulse {
