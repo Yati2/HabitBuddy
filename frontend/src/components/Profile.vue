@@ -158,7 +158,7 @@
                     <img
                       :src="item.imgpath"
                       alt="Item Image"
-                      class="item-image"
+                      class="fish-image"
                       :style="{ width: '100px' }"
                     />
                   </div>
@@ -684,7 +684,21 @@ span {
 
 .inventory-item {
   width: 100%;
-  margin: 10px 0px;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.item-image,
+.fish-image {
+  display: block;
+  margin: 0 auto;
+}
+
+.inventory-item p {
+  font-size: 1rem;
+  color: #333;
+  text-align: center;
+  margin: 5px 0 0 0;
 }
 
 @media (max-width: 768px) {
@@ -727,17 +741,33 @@ span {
 
   .inventory-item {
     width: 30%;
-    margin: 10px 90px;
+    margin: 0;
   }
 }
 
 @media (min-width: 576px) {
   .inventory-item {
     width: 48%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .inventory-item {
+    margin-left: 60px;
   }
 }
 
 @media (max-width: 448px) {
+  .inventory-item {
+    margin-left: 50px;
+  }
+
+  .item-image,
+  .fish-image {
+    width: 100px;
+    max-height: 80px;
+  }
   .quote-bubble::after {
     top: -10px;
     left: 50%;
