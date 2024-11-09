@@ -5,21 +5,25 @@
       <div class="jumbotron">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-12 profile text-center">
-              <h1>{{ user.username }}'s Profile!</h1>
-            </div>
-          </div>
-
-          <div class="row">
             <div class="col-12 text-center position-relative">
               <img :src="bgImage" alt="Background Img" class="bg-img" />
-              <button @click="showImageOptions('bg')" class="btn btn-primary change-bg-button">
+              <button
+                @click="showImageOptions('bg')"
+                class="btn btn-primary change-bg-button"
+                style="border-radius: 10px"
+              >
                 Change Picture
               </button>
               <img :src="avatarImage" class="avatar mx-auto" />
+              <div class="row">
+                <div class="col-12 profile text-center">
+                  <h1>{{ user.username }}'s Profile!</h1>
+                </div>
+              </div>
               <button
                 @click="showImageOptions('avatar')"
                 class="btn btn-primary change-avatar-button"
+                style="border-radius: 10px"
               >
                 Change Avatar
               </button>
@@ -81,8 +85,15 @@
                 required
               />
             </div>
-            <button class="btn styled-button" type="submit">Change Password</button>
-            <button class="btn styled-button close" type="button" @click="closeModal">
+            <button class="btn styled-button" type="submit" style="border-radius: 10px">
+              Change Password
+            </button>
+            <button
+              class="btn styled-button close"
+              type="button"
+              style="border-radius: 10px"
+              @click="closeModal"
+            >
               Cancel
             </button>
           </form>
@@ -90,8 +101,12 @@
       </div>
 
       <div class="button-container">
-        <button class="btn styled-button" @click="showModal = true">Change Password</button>
-        <button class="btn styled-button" @click="logoutDev">Logout</button>
+        <button class="btn styled-button" @click="showModal = true" style="border-radius: 10px">
+          Change Password
+        </button>
+        <button class="btn styled-button" @click="logoutDev" style="border-radius: 10px">
+          Logout
+        </button>
       </div>
 
       <div class="dashboard-container">
@@ -515,8 +530,7 @@ h3,
 .button-container {
   display: block;
   text-align: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 10px;
 }
 
 .modal {
