@@ -320,7 +320,10 @@ body {
 }
 
 h1 {
-  font-family: 'Jersey 25', sans-serif;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-align: center;
 }
 
 .header {
