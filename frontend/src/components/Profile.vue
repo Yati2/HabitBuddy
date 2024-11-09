@@ -209,7 +209,7 @@ export default {
   },
   mounted() {
     this.isLoading = true
-    const minimumLoadingTime = new Promise((resolve) => setTimeout(resolve, 1150))
+    const minimumLoadingTime = new Promise((resolve) => setTimeout(resolve, 1200))
 
     Promise.all([minimumLoadingTime, this.checkAuthentication()])
       .then(() => {
