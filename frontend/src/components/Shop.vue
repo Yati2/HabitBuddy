@@ -7,7 +7,7 @@
       <div class="row" style="justify-content: center; align-items: center; text-align: center">
         <div v-for="item in shopitems" :key="item.itemname" class="col-4">
           <img
-            class="itemimage"
+            :class="item.itemtype === 'Fish' ? 'itemimage fish-image' : 'itemimage'"
             v-bind:src="item.imgpath"
             width="80px"
             style="cursor: pointer"
@@ -344,8 +344,10 @@ export default {
 .shop-container {
   height: fit-content;
   background-color: #eec0c2;
+  overflow-y: auto;
+  max-height: 100%;
   border-radius: 10px;
-  border: solid 1px #C49EA0;
+  border: solid 1px #c49ea0;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -377,7 +379,9 @@ export default {
 }
 
 .itemimage {
-  transition: transform 0.2s ease, filter 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
 .itemimage:hover {
@@ -391,10 +395,10 @@ export default {
   border: 1px solid lightgray;
   border-radius: 5px;
   padding: 5px;
-  width: 100px;
+  width: 50%;
   justify-content: space-between;
   background-color: wheat;
-  margin: 10px 0;
+  margin: 10px auto;
 }
 
 .quantity-selector button {
@@ -421,5 +425,31 @@ input[type='number']::-webkit-inner-spin-button {
 
 input[type='number'] {
   -moz-appearance: textfield;
+}
+.inventory-section,
+.background-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 100%;
+}
+.fish-image {
+  width: 60px;
+  height: auto;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+.inventory-item,
+.background-item {
+  width: 70px;
+  text-align: center;
+}
+.inventory-item img,
+.background-item img {
+  max-width: 100%;
+  max-height: 50px;
+  object-fit: contain;
 }
 </style>
