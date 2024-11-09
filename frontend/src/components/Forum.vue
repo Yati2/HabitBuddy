@@ -1,5 +1,6 @@
 <template>
   <div class="container-fluid" :class="{ 'comments-visible': selectedPostId }" id="forum-container">
+    <loading-overlay :is-loading="!forumPosts.length"></loading-overlay>
     <div class="row header">
       <h1 class="forum-title">HabitBuddy Forum</h1>
       <nav class="navbar navbar-expand-lg navbar-dark">
@@ -81,8 +82,10 @@
 
 <script>
 import axios from 'axios'
+import LoadingOverlay from '@/components/LoadingOverlay.vue'
 
 export default {
+  components: { LoadingOverlay },
   name: 'ForumComponent',
   data() {
     return {
@@ -91,6 +94,7 @@ export default {
       newCommentContent: {},
       selectedTopic: 'academics',
       username: '',
+      isLoading: true,
       selectedPostId: null,
       showModal: false,
       topics: ['academics', 'physical health', 'mental wellness'] // List of topics
@@ -103,6 +107,7 @@ export default {
   },
   methods: {
     async fetchPosts() {
+      this.isLoading = true
       console.log('fetching posts')
       console.log(this.username)
       try {
@@ -155,10 +160,16 @@ export default {
         console.error('Error deleting post:', error.response ? error.response.data : error.message)
       }
     },
-    selectTopic(topic) {
+    async selectTopic(topic) {
       console.log('Selected topic:', topic)
       this.selectedTopic = topic
-      this.fetchPosts()
+      try {
+        await this.fetchPosts()
+      } catch (error) {
+        console.error('Error selecting topic:', error)
+      } finally {
+        this.isLoading = false
+      }
     },
     async likePost(postId) {
       const post = this.forumPosts.find((p) => p._id === postId)
@@ -205,8 +216,15 @@ export default {
   },
   mounted() {
     this.username = localStorage.getItem('username')
+    this.isLoading = true
     console.log('Username:', this.username)
-    this.fetchPosts() // Fetch posts when the component is mounted
+    try {
+      this.fetchPosts()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      this.isLoading = false
+    }
   }
 }
 </script>
