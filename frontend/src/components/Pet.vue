@@ -177,6 +177,8 @@
 <script>
 import Phaser from 'phaser'
 import axios from 'axios'
+import { isAuthenticated } from '../auth'
+import { useRouter } from 'vue-router'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
 import LoadingOverlay from './LoadingOverlay.vue'
@@ -254,6 +256,14 @@ export default {
     LoadingOverlay
   },
   name: 'PetComponent',
+  setup() {
+    const router = useRouter()
+    if (!isAuthenticated()) {
+      router.push('/login')
+    } else {
+      console.log('Logged in user:', localStorage.getItem('username')) // Log the username
+    }
+  },
   data() {
     return {
       isLoading: true,

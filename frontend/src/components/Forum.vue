@@ -82,11 +82,19 @@
 
 <script>
 import axios from 'axios'
+import { isAuthenticated } from '../auth'
+import { useRouter } from 'vue-router'
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
 
 export default {
   components: { LoadingOverlay },
   name: 'ForumComponent',
+  setup() {
+    const router = useRouter()
+    if (!isAuthenticated()) {
+      router.push('/login')
+    }
+  },
   data() {
     return {
       forumPosts: [],

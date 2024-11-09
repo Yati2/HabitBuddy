@@ -22,35 +22,33 @@ const router = createRouter({
     {
       path: '/profile',
       name: 'profile',
-      component: ProfileView
+      component: ProfileView,
+      meta: { requiresAuth: true }
     },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: DashboardView
-    },
+
     {
       path: '/journal',
       name: 'journal',
-      component: JournalView
+      component: JournalView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/forum',
       name: 'forum',
-      component: ForumView
+      component: ForumView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/pet',
       name: 'pet',
-      component: PetView
+      component: PetView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/tasks',
       name: 'tasks',
-      component: TasksView
+      component: TasksView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/register',
@@ -60,14 +58,24 @@ const router = createRouter({
     {
       path: '/',
       name: 'LandingPage',
-      component: LandingPage,
+      component: LandingPage
     },
     {
       path: '/help',
       name: 'HelpPage',
       component: HelpPage,
+      meta: { requiresAuth: true }
     }
   ]
+})
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem('isLoggedIn') === 'true'
+
+  if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
+    next({ name: 'login' })
+  } else {
+    next()
+  }
 })
 
 export default router

@@ -79,7 +79,7 @@ export default {
         })
         this.message = response.data.message
         await this.fetchPet()
-        localStorage.setItem('isLoggedIn', true)
+        sessionStorage.setItem('isLoggedIn', 'true')
         localStorage.setItem('username', this.username)
 
         this.$router.push('/tasks')

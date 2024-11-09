@@ -23,8 +23,18 @@
 </template>
 
 <script>
+import { isAuthenticated } from '../auth'
+import { useRouter } from 'vue-router'
 export default {
   name: 'HelpPage',
+  setup() {
+    const router = useRouter()
+    if (!isAuthenticated()) {
+      router.push('/login')
+    } else {
+      console.log('Logged in user:', localStorage.getItem('username')) // Log the username
+    }
+  },
   data() {
     return {
       expandedSections: [],

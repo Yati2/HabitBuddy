@@ -323,7 +323,7 @@ export default {
         })
     },
     logoutDev() {
-      localStorage.setItem('isLoggedIn', '')
+      sessionStorage.removeItem('isLoggedIn')
       localStorage.setItem('username', '')
       this.$router.push('/login')
     },

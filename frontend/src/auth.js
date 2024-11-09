@@ -1,7 +1,7 @@
 export function isAuthenticated() {
-  return localStorage.getItem('isLoggedIn') === 'true'
+  return sessionStorage.getItem('isLoggedIn') === 'true'
 }
 
 export function logout() {
-  localStorage.removeItem('isLoggedIn') // Clear login state
+  localStorage.removeItem('isLoggedIn')
 }
