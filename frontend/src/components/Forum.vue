@@ -292,8 +292,8 @@ export default {
   position: fixed;
   bottom: 50px;
   right: 50px;
-  background-color: rgba(238, 192, 194, 0.7);
-  color: black;
+  background: linear-gradient(135deg, #f3a8ab, #f9d6b3);
+  color: rgb(30, 27, 27);
   border-radius: 50%;
   z-index: 1020;
   width: 70px;
@@ -303,13 +303,34 @@ export default {
   padding: 5px;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+
   transition: background-color 0.3s;
+  cursor: pointer;
+  animation: bounce 2s infinite;
 }
 
 .create-post-btn:hover {
-  background-color: rgba(239, 165, 169, 0.7);
+  transform: scale(1.08);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #f7ca9d, #eea6aa); /* Gradient shifts on hover */
 }
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
 .card-body {
   padding: 15px;
 }

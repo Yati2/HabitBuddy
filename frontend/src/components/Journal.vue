@@ -338,11 +338,14 @@ h1 {
 button {
   margin: 10px;
   border: none;
-  background: transparent;
+  background: #fff3e7;
+  color: black;
 }
 
 button:hover {
-  transform: scale(1.5);
+  transform: scale(1.2);
+  background: #fbe2c8;
+  color: black;
 }
 
 .journal-container {
