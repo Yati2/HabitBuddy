@@ -56,7 +56,7 @@
 
     <!-- Sidebar for Mobile View -->
     <div>
-      <nav v-if="isMobileView && avatarLoaded" class="navbar navbar-custom">
+      <nav v-if="isMobileView" class="navbar navbar-custom">
         <div class="container-fluid">
           <a href="/tasks">
             <img

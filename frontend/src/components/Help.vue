@@ -201,4 +201,9 @@ p {
 .fade-leave-to {
   opacity: 0;
 }
+@media (max-width: 991px) {
+  .help-section {
+    width: 85%;
+  }
+}
 </style>
