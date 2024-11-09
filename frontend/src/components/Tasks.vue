@@ -76,7 +76,7 @@
 
                 <div>&nbsp;</div>
 
-                <div class="form-buttons d-flex justify-content-between">
+                <div class="form-buttons">
                   <button type="submit" class="btn btn-custom">Confirm</button>
                   <button type="button" class="btn btn-custom" @click="cancelHabitForm">
                     Cancel
@@ -894,6 +894,10 @@ export default {
 .habit-controls {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+.form-buttons {
+  display: flex;
   justify-content: space-between;
 }
 
