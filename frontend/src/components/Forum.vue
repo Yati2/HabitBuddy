@@ -23,7 +23,13 @@
         :key="post._id"
         :class="{ 'post-card': true, expanded: selectedPostId === post._id }"
       >
-        <button @click="deletePost(post._id)" class="delete-icon-btn">🗑️</button>
+        <button
+          v-if="post.username === this.username"
+          @click="deletePost(post._id)"
+          class="delete-icon-btn"
+        >
+          🗑️
+        </button>
         <div class="card-body">
           <h5 class="card-title">{{ post.username }}</h5>
           <p class="card-text">{{ post.content }}</p>
@@ -207,8 +213,9 @@ export default {
 
 <style scoped>
 .forum-posts-grid {
-  column-count: 4; /* Number of columns you want to display */
-  column-gap: 20px; /* Spacing between columns */
+  min-height: 100vh;
+  column-count: 4;
+  column-gap: 20px;
   padding: 20px;
 }
 
@@ -304,6 +311,8 @@ export default {
 }
 .expanded-comments {
   position: absolute;
+  max-height: 300px;
+  overflow-y: auto;
   top: 100%;
   left: 0;
   margin-top: 10px;
@@ -420,7 +429,9 @@ textarea {
 }
 .submitcomment {
   background-color: #eec0c2;
-  color: white;
+  border: none;
+  border-radius: 10px;
+  color: black;
 }
 
 .submitcomment:hover {
@@ -576,8 +587,16 @@ textarea {
 .modal-content .btn-secondary:hover {
   background-color: #ccc;
 }
+@media (max-width: 992px) {
+  .forum-posts-grid {
+    column-count: 2;
+  }
+}
 
 @media (max-width: 576px) {
+  .forum-posts-grid {
+    column-count: 1;
+  }
   .forum-title {
     font-size: 1.5rem;
   }
