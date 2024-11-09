@@ -137,7 +137,7 @@ h2.help-intro {
 }
 
 .help-content-box {
-  background-color: #ffffffe4;
+  background-color: #fffffff7;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
