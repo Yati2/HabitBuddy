@@ -1,6 +1,5 @@
 <template>
   <div v-if="isAuthenticatedUser" class="profile-container">
-    <!-- Profile content -->
     <LoadingOverlay :isLoading="isLoading" />
     <div class="jumbotron">
       <div class="container-fluid">
