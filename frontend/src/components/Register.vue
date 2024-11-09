@@ -119,9 +119,9 @@ export default {
           email: this.email,
           password: this.password,
           points: 0,
-          habitcompleted:0,
-          longtermcompleted:0,
-          todocompleted:0
+          habitcompleted: 0,
+          longtermcompleted: 0,
+          todocompleted: 0
         })
 
         // Show success message and redirect to tasks page
@@ -188,7 +188,7 @@ a:hover {
   color: #be9294;
 }
 .container-fluid {
-  background-image: url('/assets/backgrounds/bg_login_register.gif');
+  background-image: url('https://i.pinimg.com/originals/6a/dc/87/6adc878b255111abc1f13748a257d38f.gif');
   background-size: cover;
   background-position: center;
   min-height: 100vh;

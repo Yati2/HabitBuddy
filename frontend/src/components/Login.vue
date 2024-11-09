@@ -136,7 +136,7 @@ a:hover {
   color: #be9294;
 }
 .container-fluid {
-  background-image: url('/assets/backgrounds/bg_login_register.gif'); /* Background GIF */
+  background-image: url('https://i.pinimg.com/originals/6a/dc/87/6adc878b255111abc1f13748a257d38f.gif'); /* Background GIF */
   background-size: cover;
   background-position: center;
   min-height: 100vh;
