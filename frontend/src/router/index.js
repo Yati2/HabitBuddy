@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
-import DashboardView from '../views/DashboardView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 import JournalView from '../views/JournalView.vue'
 import ForumView from '../views/ForumView.vue'
 import PetView from '../views/PetView.vue'
@@ -65,6 +65,10 @@ const router = createRouter({
       name: 'HelpPage',
       component: HelpPage,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/:catchAll(.*)',
+      component: NotFoundView
     }
   ]
 })

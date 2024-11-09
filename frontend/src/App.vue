@@ -28,7 +28,11 @@ export default {
   },
   computed: {
     isLoginPage() {
+      const isNotFoundPage = this.$route.matched.some(
+        (record) => record.components.default.name === 'NotFoundView'
+      )
       return (
+        isNotFoundPage ||
         this.$route.path === '/login' ||
         this.$route.path === '/register' ||
         this.$route.path === '/'
