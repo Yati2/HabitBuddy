@@ -1,110 +1,112 @@
 <template>
   <div v-if="isAuthenticatedUser" class="journal-container">
-    <h1 class="text-center">Mood Tracker Journal</h1>
+    <h1 class="text-center header">Mood Tracker Journal</h1>
 
-    <div class="controls">
-      <button @click="previousMonth">←</button>
-      <span>{{ currentMonthName }} {{ selectedYear }}</span>
-      <button @click="nextMonth">→</button>
-    </div>
-
-    <div class="calendar">
-      <!-- days -->
-      <div class="day day-header">Sun</div>
-      <div class="day day-header">Mon</div>
-      <div class="day day-header">Tue</div>
-      <div class="day day-header">Wed</div>
-      <div class="day day-header">Thu</div>
-      <div class="day day-header">Fri</div>
-      <div class="day day-header">Sat</div>
-
-      <!-- each day -->
-      <div
-        v-for="(day, index) in days"
-        :key="index"
-        class="calendar-day"
-        :class="getMoodClass(day)"
-        @click="selectDay(day)"
-      >
-        <div class="day-number">{{ day }}</div>
+    <div class="calendar-container">
+      <div class="controls">
+        <button @click="previousMonth">←</button>
+        <span>{{ currentMonthName }} {{ selectedYear }}</span>
+        <button @click="nextMonth">→</button>
       </div>
-    </div>
 
-    <!-- form -->
-    <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
-      <div class="modal-content" @click.stop>
-        <h3>{{ selectedDay }} {{ currentMonthName }} {{ selectedYear }}</h3>
+      <div class="calendar">
+        <!-- days -->
+        <div class="day day-header">Sun</div>
+        <div class="day day-header">Mon</div>
+        <div class="day day-header">Tue</div>
+        <div class="day day-header">Wed</div>
+        <div class="day day-header">Thu</div>
+        <div class="day day-header">Fri</div>
+        <div class="day day-header">Sat</div>
 
-        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <!-- each day -->
+        <div
+          v-for="(day, index) in days"
+          :key="index"
+          class="calendar-day"
+          :class="getMoodClass(day)"
+          @click="selectDay(day)"
+        >
+          <div class="day-number">{{ day }}</div>
+        </div>
+      </div>
 
-        <form @submit.prevent="saveJournalEntry">
-          <div class="form-group">
-            <label for="journalEntry">Journal Entry</label>
-            <textarea
-              id="journalEntry"
-              class="form-control"
-              v-model="entry"
-              placeholder="Write your journal entry..."
-            ></textarea>
-          </div>
+      <!-- form -->
+      <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+        <div class="modal-content" @click.stop>
+          <h3>{{ selectedDay }} {{ currentMonthName }} {{ selectedYear }}</h3>
 
-          <div class="form-group">
-            <label>Mood</label>
-            <div class="mood-picker">
-              <div
-                class="mood-option"
-                :class="{ selected: mood === 'mood-excellent' }"
-                @click="mood = 'mood-excellent'"
-              >
-                <img src="/assets/emotions/excellent.png" alt="Excellent" />
-                <span>Excellent</span>
-              </div>
-              <div
-                class="mood-option"
-                :class="{ selected: mood === 'mood-good' }"
-                @click="mood = 'mood-good'"
-              >
-                <img src="/assets/emotions/good.png" alt="Good" />
-                <span>Good</span>
-              </div>
-              <div
-                class="mood-option"
-                :class="{ selected: mood === 'mood-neutral' }"
-                @click="mood = 'mood-neutral'"
-              >
-                <img src="/assets/emotions/neutral.png" alt="Neutral" />
-                <span>Neutral</span>
-              </div>
-              <div
-                class="mood-option"
-                :class="{ selected: mood === 'mood-bad' }"
-                @click="mood = 'mood-bad'"
-              >
-                <img src="/assets/emotions/bad.png" alt="Bad" />
-                <span>Bad</span>
-              </div>
-              <div
-                class="mood-option"
-                :class="{ selected: mood === 'mood-terrible' }"
-                @click="mood = 'mood-terrible'"
-              >
-                <img src="/assets/emotions/terrible.png" alt="Terrible" />
-                <span>Terrible</span>
+          <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+          <form @submit.prevent="saveJournalEntry">
+            <div class="form-group">
+              <label for="journalEntry">Journal Entry</label>
+              <textarea
+                id="journalEntry"
+                class="form-control"
+                v-model="entry"
+                placeholder="Write your journal entry..."
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Mood</label>
+              <div class="mood-picker">
+                <div
+                  class="mood-option"
+                  :class="{ selected: mood === 'mood-excellent' }"
+                  @click="mood = 'mood-excellent'"
+                >
+                  <img src="/assets/emotions/excellent.png" alt="Excellent" />
+                  <span>Excellent</span>
+                </div>
+                <div
+                  class="mood-option"
+                  :class="{ selected: mood === 'mood-good' }"
+                  @click="mood = 'mood-good'"
+                >
+                  <img src="/assets/emotions/good.png" alt="Good" />
+                  <span>Good</span>
+                </div>
+                <div
+                  class="mood-option"
+                  :class="{ selected: mood === 'mood-neutral' }"
+                  @click="mood = 'mood-neutral'"
+                >
+                  <img src="/assets/emotions/neutral.png" alt="Neutral" />
+                  <span>Neutral</span>
+                </div>
+                <div
+                  class="mood-option"
+                  :class="{ selected: mood === 'mood-bad' }"
+                  @click="mood = 'mood-bad'"
+                >
+                  <img src="/assets/emotions/bad.png" alt="Bad" />
+                  <span>Bad</span>
+                </div>
+                <div
+                  class="mood-option"
+                  :class="{ selected: mood === 'mood-terrible' }"
+                  @click="mood = 'mood-terrible'"
+                >
+                  <img src="/assets/emotions/terrible.png" alt="Terrible" />
+                  <span>Terrible</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <button type="submit" class="btn btn-primary">Save Entry</button>
-          <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
-          <button
-            type="button"
-            class="btn btn-danger"
-            @click="deleteJournalEntry"
-            v-if="moodTracker[selectedDay]"
-          >
-            Delete Entry
-          </button>
-        </form>
+            <button type="submit" class="btn btn-primary">Save Entry</button>
+            <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              @click="deleteJournalEntry"
+              v-if="moodTracker[selectedDay]"
+            >
+              Delete Entry
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -321,6 +323,12 @@ h1 {
   font-family: 'Jersey 25', sans-serif;
 }
 
+.header {
+  background-image: url('https://i.pinimg.com/originals/86/80/5a/86805ab550586369a6d2e9c6a8823c97.gif');
+  background-size: cover;
+  padding: 40px;
+}
+
 button {
   margin: 10px;
   border: none;
@@ -332,6 +340,10 @@ button:hover {
 }
 
 .journal-container {
+  background-color: #fff3e7;
+}
+
+.calendar-container {
   width: 100%;
   margin: 0 auto;
   padding-left: 50px;
@@ -467,7 +479,7 @@ button:hover {
 }
 
 @media (max-width: 768px) {
-  .journal-container {
+  .calendar-container {
     margin: 0 auto;
     padding: 10px;
   }
@@ -507,7 +519,7 @@ button:hover {
 }
 
 @media (max-width: 480px) {
-  .journal-container {
+  .calendar-container {
     margin: 0 auto;
     padding: 10px;
   }
