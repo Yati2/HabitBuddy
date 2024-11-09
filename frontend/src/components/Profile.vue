@@ -136,7 +136,12 @@
             <div class="row">
               <div class="col-lg-3 col-md-6 col-xs-12" v-for="item in items" :key="item._id">
                 <div class="inventory-item text-center">
+                  <div  v-if="item.itemname.toLowerCase().includes('fish')">
+                  <img :src="item.imgpath" alt="Item Image" class="item-image" :style="{ width: '100px' }" />
+                  </div>
+                  <div v-else>
                   <img :src="item.imgpath" alt="Item Image" class="item-image" />
+                  </div>
                   <p>{{ item.itemname }}</p>
                   <span class="item-count" v-if="item.itemname.toLowerCase().includes('fish')"> Qty: {{ item.itemqty }}</span>
                 </div>
