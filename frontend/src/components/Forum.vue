@@ -485,7 +485,7 @@ textarea {
 /* Like and Comment Buttons Specific Styling */
 .like-btn,
 .comment-btn {
-  background-color: #fff3e7;
+  background-color: rgba(238, 192, 194, 0.7);
   border-radius: 10px;
   padding: 5px;
   color: #333;
@@ -494,7 +494,7 @@ textarea {
 
 .like-btn:hover,
 .comment-btn:hover {
-  background-color: #f5d8bb; /* Slightly darker on hover */
+  background-color: rgba(242, 174, 177, 0.7); /* Slightly darker on hover */
 }
 
 .navbar {

@@ -532,7 +532,7 @@ export default {
         .then((response) => {
           console.log('habit saved to database:', response.data)
           console.log(this.habits)
-          window.location.reload()
+          // window.location.reload()
           this.cancelHabitForm()
         })
         .catch((error) => {
@@ -609,7 +609,7 @@ export default {
         .then((response) => {
           console.log('Long Term saved to database:', response.data)
           console.log(this.longTermTasks)
-          window.location.reload()
+          // window.location.reload()
           this.cancelLTForm()
         })
         .catch((error) => {
@@ -712,7 +712,7 @@ export default {
         .then((response) => {
           console.log('To-Do saved to database:', response.data)
           console.log(this.todos)
-          window.location.reload()
+          // window.location.reload()
           this.cancelForm()
         })
         .catch((error) => {
