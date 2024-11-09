@@ -9,7 +9,8 @@
       rel="stylesheet"
       type="text/css"
     />
-    <div class="tasks-container">
+    <LoadingOverlay :isLoading="isLoading" />
+    <div v-if="!isLoading" class="tasks-container">
       <div class="container-fluid">
         <div class="row header">
           <div class="col-2">
@@ -76,8 +77,8 @@
                 <div>&nbsp;</div>
 
                 <div class="form-buttons d-flex justify-content-between">
-                  <button type="submit" class="btn btn-custom ">Confirm</button>
-                  <button type="button" class="btn btn-custom " @click="cancelHabitForm">
+                  <button type="submit" class="btn btn-custom">Confirm</button>
+                  <button type="button" class="btn btn-custom" @click="cancelHabitForm">
                     Cancel
                   </button>
                 </div>
@@ -122,7 +123,7 @@
                 </div>
 
                 <!-- Delete Habit Button -->
-                <button class="btn btn-custom  btn-sm mt-3 w-100" @click="markAsDoneh(h)">
+                <button class="btn btn-custom btn-sm mt-3 w-100" @click="markAsDoneh(h)">
                   Delete Habit
                 </button>
               </div>
@@ -177,8 +178,8 @@
                 <div>&nbsp;</div>
 
                 <div class="form-buttons">
-                  <button type="submit" class="btn btn-custom ">Confirm</button>
-                  <button type="button" class="btn btn-custom " @click="cancelLTForm">Cancel</button>
+                  <button type="submit" class="btn btn-custom">Confirm</button>
+                  <button type="button" class="btn btn-custom" @click="cancelLTForm">Cancel</button>
                 </div>
               </form>
             </div>
@@ -195,7 +196,7 @@
                   </small>
                 </div>
                 <div>
-                  <button class="btn btn-custom  btn-sm" @click="markAsDonelt(lt)">
+                  <button class="btn btn-custom btn-sm" @click="markAsDonelt(lt)">
                     Mark as Done
                   </button>
                 </div>
@@ -248,7 +249,7 @@
                 </div>
 
                 <div class="form-buttons">
-                  <button type="submit" class="btn btn-custom ">Confirm</button>
+                  <button type="submit" class="btn btn-custom">Confirm</button>
                   <button type="button" class="btn btn-custom" @click="cancelForm">Cancel</button>
                 </div>
               </form>
@@ -283,18 +284,19 @@ import { isAuthenticated } from '../auth'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { toast } from 'vue3-toastify'
-// Import one of the available themes
-//import 'vue-toast-notification/dist/theme-default.css';
+import LoadingOverlay from './LoadingOverlay.vue'
 import 'vue3-toastify/dist/index.css'
 import Shop from './Shop.vue'
 
 export default {
   name: 'Tasks',
   components: {
-    Shop
+    Shop,
+    LoadingOverlay
   },
   data() {
     return {
+      isLoading: true,
       selectedCat: 'assets/pet_related/orange/orange.gif',
       userPoints: 0,
       habits: [],
@@ -485,21 +487,26 @@ export default {
     //methods for habits
 
     fetchHabits() {
-      const username = localStorage.getItem('username') || 'anonymous'
+      this.isLoading = true
+      try {
+        const username = localStorage.getItem('username') || 'anonymous'
 
-      // Axios request to fetch todos for the current user
-      axios
-        .get(`https://habit-buddy-server.vercel.app/api/user_habits`, {
-          params: {
-            username: username
-          }
-        })
-        .then((response) => {
-          this.habits = response.data
-        })
-        .catch((error) => {
-          console.error('Error fetching habits:', error)
-        })
+        // Axios request to fetch todos for the current user
+        axios
+          .get(`https://habit-buddy-server.vercel.app/api/user_habits`, {
+            params: {
+              username: username
+            }
+          })
+          .then((response) => {
+            this.habits = response.data
+          })
+          .catch((error) => {
+            console.error('Error fetching habits:', error)
+          })
+      } catch (error) {
+        console.error('Error fetching habits:', error)
+      }
     },
     cancelHabitForm() {
       this.showHabitForm = false
@@ -558,21 +565,25 @@ export default {
     //methods for longterm tasks
 
     fetchLTs() {
-      const username = localStorage.getItem('username') || 'anonymous'
+      this.isLoading = true
+      try {
+        const username = localStorage.getItem('username') || 'anonymous'
 
-      // Axios request to fetch todos for the current user
-      axios
-        .get(`https://habit-buddy-server.vercel.app/api/user_lts`, {
-          params: {
-            username: username
-          }
-        })
-        .then((response) => {
-          this.longTermTasks = response.data
-        })
-        .catch((error) => {
-          console.error('Error fetching long terms:', error)
-        })
+        axios
+          .get(`https://habit-buddy-server.vercel.app/api/user_lts`, {
+            params: {
+              username: username
+            }
+          })
+          .then((response) => {
+            this.longTermTasks = response.data
+          })
+          .catch((error) => {
+            console.error('Error fetching long terms:', error)
+          })
+      } catch (error) {
+        console.log('Error fetching long terms:', error)
+      }
     },
     cancelLTForm() {
       this.showLTForm = false
@@ -660,6 +671,7 @@ export default {
     //todos methods
 
     fetchTodos() {
+      this.isLoading = true
       const username = localStorage.getItem('username') || 'anonymous'
 
       // Axios request to fetch todos for the current user
@@ -758,20 +770,27 @@ export default {
     }
   },
   mounted() {
-    const username = localStorage.getItem('username') || 'anonymous'
+    this.isLoading = true
+    try {
+      const username = localStorage.getItem('username') || 'anonymous'
 
-    axios
-      .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}/selected-cat`)
-      .then((response) => {
-        this.selectedCat = response.data.imgpath || 'assets/pet_related/orange/orange.gif'
-      })
-      .catch((error) => {
-        console.error('Error fetching selected cat image:', error)
-      })
-    this.fetchTodos() // Fetch todos when the component is mounted
-    this.fetchLTs()
-    this.fetchHabits()
-    this.fetchUserPoints()
+      axios
+        .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}/selected-cat`)
+        .then((response) => {
+          this.selectedCat = response.data.imgpath || 'assets/pet_related/orange/orange.gif'
+        })
+        .catch((error) => {
+          console.error('Error fetching selected cat image:', error)
+        })
+      this.fetchTodos() // Fetch todos when the component is mounted
+      this.fetchLTs()
+      this.fetchHabits()
+      this.fetchUserPoints()
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      this.isLoading = false
+    }
   },
   setup() {
     const router = useRouter()
@@ -888,7 +907,7 @@ export default {
 }
 
 .btn-custom {
-  background-color: #EEC0C2; /* Initial button color */
+  background-color: #eec0c2; /* Initial button color */
 }
 
 .btn-custom:hover {
