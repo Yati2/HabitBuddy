@@ -290,7 +290,7 @@ export default {
     try {
       this.getCurrentUsername()
       await this.fetchPet()
-      this.setTooltipWidth()
+      setTimeout(() => this.setTooltipWidth(), 150)
       this.fetchUserInventory()
 
       if (this.petHappiness < 20) {
@@ -368,9 +368,15 @@ export default {
       console.log(this.username)
     },
     setTooltipWidth() {
+      console.log('setting tooltip width')
       const gameContainer = this.$refs.gameContainer
+
       if (gameContainer) {
-        this.tooltipWidth = `${gameContainer.clientWidth}px`
+        this.tooltipWidth = `${gameContainer.clientWidth + 10}px`
+        console.log('container width' + this.$refs.gameContainer)
+        console.log('tooltip width' + this.tooltipWidth)
+      } else {
+        console.log('Container width is not defined' + this.$refs.gameContainer)
       }
     },
 
@@ -1232,8 +1238,7 @@ canvas {
 }
 .custom-tooltip {
   position: absolute;
-  top: 50%;
-  left: 0;
+  top: 30%;
   transform: translateY(-50%);
   background-color: #fecfa5;
   border: 2px solid #fef7f6;
