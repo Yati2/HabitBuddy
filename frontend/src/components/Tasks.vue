@@ -27,7 +27,7 @@
           <div class="col-3 ms-auto d-flex justify-content-end">
             <div class="d-flex align-items-center">
               <h4 class="m-0 text-white">{{ userPoints }} &nbsp;</h4>
-              <img width="18px" src="/assets/shop/coin.gif" alt="coins icon" />
+              <img width="18px" class="coin" src="/assets/shop/coin.gif" alt="coins icon" />
             </div>
           </div>
         </div>
@@ -822,6 +822,20 @@ export default {
   align-items: center;
   overflow: hidden;
 }
+.header .d-flex {
+  display: flex;
+  align-items: center;
+}
+
+.header h4 {
+  margin: 0;
+}
+
+.header img[alt='coins icon'] {
+  margin-left: 5px;
+  display: inline-block;
+  vertical-align: middle;
+}
 .cat-img {
   width: 100px;
   height: auto;
@@ -983,6 +997,11 @@ input[type='number'] {
 @media (max-width: 576px) {
   .main-content {
     flex-direction: column;
+  }
+}
+@media (max-width: 586px) {
+  .coin {
+    padding-bottom: 25px;
   }
 }
 </style>
