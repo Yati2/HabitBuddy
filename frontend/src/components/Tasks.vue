@@ -936,16 +936,16 @@ body {
 
 .d-flex.align-items-center {
   display: flex;
-  align-items: center; /* Ensures vertical alignment */
-  justify-content: flex-end; /* Keeps content aligned to the right */
-  gap: 5px; /* Adds spacing between points and the coin icon */
+  align-items: center; 
+  justify-content: flex-end; 
+  gap: 5px; 
 }
 
 .coin {
-  width: 18px; /* Ensure consistent size for the icon */
+  width: 18px; 
   height: auto;
   display: inline-block;
-  vertical-align: middle; /* Aligns the image vertically with the text */
+  vertical-align: middle;
 }
 
 .btn-custom {
