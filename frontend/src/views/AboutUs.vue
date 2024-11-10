@@ -11,8 +11,8 @@
       </p>
       <p>
         With his idea as our compass, we set out on an adventure to bring it to life. Through
-        late-night coding, countless cups of coffee, and a lot of ChatGPTings, we shaped this web app
-        into something we’re truly proud of🙏🏻.
+        late-night coding, countless cups of coffee, and a lot of ChatGPTings, we shaped this web
+        app into something we’re truly proud of🙏🏻.
       </p>
       <p>
         And here we are, 7 weeks later! Our journey doesn’t end here; we’re committed to making this
@@ -67,9 +67,9 @@ export default {
           description: 'I enjoy painting and making art for others!',
 
           stats: [
-            { name: 'Hardworking', value: 90 },
-            { name: 'Creative', value: 85 },
-            { name: 'Team Spirit', value: 95 }
+            { name: 'Fitness Level', value: 90 },
+            { name: 'Artistic Ability', value: 99 },
+            { name: 'Swag', value: 70 }
           ]
         },
         {
@@ -105,7 +105,7 @@ export default {
           stats: [
             { name: 'Fitness Level', value: 20 },
             { name: 'Coffee Consumption', value: 95 },
-            { name: 'Moring Energy', value: 30 }
+            { name: 'Tired Energy', value: 90 }
           ]
         }
       ]
