@@ -166,7 +166,7 @@
       <div class="modal-content">
         <h2 class="modal-title">Attention!</h2>
         <p class="modal-message">
-          Your cat is not happy and walking lazily. Feed it now to improve its mood!
+          Your cat is unhappy and tired! Feed it now to improve its mood!
         </p>
         <button class="modal-button" @click="closeModal">Okay</button>
       </div>
