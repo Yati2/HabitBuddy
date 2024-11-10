@@ -3,7 +3,7 @@
     <LoadingOverlay v-if="isLoading" />
     <NavBar v-if="!isLoginPage && !isLoading" :avatar="avatar" />
 
-    <div v-if="!isLoading" class="content">
+    <div v-if="!isLoading" :class="['content', { 'no-padding-top': isLoginPage }]">
       <router-view @update-avatar="updateAvatar" />
     </div>
   </div>
@@ -98,9 +98,15 @@ body {
   padding-top: 80px;
   min-height: 0;
 }
+.content.no-padding-top {
+  padding-top: 0;
+}
 @media (max-width: 991px) {
   .content {
     padding-top: 60px;
+  }
+  .content.no-padding-top {
+    padding-top: 0;
   }
 }
 </style>
