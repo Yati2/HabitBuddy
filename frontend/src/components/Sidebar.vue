@@ -14,7 +14,6 @@
           </a>
           <button class="close-btn" @click="toggleSidebar">&times;</button>
         </div>
-
         <div class="border-bottom-custom"></div>
 
         <div class="sidebar-content">
