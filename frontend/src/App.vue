@@ -95,6 +95,7 @@ body {
   display: flex;
   flex-direction: column;
   background-color: white;
+  padding-top: 80px;
   min-height: 0;
 }
 </style>
