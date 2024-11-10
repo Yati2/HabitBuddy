@@ -9,6 +9,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import LandingPage from '../views/LandingPage.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import HelpPage from '../views/HelpPage.vue'
+import AboutUs from '../views/AboutUs.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,6 +65,12 @@ const router = createRouter({
       path: '/help',
       name: 'HelpPage',
       component: HelpPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/team',
+      name: 'AboutUs',
+      component: AboutUs,
       meta: { requiresAuth: true }
     },
     {

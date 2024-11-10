@@ -24,8 +24,12 @@
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="/forum">Forum</a>
             </li>
+
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="/help">Help</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/team">About Us</a>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -151,14 +155,20 @@ export default {
 body {
   font-family: 'Roboto', sans-serif;
 }
-
 .navbar-custom {
   background-color: #eec0c2;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.cat-icon {
-  height: 60px;
+.cat-icon,
+.logo {
+  height: 50px;
   width: auto;
+  transition: transform 0.3s ease;
+}
+.cat-icon:hover,
+.logo:hover {
+  transform: scale(1.1);
 }
 
 .profile-icon {
@@ -166,13 +176,19 @@ body {
   height: 40px;
   border-radius: 50%;
   background-color: black;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.profile-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .navbar {
   background-image: url('https://i.pinimg.com/564x/a7/df/70/a7df70069a27956088556ad4833f8e03.jpg');
   background-size: cover;
   z-index: 1000;
-  position: relative;
   font-size: 1.5rem;
   font-family: 'Jersey 25', sans-serif;
   display: flex;
@@ -180,13 +196,11 @@ body {
   padding: 10px 20px;
   height: 80px;
   width: 100%;
+  transition: background-color 0.3s ease;
 }
-.btn-sidebar-toggle {
-  font-size: 1.5rem;
-  border: none;
-  background: transparent;
-  color: #333;
-  margin-right: 10px;
+.navbar li {
+  color: #eec0c2;
+  transform: translateX(5px);
 }
 
 .nav-item {
@@ -196,18 +210,42 @@ body {
 .nav-link {
   font-size: 1.2rem;
   font-weight: normal;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
   text-align: center;
+
+  text-decoration: none;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
+}
+.nav-link:hover {
+  color: #eec0c2;
+
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.btn-sidebar-toggle {
+  font-size: 1.5rem;
+  border: none;
+  background: transparent;
+  color: #333;
+  margin-right: 10px;
+  transition: color 0.3s ease;
 }
 
 .btn {
   font-size: 1rem;
   margin-top: 9px;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+.btn:hover {
+  background-color: #eec0c2;
+  color: black;
+  border-color: transparent;
 }
 
-/* Responsive adjustments */
 @media (max-width: 991px) {
   .navbar {
     padding: 5px;

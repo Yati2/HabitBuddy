@@ -24,6 +24,7 @@
             <li @click="navigate('/forum')">Forum</li>
             <li @click="navigate('/help')">Help</li>
             <li @click="navigate('/profile')">Profile</li>
+            <li @click="navigate('/team')">Meet Our Team</li>
           </ul>
         </div>
         <div class="border-bottom-custom"></div>
