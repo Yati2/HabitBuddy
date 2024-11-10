@@ -73,7 +73,7 @@ const router = createRouter({
   ]
 })
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('isLoggedIn') === 'true'
+  const isAuthenticated = sessionStorage.getItem('isLoggedIn') === 'true'
 
   if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
     next({ name: 'login' })

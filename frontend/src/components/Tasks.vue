@@ -817,9 +817,9 @@ body {
 .tasks-container {
   font-family: 'Jersey 25', sans-serif;
   background-color: #fff3e7;
-  min-height: 100vh; 
+  min-height: 100vh;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
 }
 .header {
   background-image: url('https://i.pinimg.com/originals/80/ec/77/80ec77932091113c4970a88f69b9bb4f.gif');
@@ -856,7 +856,6 @@ body {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
-  
 }
 
 .card {
@@ -940,7 +939,7 @@ body {
 }
 
 .btn-custom:hover {
-  background-color: #e07e83; 
+  background-color: #e07e83;
 }
 
 .habit-content {
@@ -1010,5 +1009,4 @@ input[type='number'] {
     flex-direction: column;
   }
 }
-
 </style>
