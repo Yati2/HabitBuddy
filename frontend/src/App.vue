@@ -98,4 +98,9 @@ body {
   padding-top: 80px;
   min-height: 0;
 }
+@media (max-width: 991px) {
+  .content {
+    padding-top: 60px;
+  }
+}
 </style>
