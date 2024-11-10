@@ -73,46 +73,39 @@ export default {
   },
   methods: {
     async registerUser() {
-      // Reset errors and message
       this.usernameError = ''
       this.emailError = ''
       this.passwordError = ''
       this.message = ''
 
-      // Validate username
       if (!this.validateUsername(this.username)) {
         this.usernameError =
           'Username must be between 6-10 characters and can only contain letters, numbers, and underscores.'
         return
       }
 
-      // Validate email
       if (!this.validateEmail(this.email)) {
         this.emailError = 'Please enter a valid email address.'
         return
       }
 
-      // Validate password
       if (!this.validatePassword(this.password)) {
         this.passwordError =
           'Password must contain at least 8 characters, including letters and numbers.'
         return
       }
 
-      // Check if passwords match
       if (this.password !== this.confirmPassword) {
         this.passwordError = 'Passwords do not match.'
         return
       }
 
-      // Check if username already exists
       const existingUser = await this.checkUsernameExists(this.username)
       if (existingUser) {
         this.usernameError = 'Username already exists.'
         return
       }
 
-      // Try to register the user
       try {
         const response = await axios.post('https://habit-buddy-server.vercel.app/api/register', {
           username: this.username,
@@ -124,10 +117,10 @@ export default {
           todocompleted: 0
         })
 
-        // Show success message and redirect to tasks page
         alert('Registration successful! Redirecting to tasks page...')
-        this.$router.push('/tasks') // Redirect to the tasks page
-        this.resetForm() // Reset the form fields
+
+        this.$router.push('/tasks')
+        this.resetForm()
       } catch (error) {
         console.error('Error registering user:', error)
         this.message = 'Error registering user.'

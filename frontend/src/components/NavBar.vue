@@ -10,14 +10,6 @@
             class="cat-icon d-inline-block align-text-top"
           />
         </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          @click="toggleSidebar"
-          aria-label="Toggle sidebar"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">

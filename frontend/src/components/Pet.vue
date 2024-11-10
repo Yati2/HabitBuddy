@@ -165,9 +165,7 @@
     <div v-if="!isLoading && showHappinessModal" class="alert-box">
       <div class="modal-content">
         <h2 class="modal-title">Attention!</h2>
-        <p class="modal-message">
-          Your cat is unhappy and tired! Feed it now to improve its mood!
-        </p>
+        <p class="modal-message">Your cat is unhappy and tired! Feed it now to improve its mood!</p>
         <button class="modal-button" @click="closeModal">Okay</button>
       </div>
     </div>
@@ -521,21 +519,24 @@ export default {
         )
 
         let appliedPet = inventory.find((item) => item.itemtype === 'Cat' && item.applied)
-        this.petName = appliedPet.itemname
 
         if (appliedBackground) {
           this.applyCustomization(appliedBackground)
         } else {
           const defaultBackground = this.allCustomItems.find((item) => item.itemname === 'Cozyroom')
           this.applyCustomization(defaultBackground)
+          console.log('applying default background:', defaultBackground)
         }
 
         if (appliedPet) {
           console.log('applying pet:', appliedPet)
+          this.petName = appliedPet.itemname
           this.updateGameWithNewPet(appliedPet.itemname)
           localStorage.setItem('selectedPet', appliedPet.itemname)
         } else {
           this.updateGameWithNewPet('Orange')
+          this.petName = 'Orange'
+          console.log('applying default pet:', 'Orange')
           localStorage.setItem('selectedPet', 'Orange')
         }
 
