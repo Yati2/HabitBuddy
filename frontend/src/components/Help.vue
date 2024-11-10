@@ -148,6 +148,7 @@ h2.help-intro {
 
 .help-content-box {
   background-color: #fffffff7;
+  animation: fadeIn 0.8s ease-in-out;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
@@ -203,13 +204,15 @@ p {
   border-radius: 5px;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @media (max-width: 991px) {
   .help-section {
