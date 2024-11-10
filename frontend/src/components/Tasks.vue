@@ -25,11 +25,11 @@
             </div>
           </div>
           <div class="col-3 ms-auto d-flex justify-content-end">
-            <div class="d-flex align-items-center">
-              <h4 class="m-0 text-white">{{ userPoints }} &nbsp;</h4>
-              <img width="18px" class="coin" src="/assets/shop/coin.gif" alt="coins icon" />
-            </div>
-          </div>
+  <div class="d-flex align-items-center gap-2">
+    <h4 class="m-0 text-white">{{ userPoints }}</h4>
+    <img width="18px" class="coin" src="/assets/shop/coin.gif" alt="coins icon" />
+  </div>
+</div>
         </div>
 
         <div class="row main-content">
@@ -932,6 +932,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.d-flex.align-items-center {
+  display: flex;
+  align-items: center; /* Ensures vertical alignment */
+  justify-content: flex-end; /* Keeps content aligned to the right */
+  gap: 5px; /* Adds spacing between points and the coin icon */
+}
+
+.coin {
+  width: 18px; /* Ensure consistent size for the icon */
+  height: auto;
+  display: inline-block;
+  vertical-align: middle; /* Aligns the image vertically with the text */
 }
 
 .btn-custom {
