@@ -107,7 +107,8 @@ export default {
   background-image: url('https://i.pinimg.com/564x/c3/3c/28/c33c28c2fce3069931d041c0c9137ef6.jpg');
   background-size: cover;
   padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0 5px 5px 0;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
   z-index: 3000;
   display: flex;
   flex-direction: column;
@@ -136,6 +137,7 @@ export default {
   width: 60px;
   height: 60px;
   border-radius: 50%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   margin-top: 10px;
 }
 
@@ -145,7 +147,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.3);
   z-index: 2000;
 }
 .border-bottom-custom {
@@ -194,5 +196,16 @@ export default {
   text-align: center;
   margin-top: 10px;
   margin-left: 2px;
+}
+.slide-enter-active,
+.slide-leave-active {
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+.slide-enter,
+.slide-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
 }
 </style>
