@@ -159,7 +159,7 @@
         @click="showHappinessHelpMsg = false"
       >
         Feed your cat to increase the happiness level! Your cat will refuse to eat more when it's
-        full!
+        full! Happiness level reduces by 10% every hour.
       </div>
     </div>
     <div v-if="!isLoading && showHappinessModal" class="alert-box">
