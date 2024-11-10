@@ -440,6 +440,7 @@ export default {
             console.log('petType:', this.petType)
             localStorage.setItem('selectedPet', selectedItem.itemname)
             this.updateGameWithNewPet(selectedItem.itemname)
+            this.petName = selectedItem.itemname
 
             this.applyItemOnServer(selectedItem, 'Cat')
             console.log('Applied Cat:', selectedItem)
@@ -487,7 +488,6 @@ export default {
         const response = await axios.get(
           `https://habit-buddy-server.vercel.app/api/pet/${this.username}`
         )
-        this.petName = response.data.petName
 
         this.petHappiness = response.data.happinessLevel
 
@@ -521,6 +521,7 @@ export default {
         )
 
         let appliedPet = inventory.find((item) => item.itemtype === 'Cat' && item.applied)
+        this.petName = appliedPet.itemname
 
         if (appliedBackground) {
           this.applyCustomization(appliedBackground)
