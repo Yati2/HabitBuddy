@@ -11,8 +11,8 @@
       </p>
       <p>
         With his idea as our compass, we set out on an adventure to bring it to life. Through
-        late-night coding, countless cups of coffee, and a lot of ChatGPTings, we shaped this web
-        app into something we’re truly proud of🙏🏻.
+        late-night coding, countless cups of coffee, and a lot of project meetings, we shaped this
+        web app into something we’re truly proud of🙏🏻.
       </p>
       <p>
         And here we are, 7 weeks later! Our journey doesn’t end here; we’re committed to making this
