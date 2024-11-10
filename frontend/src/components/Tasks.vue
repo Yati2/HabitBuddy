@@ -805,11 +805,17 @@ export default {
 
 <style scoped>
 /* Add your scoped styles here */
+html,
+body {
+  background-color: #fff3e7;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
 
 .tasks-container {
   font-family: 'Jersey 25', sans-serif;
   background-color: #fff3e7;
-  height: 100vh;
 }
 .header {
   background-image: url('https://i.pinimg.com/originals/80/ec/77/80ec77932091113c4970a88f69b9bb4f.gif');
