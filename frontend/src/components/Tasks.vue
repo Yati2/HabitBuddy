@@ -808,14 +808,18 @@ export default {
 html,
 body {
   background-color: #fff3e7;
+  margin: 0;
+  padding: 0;
   height: 100%;
   width: 100%;
-  margin: 0;
 }
 
 .tasks-container {
   font-family: 'Jersey 25', sans-serif;
   background-color: #fff3e7;
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column; 
 }
 .header {
   background-image: url('https://i.pinimg.com/originals/80/ec/77/80ec77932091113c4970a88f69b9bb4f.gif');
@@ -852,6 +856,7 @@ body {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+  
 }
 
 .card {
@@ -931,11 +936,11 @@ body {
 }
 
 .btn-custom {
-  background-color: #eec0c2; /* Initial button color */
+  background-color: #eec0c2;
 }
 
 .btn-custom:hover {
-  background-color: #e07e83; /* Hover button color */
+  background-color: #e07e83; 
 }
 
 .habit-content {
@@ -1005,9 +1010,5 @@ input[type='number'] {
     flex-direction: column;
   }
 }
-@media (max-width: 586px) {
-  .coin {
-    padding-bottom: 25px;
-  }
-}
+
 </style>
