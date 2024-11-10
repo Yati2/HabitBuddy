@@ -3,5 +3,5 @@ export function isAuthenticated() {
 }
 
 export function logout() {
-  localStorage.removeItem('isLoggedIn')
+  sessionStorage.removeItem('isLoggedIn')
 }
