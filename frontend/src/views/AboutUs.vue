@@ -105,7 +105,7 @@ export default {
           stats: [
             { name: 'Fitness Level', value: 20 },
             { name: 'Coffee Consumption', value: 95 },
-            { name: 'Tired Energy', value: 90 }
+            { name: 'ScreenTime', value: 100 }
           ]
         }
       ]
