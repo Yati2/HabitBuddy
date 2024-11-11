@@ -401,7 +401,11 @@ body {
   height: 100%;
   width: 100%;
   margin: 0;
+  padding: 0;
+  overflow-x: hidden; 
+  box-sizing: border-box;
 }
+
 .profile-container {
   background-color: #fff3e7;
   margin: 0px;
@@ -414,8 +418,7 @@ body {
 .col-12 {
   padding: 0;
   margin: 0;
-  width: 100vw;
-}
+  width: 100%;}
 
 .profile h1 {
   margin: 0;
@@ -431,7 +434,7 @@ body {
 }
 
 .bg-img {
-  width: 100vw;
+  width: 100%;
 }
 
 .avatar {
