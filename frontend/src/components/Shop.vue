@@ -50,7 +50,7 @@
         <p><strong>Cost:</strong> {{ totalCost }} coins</p>
 
         <!-- Purchase Button or Ownership Message -->
-        <div v-if="backgroundOwned || catOwned">
+        <div v-if="(backgroundOwned || catOwned) && !selectedItem.itemname?.includes('Fish')">
           <button type="button" class="btn btn-secondary" disabled>
             You already own this {{ selectedItem.itemtype.toLowerCase() }}!
           </button>
@@ -62,8 +62,9 @@
             class="btn btn-primary w-100"
             style="background-color: #d2691e"
             @click="buyItem"
+            :disabled="purchasing"
           >
-            Purchase
+            {{ purchasing ? 'Purchasing...' : 'Purchase' }}
           </button>
           <button v-else type="button" class="btn btn-danger" disabled>Not enough coins!</button>
         </div>
@@ -93,6 +94,10 @@ export default {
       ultraFishQty: 0,
       catOwned: false,
       backgroundOwned: false,
+      catOwnedItems: new Set(),
+      purchasing: false,
+      backgroundOwnedItems: new Set(),
+
       shopitems: [
         {
           itemname: 'Regular Fish',
@@ -175,58 +180,76 @@ export default {
     }
   },
   methods: {
-    fetchUserInventory() {
-      const username = localStorage.getItem('username')
+    async fetchUserInventory() {
+      const username = localStorage.getItem('username') || 'anonymous'
 
-      axios
-        .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
-        .then((response) => {
-          const inventory = response.data
-          console.log(inventory)
+      try {
+        const response = await axios.get(
+          `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
+        )
+        const inventory = response.data
+        this.catOwnedItems = new Set()
+        this.backgroundOwnedItems = new Set()
+        this.catOwned = false
+        this.backgroundOwned = false
+        console.log('User inventory:', inventory)
+        console.log(this.catOwnedItems, this.backgroundOwnedItems)
 
-          inventory.forEach((item) => {
-            if (item.itemname === 'Regular Fish') {
-              this.regularFishQty = item.itemqty
-            } else if (item.itemname === 'Rare Fish') {
-              this.rareFishQty = item.itemqty
-            } else if (item.itemname === 'Ultra Fish') {
-              this.ultraFishQty = item.itemqty
-            }
-          })
+        inventory.forEach((item) => {
+          if (item.itemname === 'Regular Fish') {
+            this.regularFishQty = item.itemqty
+          } else if (item.itemname === 'Rare Fish') {
+            this.rareFishQty = item.itemqty
+          } else if (item.itemname === 'Ultra Fish') {
+            this.ultraFishQty = item.itemqty
+          } else if (item.itemtype === 'Background') {
+            this.backgroundOwnedItems.add(item.imgpath)
+          } else if (item.itemtype === 'Cat') {
+            this.catOwnedItems.add(item.itemname)
+          }
         })
-        .catch((error) => {
-          console.error('Error fetching user inventory:', error)
-        })
+        console.log('Cat owned items:', this.catOwnedItems)
+        console.log('Background owned items:', this.backgroundOwnedItems)
+      } catch (error) {
+        console.error('Error fetching user inventory:', error)
+      }
     },
-    buyItem() {
+
+    async buyItem() {
+      this.purchasing = true
       const username = localStorage.getItem('username') || 'anonymous'
       const totalCost = this.selectedItem.itemcost * this.itemqty
 
-      axios
-        .put(`https://habit-buddy-server.vercel.app/api/users/${username}/deduct-points`, {
-          pointsToDeduct: totalCost
-        })
-        .then((response) => {
-          console.log('Points deducted successfully')
-          this.$emit('points-updated', -totalCost)
-          this.updateInventory(username)
-
-          // Set ownership flags instead of removing item from shop
-          if (this.selectedItem.itemtype === 'Background') {
-            this.backgroundOwned = true
-          } else if (this.selectedItem.itemtype === 'Cat') {
-            this.catOwned = true
+      try {
+        await axios.put(
+          `https://habit-buddy-server.vercel.app/api/users/${username}/deduct-points`,
+          {
+            pointsToDeduct: totalCost
           }
+        )
+        console.log('Points deducted successfully')
+        this.$emit('points-updated', -totalCost)
 
-          this.closeModal()
-          toast(`${this.itemqty} x ${this.selectedItem.itemname} was added to your Inventory!`, {
-            icon: '💸',
-            autoClose: 1000
-          })
+        await this.updateInventory(username)
+        await this.fetchUserInventory()
+        if (this.selectedItem.itemtype === 'Background') {
+          this.backgroundOwnedItems.add(this.selectedItem.imgpath)
+          this.backgroundOwned = true
+        } else if (this.selectedItem.itemtype === 'Cat') {
+          this.catOwnedItems.add(this.selectedItem.itemname)
+          this.catOwned = true
+        }
+
+        toast(`${this.itemqty} x ${this.selectedItem.itemname} was added to your Inventory!`, {
+          icon: '💸',
+          autoClose: 1000
         })
-        .catch((error) => {
-          console.error('Error deducting points:', error)
-        })
+      } catch (error) {
+        console.error('Error during purchase:', error)
+      } finally {
+        this.purchasing = false
+        this.closeModal()
+      }
     },
 
     async updateInventory(username) {
@@ -273,41 +296,15 @@ export default {
       this.selectedItem = item
       this.isModalOpen = true
       this.itemqty = 1
-      this.backgroundOwned = false
-      this.catOwned = false
 
-      const username = localStorage.getItem('username')
+      this.backgroundOwned =
+        this.selectedItem.itemtype === 'Background' &&
+        this.backgroundOwnedItems.has(this.selectedItem.imgpath)
+      console.log(item.itemname, this.backgroundOwned)
 
-      // Fetch user inventory and check if they already own the selected background or cat
-      axios
-        .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
-        .then((response) => {
-          const inventory = response.data
-
-          if (this.selectedItem.itemtype === 'Background') {
-            this.backgroundOwned = inventory.some(
-              (inventoryItem) => inventoryItem.imgpath === this.selectedItem.imgpath
-            )
-          } else if (this.selectedItem.itemtype === 'Cat') {
-            this.catOwned = inventory.some(
-              (inventoryItem) => inventoryItem.itemname === this.selectedItem.itemname
-            )
-          }
-
-          // Update inventory counts if the selected item is a type of fish
-          inventory.forEach((item) => {
-            if (item.itemname === 'Regular Fish') {
-              this.regularFishQty = item.itemqty
-            } else if (item.itemname === 'Rare Fish') {
-              this.rareFishQty = item.itemqty
-            } else if (item.itemname === 'Ultra Fish') {
-              this.ultraFishQty = item.itemqty
-            }
-          })
-        })
-        .catch((error) => {
-          console.error('Error fetching user inventory:', error)
-        })
+      this.catOwned =
+        this.selectedItem.itemtype === 'Cat' && this.catOwnedItems.has(this.selectedItem.itemname)
+      console.log(item.itemname, this.catOwned)
     },
 
     closeModal() {
@@ -315,27 +312,7 @@ export default {
     }
   },
   mounted() {
-    const username = localStorage.getItem('username') || 'anonymous'
-
-    axios
-      .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
-      .then((response) => {
-        const inventory = response.data
-
-        // Keeping all items in the shop
-        inventory.forEach((item) => {
-          if (item.itemname === 'Regular Fish') {
-            this.regularFishQty = item.itemqty
-          } else if (item.itemname === 'Rare Fish') {
-            this.rareFishQty = item.itemqty
-          } else if (item.itemname === 'Ultra Fish') {
-            this.ultraFishQty = item.itemqty
-          }
-        })
-      })
-      .catch((error) => {
-        console.error('Error fetching user inventory:', error)
-      })
+    this.fetchUserInventory()
   }
 }
 </script>
