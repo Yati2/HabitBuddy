@@ -481,7 +481,7 @@ h3,
   flex-direction: row;
   justify-content: flex-start;
   margin-top: 10px;
-  overflow-x: auto;
+  overflow-x: auto; /* enable horizontal scolling */
   max-width: 600px;
 }
 
