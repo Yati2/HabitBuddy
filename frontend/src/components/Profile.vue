@@ -119,7 +119,7 @@
                 <p>Habits</p>
               </h5>
               <div class="count-container">
-                <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
+                <img src="/assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
                 <p class="count">{{ habitCompletedCount }}</p>
               </div>
             </div>
@@ -129,7 +129,7 @@
                 <p>Long Term Tasks</p>
               </h5>
               <div class="count-container">
-                <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
+                <img src="/assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
                 <p class="count">{{ longTermCompletedCount }}</p>
               </div>
             </div>
@@ -139,7 +139,7 @@
                 <p>Daily To-dos</p>
               </h5>
               <div class="count-container">
-                <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
+                <img src="/assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
                 <p class="count">{{ todoCompletedCount }}</p>
               </div>
             </div>
@@ -657,15 +657,15 @@ span {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; 
-  text-align: center; 
+  align-items: center;
+  text-align: center;
   padding: 10px;
   margin: 10px 0;
 }
 
 .col {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
 }
 
