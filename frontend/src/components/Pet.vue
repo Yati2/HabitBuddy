@@ -307,8 +307,6 @@ export default {
         console.log('petHappiness: for movement', this.movementSpeed)
       }
 
-      const savedPet = localStorage.getItem('selectedPet') || 'orange'
-
       const config = {
         type: Phaser.AUTO,
         width: '100%',
@@ -326,7 +324,7 @@ export default {
             debug: false
           }
         },
-        scene: [new GameScene(savedPet, this.petHappiness)]
+        scene: [new GameScene(this.petHappiness)]
       }
 
       this.phaserGame = new Phaser.Game(config)
@@ -429,14 +427,14 @@ export default {
             if (gameBg) {
               gameBg.src = selectedItem.imgpath
             }
-            localStorage.setItem('selectedBackground', selectedItem.itemname)
+
             this.applyItemOnServer(selectedItem, 'Background')
             console.log('Applied background:', selectedItem)
           } else if (selectedItem.itemtype === 'Cat') {
             console.log('selectedItem:', selectedItem)
 
             console.log('petType:', this.petType)
-            localStorage.setItem('selectedPet', selectedItem.itemname)
+
             this.updateGameWithNewPet(selectedItem.itemname)
             this.petName = selectedItem.itemname
 
@@ -532,12 +530,10 @@ export default {
           console.log('applying pet:', appliedPet)
           this.petName = appliedPet.itemname
           this.updateGameWithNewPet(appliedPet.itemname)
-          localStorage.setItem('selectedPet', appliedPet.itemname)
         } else {
           this.updateGameWithNewPet('Orange')
           this.petName = 'Orange'
           console.log('applying default pet:', 'Orange')
-          localStorage.setItem('selectedPet', 'Orange')
         }
 
         this.allFishItems.forEach((fish) => {
@@ -867,7 +863,7 @@ class GameScene extends Phaser.Scene {
   }
 
   definePinkieCatAnimations() {
-    // Define all animations for the pinkie cat
+
     this.anims.create({
       key: 'walkRight',
       frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 6 }),
@@ -1296,57 +1292,6 @@ canvas {
   }
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes glow {
-  0% {
-    text-shadow:
-      0 0 5px #fceabb,
-      0 0 10px #f8b500,
-      0 0 15px #ffb84d;
-  }
-  50% {
-    text-shadow:
-      0 0 10px #ffd700,
-      0 0 20px #f8b500,
-      0 0 30px #ffb84d;
-  }
-  100% {
-    text-shadow:
-      0 0 5px #fceabb,
-      0 0 10px #f8b500,
-      0 0 15px #ffb84d;
-  }
-}
-
-.feed-text:hover {
-  animation: glow 1.5s infinite ease-in-out;
-}
-@keyframes bounce {
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-10px);
-  }
-  60% {
-    transform: translateY(-5px);
-  }
-}
 .progress-bar-container {
   width: 100%;
   height: 20px;
@@ -1373,12 +1318,6 @@ canvas {
   background-size: 20px 20px;
   border-radius: 10px 0 0 10px;
   transition: width 0.5s ease;
-}
-
-.feed-text {
-  display: inline-block;
-  cursor: pointer;
-  animation: bounce 2s infinite;
 }
 
 .alert-box {
