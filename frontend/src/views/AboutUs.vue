@@ -100,7 +100,7 @@ export default {
           id: 5,
           name: 'Sue 🦦',
           photo: '/assets/team/sue.jpg',
-          description: 'yap and yap and yap',
+          description: 'I yap but I always get the job done 🤪',
 
           stats: [
             { name: 'Fitness Level', value: 20 },
