@@ -24,11 +24,8 @@
           v-for="(day, index) in days"
           :key="index"
           class="calendar-day"
-          :class="{
-            'empty-day': !day,
-            [getMoodClass(day)]: day
-          }"
-          @click="day && selectDay(day)"
+          :class="getMoodClass(day)"
+          @click="selectDay(day)"
         >
           <div class="day-number">{{ day }}</div>
         </div>
@@ -405,18 +402,12 @@ button:hover {
   min-width: 30px;
 }
 
-.empty-day {
-  background-color: #ececec; /* Light grey color */
-  cursor: default; /* Disable the pointer cursor */
-  pointer-events: none; /* Disable clicking on these boxes */
-}
-
 .day-number {
   position: absolute;
   top: 4px;
   left: 4px;
   font-family: 'Jersey 25', sans-serif;
-  font-size: 16px;
+  font-size: 10px;
 }
 
 .error-message {
