@@ -119,7 +119,7 @@
                 <p>Habits</p>
               </h5>
               <div class="count-container">
-                <img src="/assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
+                <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
                 <p class="count">{{ habitCompletedCount }}</p>
               </div>
             </div>
@@ -129,7 +129,7 @@
                 <p>Long Term Tasks</p>
               </h5>
               <div class="count-container">
-                <img src="/assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
+                <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
                 <p class="count">{{ longTermCompletedCount }}</p>
               </div>
             </div>
@@ -139,7 +139,7 @@
                 <p>Daily To-dos</p>
               </h5>
               <div class="count-container">
-                <img src="/assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
+                <img src="../assets/dashboard/star.png" alt="Star Icon" class="star-icon" />
                 <p class="count">{{ todoCompletedCount }}</p>
               </div>
             </div>
@@ -152,7 +152,7 @@
           <div v-for="(items, itemType) in groupedInventoryItems" :key="itemType">
             <h5>{{ itemType }}</h5>
             <div class="row">
-              <div class="col-lg-3 col-md-6 col-xs-12" v-for="item in items" :key="item._id">
+              <div class="col" v-for="item in items" :key="item._id">
                 <div class="inventory-item text-center">
                   <div v-if="item.itemname.toLowerCase().includes('fish')">
                     <img
@@ -419,6 +419,7 @@ body {
   padding: 0;
   margin: 0;
   width: 100%;
+  justify-content: center;
 }
 
 .profile h1 {
@@ -652,44 +653,20 @@ span {
   color: #666;
 }
 
-.quoteCat {
-  width: 100px;
-}
-
-.quote {
-  position: relative;
-  text-align: center;
-  margin: 20px;
-}
-
-.quote-bubble {
-  display: inline-block;
-  background: #eec0c2;
-  padding: 10px 15px;
-  border-radius: 10px;
-  position: relative;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.quote-bubble::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: -10px;
-  margin-top: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent #eec0c2 transparent transparent;
-}
-
-.row {
-  justify-content: center;
-}
-
 .inventory-item {
-  width: 100%;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; 
+  text-align: center; 
+  padding: 10px;
   margin: 10px 0;
+}
+
+.col {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
 }
 
 .item-image,
@@ -742,42 +719,13 @@ span {
     font-size: 0.8rem;
     margin-top: 5px;
   }
-
-  .inventory-item {
-    width: 30%;
-    margin: 0;
-  }
-}
-
-@media (min-width: 576px) {
-  .inventory-item {
-    width: 48%;
-    margin: 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .inventory-item {
-    margin-left: 60px;
-  }
 }
 
 @media (max-width: 448px) {
-  .inventory-item {
-    margin-left: 50px;
-  }
-
   .item-image,
   .fish-image {
     width: 100px;
     max-height: 80px;
-  }
-  .quote-bubble::after {
-    top: -10px;
-    left: 50%;
-    margin-left: -5px;
-    margin-top: 0;
-    border-color: transparent transparent #eec0c2 transparent;
   }
 }
 </style>
