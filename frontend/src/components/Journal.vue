@@ -215,11 +215,12 @@ export default {
     },
     saveJournalEntry() {
       if (this.selectedDay && this.entry.trim()) {
-        const fullDate = new Date(`${this.selectedYear}-${this.selectedMonth}-${this.selectedDay}`)
+        // Set the date to midnight UTC
+        const fullDate = new Date(
+          Date.UTC(this.selectedYear, this.selectedMonth - 1, this.selectedDay)
+        )
 
         const user = localStorage.getItem('username')
-
-        // Check if an entry already exists for this day
         const existingEntry = this.moodTracker[this.selectedDay]
 
         if (existingEntry) {
@@ -239,7 +240,7 @@ export default {
               this.errorMessage = 'An error occurred while updating your entry.'
             })
         } else {
-          // Create new entry
+          // Create new entry with date set to midnight UTC
           axios
             .post('https://habit-buddy-server.vercel.app/api/journals', {
               username: user,
@@ -290,7 +291,11 @@ export default {
         .get(`https://habit-buddy-server.vercel.app/api/journals/${username}/${year}/${month}`)
         .then((response) => {
           this.moodTracker = response.data.reduce((acc, entry) => {
-            acc[new Date(entry.date).getDate()] = entry
+            const entryDate = new Date(entry.date)
+
+            const localDate = new Date(entryDate.getTime() - entryDate.getTimezoneOffset() * 60000)
+            const day = localDate.getDate()
+            acc[day] = entry
             return acc
           }, {})
           this.updateCalendar()
