@@ -55,16 +55,15 @@
             You already own this {{ selectedItem.itemtype.toLowerCase() }}!
           </button>
         </div>
-        <div v-else-if="!backgroundOwned || !catOwned || selectedItem.itemname.includes('Fish')">
+        <div v-else>
           <button
             v-if="canAfford"
             type="button"
             class="btn btn-primary w-100"
             style="background-color: #d2691e"
             @click="buyItem"
-            :disabled="purchasing"
           >
-            {{ purchasing ? 'Purchasing...' : 'Purchase' }}
+            Purchase
           </button>
           <button v-else type="button" class="btn btn-danger" disabled>Not enough coins!</button>
         </div>
@@ -79,7 +78,7 @@ import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
 export default {
-  name: 'ShopComponent',
+  name: 'Shop',
   props: {
     userPoints: {
       type: Number,
@@ -94,10 +93,6 @@ export default {
       ultraFishQty: 0,
       catOwned: false,
       backgroundOwned: false,
-      catOwnedItems: new Set(),
-      isPurchasing: false,
-      backgroundOwnedItems: new Set(),
-
       shopitems: [
         {
           itemname: 'Regular Fish',
@@ -180,35 +175,30 @@ export default {
     }
   },
   methods: {
-    async fetchUserInventory() {
-      this.isPurchasing = true
-      const username = localStorage.getItem('username') || 'anonymous'
+    fetchUserInventory() {
+      const username = localStorage.getItem('username')
 
-      try {
-        const response = await axios.get(
-          `https://habit-buddy-server.vercel.app/api/userinventory/${username}`
-        )
-        const inventory = response.data
+      axios
+        .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
+        .then((response) => {
+          const inventory = response.data
+          console.log(inventory)
 
-        inventory.forEach((item) => {
-          if (item.itemname === 'Regular Fish') {
-            this.regularFishQty = item.itemqty
-          } else if (item.itemname === 'Rare Fish') {
-            this.rareFishQty = item.itemqty
-          } else if (item.itemname === 'Ultra Fish') {
-            this.ultraFishQty = item.itemqty
-          } else if (item.itemtype === 'Background') {
-            this.backgroundOwnedItems.add(item.imgpath)
-          } else if (item.itemtype === 'Cat') {
-            this.catOwnedItems.add(item.itemname)
-          }
+          inventory.forEach((item) => {
+            if (item.itemname === 'Regular Fish') {
+              this.regularFishQty = item.itemqty
+            } else if (item.itemname === 'Rare Fish') {
+              this.rareFishQty = item.itemqty
+            } else if (item.itemname === 'Ultra Fish') {
+              this.ultraFishQty = item.itemqty
+            }
+          })
         })
-      } catch (error) {
-        console.error('Error fetching user inventory:', error)
-      }
+        .catch((error) => {
+          console.error('Error fetching user inventory:', error)
+        })
     },
     buyItem() {
-      this.isPurchasing = true
       const username = localStorage.getItem('username') || 'anonymous'
       const totalCost = this.selectedItem.itemcost * this.itemqty
 
@@ -219,7 +209,6 @@ export default {
         .then((response) => {
           console.log('Points deducted successfully')
           this.$emit('points-updated', -totalCost)
-
           this.updateInventory(username)
 
           // Set ownership flags instead of removing item from shop
@@ -267,7 +256,6 @@ export default {
           })
           console.log('New item added successfully')
         }
-        await this.fetchUserInventory()
       } catch (error) {
         console.error('Error updating inventory:', error)
       }
@@ -285,23 +273,69 @@ export default {
       this.selectedItem = item
       this.isModalOpen = true
       this.itemqty = 1
+      this.backgroundOwned = false
+      this.catOwned = false
 
-      // Check if the item is already owned
-      if (this.selectedItem.itemtype === 'Background') {
-        this.backgroundOwned = this.backgroundOwnedItems.has(this.selectedItem.imgpath)
-      } else if (this.selectedItem.itemtype === 'Cat') {
-        this.catOwned = this.catOwnedItems.has(this.selectedItem.itemname)
-      }
+      const username = localStorage.getItem('username')
+
+      // Fetch user inventory and check if they already own the selected background or cat
+      axios
+        .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
+        .then((response) => {
+          const inventory = response.data
+
+          if (this.selectedItem.itemtype === 'Background') {
+            this.backgroundOwned = inventory.some(
+              (inventoryItem) => inventoryItem.imgpath === this.selectedItem.imgpath
+            )
+          } else if (this.selectedItem.itemtype === 'Cat') {
+            this.catOwned = inventory.some(
+              (inventoryItem) => inventoryItem.itemname === this.selectedItem.itemname
+            )
+          }
+
+          // Update inventory counts if the selected item is a type of fish
+          inventory.forEach((item) => {
+            if (item.itemname === 'Regular Fish') {
+              this.regularFishQty = item.itemqty
+            } else if (item.itemname === 'Rare Fish') {
+              this.rareFishQty = item.itemqty
+            } else if (item.itemname === 'Ultra Fish') {
+              this.ultraFishQty = item.itemqty
+            }
+          })
+        })
+        .catch((error) => {
+          console.error('Error fetching user inventory:', error)
+        })
     },
 
     closeModal() {
-      this.isPurchasing = false
       this.isModalOpen = false
     }
   },
-  async mounted() {
-    console.log('shop mounted')
-    await this.fetchUserInventory()
+  mounted() {
+    const username = localStorage.getItem('username') || 'anonymous'
+
+    axios
+      .get(`https://habit-buddy-server.vercel.app/api/userinventory/${username}`)
+      .then((response) => {
+        const inventory = response.data
+
+        // Keeping all items in the shop
+        inventory.forEach((item) => {
+          if (item.itemname === 'Regular Fish') {
+            this.regularFishQty = item.itemqty
+          } else if (item.itemname === 'Rare Fish') {
+            this.rareFishQty = item.itemqty
+          } else if (item.itemname === 'Ultra Fish') {
+            this.ultraFishQty = item.itemqty
+          }
+        })
+      })
+      .catch((error) => {
+        console.error('Error fetching user inventory:', error)
+      })
   }
 }
 </script>
