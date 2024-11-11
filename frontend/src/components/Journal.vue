@@ -172,11 +172,10 @@ export default {
       return firstDay
     },
     getDaysInMonth(month, year) {
-      const numDays = new Date(year, month + 1, 0).getDate() // total num of days in month
-      const firstDay = new Date(year, month, 1).getDay() // which day of the week the first day of the month falls on
+      const numDays = new Date(year, month + 1, 0).getDate()
+      const firstDay = new Date(year, month, 1).getDay()
 
-      return [...Array(firstDay).fill(''), //add empty strings representing days before the first day of the month
-      ...Array.from({ length: numDays }, (_, i) => i + 1)] // array of day numbers from 1 to numDays
+      return [...Array(firstDay).fill(''), ...Array.from({ length: numDays }, (_, i) => i + 1)]
     },
     updateCalendar() {
       this.days = this.getDaysInMonth(this.selectedMonth - 1, this.selectedYear)
