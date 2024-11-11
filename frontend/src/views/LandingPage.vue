@@ -10,11 +10,7 @@
             <router-link to="/register" class="btn">Register</router-link>
           </div>
           <div class="col-12 col-md-6">
-            <img
-              src="../assets/landingPage/landingpage.gif"
-              alt="Landing Page Img"
-              class="big-img"
-            />
+            <img src="/assets/landingPage/landingpage.gif" alt="Landing Page Img" class="big-img" />
           </div>
         </div>
       </div>
@@ -133,7 +129,7 @@
         >
           <div class="carousel-control-content">
             <img
-              src="../assets/landingPage/left.png"
+              src="/assets/landingPage/left.png"
               alt="Previous"
               class="carousel-control-prev-icon"
             />
@@ -148,7 +144,7 @@
         >
           <div class="carousel-control-content">
             <img
-              src="../assets/landingPage/right.png"
+              src="/assets/landingPage/right.png"
               alt="Next"
               class="carousel-control-next-icon"
             />
@@ -160,7 +156,7 @@
     </div>
 
     <div class="sticky">
-      <img src="../assets/landingPage/miniFigure.gif" alt="Mini Figure" class="miniImg" />
+      <img src="/assets/landingPage/miniFigure.gif" alt="Mini Figure" class="miniImg" />
     </div>
   </div>
 </template>
@@ -238,7 +234,7 @@ p {
   justify-content: center;
   align-items: center;
   flex-direction: row;
-  background-image: url('../assets/landingPage/featureBG.gif');
+  background-image: url('/assets/landingPage/featureBG.gif');
   background-size: cover;
   background-position: center;
   height: 400px;
