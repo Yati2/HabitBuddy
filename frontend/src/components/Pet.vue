@@ -912,26 +912,13 @@ class GameScene extends Phaser.Scene {
       ulti: ['ulti_1', 'ulti_2', 'ulti_3']
     }
 
-    let fishY = this.cat.y
-    let fishX
+    const margin = 10
 
-    if (this.currentAction === 'walkRight') {
-      if (this.cat.x < this.sofapositionRight) {
-        fishX = this.cat.x + 10
-      } else {
-        fishX = this.cat.x + 5
-      }
+    let fishX = this.cat.x + (this.currentAction === 'walkRight' ? 5 : -5)
+    let fishY = this.cat.y - 10
 
-      fishY = this.cat.y - 10
-    } else if (this.currentAction === 'walkLeft') {
-      if (this.cat.x > this.sofapositionLeft) {
-        fishX = this.cat.x - 10
-      } else {
-        fishX = this.cat.x - 5
-      }
-
-      fishY = this.cat.y - 10
-    }
+    fishX = Math.max(margin, Math.min(fishX, this.cameras.main.width - margin))
+    fishY = Math.max(margin, Math.min(fishY, this.cameras.main.height - margin))
 
     this.eatenFish.setPosition(fishX, fishY).setVisible(true)
 
@@ -941,7 +928,8 @@ class GameScene extends Phaser.Scene {
       console.error(`Invalid fish type '${fishType}'`)
       return
     }
-    var scale = fishType === 'reg' || fishType === 'ulti' ? 0.5 : 0.25
+
+    const scale = fishType === 'reg' || fishType === 'ulti' ? 0.5 : 0.25
     this.eatenFish.setScale(scale).setTexture(fishImages[fishType][0]).setVisible(true)
 
     this.time.delayedCall(100, () => {
