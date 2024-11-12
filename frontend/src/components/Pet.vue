@@ -53,13 +53,13 @@
 
                   <button
                     class="petbtn mt-3"
-                    :disabled="!fish.owned || fish.itemqty === 0 || isCatFull"
+                    :disabled="!fish.owned || fish.itemqty <= 0 || isCatFull"
                     @click="feedPet(fish)"
                   >
                     Feed
                   </button>
 
-                  <p v-if="fish.itemqty === 0" class="text-danger pt-1" style="font-size: 0.8rem">
+                  <p v-if="fish.itemqty <= 0" class="text-danger pt-1" style="font-size: 0.8rem">
                     <router-link to="/tasks" class="text-decoration-underline text-danger">
                       Purchase from Shopkeeper here</router-link
                     >!
@@ -361,10 +361,12 @@ export default {
   },
   watch: {
     movementSpeed(newSpeed) {
-      const gameScene = this.phaserGame.scene.keys['scene-game']
-      if (gameScene) {
-        console.log('newSpeed: in watch', newSpeed)
-        gameScene.updateMovementSpeed(newSpeed)
+      if (this.phaserGame) {
+        const gameScene = this.phaserGame.scene.keys['scene-game']
+        if (gameScene) {
+          console.log('newSpeed: in watch', newSpeed)
+          gameScene.updateMovementSpeed(newSpeed)
+        }
       }
     }
   },
@@ -570,8 +572,12 @@ export default {
           itemname: fish.itemname,
           decreaseBy: 1
         })
+        if (fish.itemqty <= 0) {
+          fish.itemqty = 0
+        } else {
+          fish.itemqty -= 1
+        }
 
-        fish.itemqty -= 1
         let fishType = ''
         if (fish.itemname.includes('Regular')) {
           fishType = 'reg'
@@ -863,7 +869,6 @@ class GameScene extends Phaser.Scene {
   }
 
   definePinkieCatAnimations() {
-
     this.anims.create({
       key: 'walkRight',
       frames: this.anims.generateFrameNumbers('catWalkingRight', { start: 0, end: 6 }),
